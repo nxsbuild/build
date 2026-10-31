@@ -3329,7 +3329,7 @@ function zeroScorePenanceSelectHtml(className, label){
   return `<select class="${className}" aria-label="${escapeHtml(label)}">${ZERO_PENANCE_SELECT_VALUES.map(value=>`<option value="${value}">${value===0?'없음':value}</option>`).join('')}</select>`;
 }
 function zeroScoreHonorSelectHtml(className, label){
-  const options=[['0','없음'],['b','B'],['a','A'],['s','S'],['x','X']];
+  const options=[['0','없음'],...ZERO_HONOR_STAGES.map(({key})=>[key,key.toUpperCase()])];
   return `<select class="${className}" aria-label="${escapeHtml(label)}">${options.map(([value,name])=>`<option value="${value}">${name}</option>`).join('')}</select>`;
 }
 function zeroScoreStarButtonHtml(){

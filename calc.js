@@ -2739,7 +2739,7 @@ function zeroRangeScore(value, start, maxValue, pointForStep){
 function zeroPenanceScore(level){
   return zeroRangeScore(level,1,20,i=>i<=13 ? 1 : (i<=16 ? 2 : (i===17 ? 3 : 7)));
 }
-const ZERO_HONOR_STAGES=[{key:'b', point:2},{key:'a', point:4},{key:'s', point:6},{key:'x', point:8}];
+const ZERO_HONOR_STAGES=[{key:'b', point:2},{key:'a', point:4},{key:'s', point:6},{key:'x', point:8},{key:'xd', point:10}];
 function zeroHonorScore(stage){
   const found=ZERO_HONOR_STAGES.find(item=>item.key===normalizeZeroHonorValue(stage));
   return found ? found.point : 0;
@@ -2757,6 +2757,7 @@ function zeroHonorTowerScore(floor){
 }
 function normalizeZeroHonorValue(value){
   const text=dataText(value).toLowerCase().replace(/명예/g,'').trim();
+  if(ZERO_HONOR_STAGES.some(item=>item.key===text)) return text;
   const first=text.charAt(0);
   if(['b','a','s','x'].includes(first)) return first;
   if(['없음','none','off','n','0','-',''].includes(text)) return '0';

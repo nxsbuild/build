@@ -3,14 +3,14 @@
 <head>
 <meta charset="UTF-8"/>
 <script>
-window.DPS_BUILD_VERSION = "v106";
+window.APP_VERSION = "v110";
+window.DPS_BUILD_VERSION = window.APP_VERSION;
 window.DPS_STANDALONE_VIEW = (function(){
   var requested=new URLSearchParams(window.location.search).get('dpsWindow');
   var value=['board','utility','both'].includes(requested) ? requested : '';
   if(value) document.documentElement.dataset.dpsStandaloneView=value;
   return value;
 })();
-window.APP_VERSION = window.DPS_BUILD_VERSION;
 (function(){
   'use strict';
   var remoteAssetBase='https://nxsbuild.github.io/build/';
@@ -24,11 +24,11 @@ window.APP_VERSION = window.DPS_BUILD_VERSION;
   }
   window.dpsAssetUrl=function(src){
     var separator=src.indexOf('?')===-1?'?':'&';
-    return src + separator + 'v=' + encodeURIComponent(window.DPS_BUILD_VERSION);
+    return src + separator + 'v=' + encodeURIComponent(window.APP_VERSION);
   };
   window.dpsRemoteAssetUrl=function(src,key){
     var path=normalizeAssetPath(key || src);
-    return remoteAssetBase.replace(/\/$/, '/') + encodeAssetPath(path) + '?v=' + encodeURIComponent(window.DPS_BUILD_VERSION);
+    return remoteAssetBase.replace(/\/$/, '/') + encodeAssetPath(path) + '?v=' + encodeURIComponent(window.APP_VERSION);
   };
   window.dpsImageAssetUrl=function(src,key){
     if(window.location && window.location.protocol==='file:') return window.dpsRemoteAssetUrl(src,key);
@@ -50,14 +50,14 @@ window.APP_VERSION = window.DPS_BUILD_VERSION;
   };
   window.dpsCheckIndexUpdate=function(){
     if(!window.fetch || !window.location || window.location.protocol==='file:') return;
-    var current=window.DPS_BUILD_VERSION || window.APP_VERSION || '';
+    var current=window.APP_VERSION;
     var url=new URL(window.location.href);
     url.searchParams.set('__dps_check',String(Date.now()));
     fetch(url.href,{cache:'no-store'}).then(function(res){
       if(!res.ok) return '';
       return res.text();
     }).then(function(html){
-      var match=String(html || '').match(/window\.(?:DPS_BUILD_VERSION|APP_VERSION)\s*=\s*["']([^"']+)["']/);
+      var match=String(html || '').match(/window\.APP_VERSION\s*=\s*["']([^"']+)["']/);
       var latest=match && match[1];
       if(!latest || latest===current) return;
       var key='dps-auto-refresh:' + latest;
@@ -223,14 +223,15 @@ html:not(.dps-booting) #dpsBootScreen{display:none}
 <meta content="https://nxsbuild.github.io/build/" property="og:url"/>
 <meta content="개복디 빌더 - 통합 빌드 계산 HUB" property="og:title"/>
 <meta content="특성 투자·재화 사용량 계산부터 스펙·DPS 분석까지 한 번에, 통합 빌드 계산 HUB" property="og:description"/>
-<meta content="https://nxsbuild.github.io/build/logo.png" property="og:image"/>
-<meta content="https://nxsbuild.github.io/build/logo.png" property="og:image:secure_url"/>
+<!-- OG/Twitter 이미지 캐시: 앱 버전 변경 시 아래 세 URL을 같은 버전으로 맞춥니다. -->
+<meta content="https://nxsbuild.github.io/build/logo.png?v=v110" property="og:image"/>
+<meta content="https://nxsbuild.github.io/build/logo.png?v=v110" property="og:image:secure_url"/>
 <meta content="image/png" property="og:image:type"/>
 <meta content="개복디 빌더 로고" property="og:image:alt"/>
 <meta content="summary_large_image" name="twitter:card"/>
 <meta content="개복디 빌더 - 통합 빌드 계산 HUB" name="twitter:title"/>
 <meta content="특성 투자·재화 사용량 계산부터 스펙·DPS 분석까지 한 번에, 통합 빌드 계산 HUB" name="twitter:description"/>
-<meta content="https://nxsbuild.github.io/build/logo.png" name="twitter:image"/>
+<meta content="https://nxsbuild.github.io/build/logo.png?v=v110" name="twitter:image"/>
 <meta content="개복디 빌더 로고" name="twitter:image:alt"/>
 <link href="https://cdn.jsdelivr.net" rel="preconnect"/>
 <link crossorigin="" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" rel="stylesheet"/>
@@ -245,10 +246,6 @@ html:not(.dps-booting) #dpsBootScreen{display:none}
     document.head.appendChild(link);
   }
   appendLink({href:icon, rel:'icon', type:'image/png'});
-  // 공유 메타태그의 이미지 버전도 앱 버전 한 곳에서 관리합니다.
-  document.querySelectorAll('meta[property="og:image"], meta[property="og:image:secure_url"], meta[name="twitter:image"]').forEach(function(meta){
-    meta.content=assetUrl(meta.content);
-  });
   var mainStyle=document.createElement('link');
   mainStyle.rel='stylesheet';
   mainStyle.dataset.bootStyle='1';
@@ -1019,6 +1016,11 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
                                   <div class="zero-rank-score-row">
                                     <span class="zero-rank-score-range">19단계</span
                                     ><span class="zero-rank-score-rate">X등급</span
+                                    ><strong class="zero-rank-score-points">2점</strong>
+                                  </div>
+                                  <div class="zero-rank-score-row">
+                                    <span class="zero-rank-score-range">20단계</span
+                                    ><span class="zero-rank-score-rate">XD등급</span
                                     ><strong class="zero-rank-score-points">2점</strong>
                                   </div>
                                 </div>
