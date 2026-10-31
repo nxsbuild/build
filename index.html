@@ -2,9 +2,8 @@
 <html lang="ko" class="dps-booting">
 <head>
 <meta charset="UTF-8"/>
-<meta name="google-site-verification" content="RTuDWbMdnKgbpRpl05eXh9epFwWRSxju4NOl8OtjMsI" />
 <script>
-window.DPS_BUILD_VERSION = "v1.0.1";
+window.DPS_BUILD_VERSION = "1.05";
 window.DPS_STANDALONE_VIEW = (function(){
   var requested=new URLSearchParams(window.location.search).get('dpsWindow');
   var value=['board','utility','both'].includes(requested) ? requested : '';
@@ -12,16 +11,6 @@ window.DPS_STANDALONE_VIEW = (function(){
   return value;
 })();
 window.APP_VERSION = window.DPS_BUILD_VERSION;
-window.DPS_ASSET_VERSIONS = {
-  "app.js": window.DPS_BUILD_VERSION,
-  "calc.js": window.DPS_BUILD_VERSION,
-  "data.js": window.DPS_BUILD_VERSION,
-  "preset.js": window.DPS_BUILD_VERSION,
-  "responsive.js": window.DPS_BUILD_VERSION,
-  "style.css": window.DPS_BUILD_VERSION,
-  "icon.png": window.DPS_BUILD_VERSION,
-  "logo.png": window.DPS_BUILD_VERSION
-};
 (function(){
   'use strict';
   var remoteAssetBase='https://nxsbuild.github.io/build/';
@@ -33,19 +22,13 @@ window.DPS_ASSET_VERSIONS = {
       return encodeURIComponent(part);
     }).join('/');
   }
-  window.dpsAssetVersion=function(key){
-    var versions=window.DPS_ASSET_VERSIONS || {};
-    return versions[key] || window.DPS_BUILD_VERSION || 'dev';
-  };
-  window.dpsAssetUrl=function(src,key){
-    var version=window.dpsAssetVersion(key || normalizeAssetPath(src));
+  window.dpsAssetUrl=function(src){
     var separator=src.indexOf('?')===-1?'?':'&';
-    return src + separator + 'v=' + encodeURIComponent(version);
+    return src + separator + 'v=' + encodeURIComponent(window.DPS_BUILD_VERSION);
   };
   window.dpsRemoteAssetUrl=function(src,key){
     var path=normalizeAssetPath(key || src);
-    var version=window.dpsAssetVersion(path);
-    return remoteAssetBase.replace(/\/$/, '/') + encodeAssetPath(path) + '?v=' + encodeURIComponent(version);
+    return remoteAssetBase.replace(/\/$/, '/') + encodeAssetPath(path) + '?v=' + encodeURIComponent(window.DPS_BUILD_VERSION);
   };
   window.dpsImageAssetUrl=function(src,key){
     if(window.location && window.location.protocol==='file:') return window.dpsRemoteAssetUrl(src,key);
@@ -240,14 +223,14 @@ html:not(.dps-booting) #dpsBootScreen{display:none}
 <meta content="https://nxsbuild.github.io/build/" property="og:url"/>
 <meta content="개복디 빌더 - 통합 빌드 계산 HUB" property="og:title"/>
 <meta content="특성 투자·재화 사용량 계산부터 스펙·DPS 분석까지 한 번에, 통합 빌드 계산 HUB" property="og:description"/>
-<meta content="https://nxsbuild.github.io/build/logo.png?v=v1.0.1" property="og:image"/>
-<meta content="https://nxsbuild.github.io/build/logo.png?v=v1.0.1" property="og:image:secure_url"/>
+<meta content="https://nxsbuild.github.io/build/logo.png" property="og:image"/>
+<meta content="https://nxsbuild.github.io/build/logo.png" property="og:image:secure_url"/>
 <meta content="image/png" property="og:image:type"/>
 <meta content="개복디 빌더 로고" property="og:image:alt"/>
 <meta content="summary_large_image" name="twitter:card"/>
 <meta content="개복디 빌더 - 통합 빌드 계산 HUB" name="twitter:title"/>
 <meta content="특성 투자·재화 사용량 계산부터 스펙·DPS 분석까지 한 번에, 통합 빌드 계산 HUB" name="twitter:description"/>
-<meta content="https://nxsbuild.github.io/build/logo.png?v=v1.0.1" name="twitter:image"/>
+<meta content="https://nxsbuild.github.io/build/logo.png" name="twitter:image"/>
 <meta content="개복디 빌더 로고" name="twitter:image:alt"/>
 <link href="https://cdn.jsdelivr.net" rel="preconnect"/>
 <link crossorigin="" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" rel="stylesheet"/>
@@ -262,6 +245,10 @@ html:not(.dps-booting) #dpsBootScreen{display:none}
     document.head.appendChild(link);
   }
   appendLink({href:icon, rel:'icon', type:'image/png'});
+  // 공유 메타태그의 이미지 버전도 앱 버전 한 곳에서 관리합니다.
+  document.querySelectorAll('meta[property="og:image"], meta[property="og:image:secure_url"], meta[name="twitter:image"]').forEach(function(meta){
+    meta.content=assetUrl(meta.content);
+  });
   var mainStyle=document.createElement('link');
   mainStyle.rel='stylesheet';
   mainStyle.dataset.bootStyle='1';
@@ -281,7 +268,7 @@ html:not(.dps-booting) #dpsBootScreen{display:none}
       ['[data-nexus-view="dps"]','개복디 빌더 이동',window.innerWidth<768?32:34],
       ['#btnFontSizePopup','글씨 크기 조절',window.innerWidth<768?32:34],
       ['.font-scale-trigger','글씨 크기 조절',30],
-      ['.header-nexus-link','개복디 넥서스',window.innerWidth<600?30:35],
+      ['.header-nexus-link','히든조합 계산기 이동',window.innerWidth<600?30:35],
       ['#independentWindowToggle','독립 창 선택',35],
     ];
     definitions.forEach(function(definition){
@@ -473,7 +460,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 <div class="header-convenience" aria-label="빠른 이동">
 <div class="header-reference-actions">
 
-<a class="btn subtle ui-action-btn header-nexus-link" href="https://nxsbuild.github.io/nexus/" aria-label="개복디 넥서스"><svg class="header-nexus-mark" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false"><defs><linearGradient id="headerNexusGradient" x1="7" y1="8" x2="25" y2="24" gradientUnits="userSpaceOnUse"><stop stop-color="#e7fbff"/><stop offset=".55" stop-color="#8edbff"/><stop offset="1" stop-color="#6b9dff"/></linearGradient></defs><path d="M7 24V8h4.4L21 18.9V8h4v16h-4.3L11 13.2V24H7Z" fill="url(#headerNexusGradient)"/><path d="M11 13.2 20.7 24" stroke="#edfbff" stroke-width=".8" stroke-opacity=".65"/></svg></a>
+<a class="btn subtle ui-action-btn header-nexus-link" href="https://nxsbuild.github.io/nexus/" aria-label="히든조합 계산기 이동"><svg class="header-nexus-mark" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false"><defs><linearGradient id="headerNexusGradient" x1="7" y1="8" x2="25" y2="24" gradientUnits="userSpaceOnUse"><stop stop-color="#e7fbff"/><stop offset=".55" stop-color="#8edbff"/><stop offset="1" stop-color="#6b9dff"/></linearGradient></defs><path d="M7 24V8h4.4L21 18.9V8h4v16h-4.3L11 13.2V24H7Z" fill="url(#headerNexusGradient)"/><path d="M11 13.2 20.7 24" stroke="#edfbff" stroke-width=".8" stroke-opacity=".65"/></svg></a>
 </div>
 </div>
 <div aria-label="글씨 크기 조절" class="font-scale-ctrl">

@@ -1447,17 +1447,12 @@ function dpsBaseUnitQuantityControlHtml(unit, slotIndex, idPrefix='dpsBaseUnitSl
 }
 /* 쥬얼 이미지·표시 및 설정 */
 function getJewelImageSources(name){
-  const safeName=encodeURIComponent(String(name||'').trim());
-  const key=`jw/${String(name||'').trim()}.png`;
-  const version=encodeURIComponent(window.DPS_BUILD_VERSION || 'dev');
-  const assetUrl=typeof window.dpsAssetUrl==='function' ? window.dpsAssetUrl : null;
-  const remoteUrl=typeof window.dpsRemoteAssetUrl==='function'
-    ? window.dpsRemoteAssetUrl(key, key)
-    : `https://nxsbuild.github.io/build/jw/${safeName}.png?v=${version}`;
-  const localUrl=assetUrl ? assetUrl(`./jw/${safeName}.png`, key) : `./jw/${safeName}.png?v=${version}`;
+  const jewelName=String(name||'').trim();
+  const key=`jw/${jewelName}.png`;
+  const localUrl=`./jw/${encodeURIComponent(jewelName)}.png`;
   return {
-    src:remoteUrl,
-    fallback:localUrl
+    src:window.dpsRemoteAssetUrl(key),
+    fallback:window.dpsAssetUrl(localUrl)
   };
 }
 function handleJewelImageError(img){
