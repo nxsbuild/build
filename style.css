@@ -521,6 +521,7 @@ body .right-workspace-copy-btn{display:inline-flex;align-items:center;justify-co
 body .right-workspace-copy-btn .nexus-control-icon svg{display:block;flex:none;width:17px;height:17px;}
 body .right-workspace-copy-btn:hover:not(:disabled),body .right-workspace-copy-btn:focus-visible{border-color:#96b7d4;background:#283b4b;}
 body .right-workspace-copy-btn:disabled{opacity:.45;cursor:default;}
+
 /* 헤더 내부로 연결되는 동일한 탭 패턴: 설정·룬·승단·빌드·유닛 */
 .integrated-tabs{display:flex;flex-wrap:nowrap;gap:0;width:100%;min-width:0;padding:0;margin:0;border:0;border-bottom:1px solid var(--ui-line);background:var(--ui-integrated-subhead-bg);box-sizing:border-box;overflow-x:auto;overflow-y:hidden;overscroll-behavior-x:contain;scroll-snap-type:x proximity;}
 .integrated-tab{display:flex;flex:1 1 0;align-items:center;justify-content:center;min-width:0;height:44px;min-height:44px;padding:6px 5px;border:0;border-bottom:2px solid transparent;border-radius:0;background:transparent;color:#9aa9bd;font-size:var(--ui-primary-tab-font);line-height:1.2;white-space:normal;word-break:keep-all;text-align:center;cursor:pointer;scroll-snap-align:start;transition:background .18s ease,color .18s ease,box-shadow .18s ease;}
@@ -1912,7 +1913,6 @@ body .unit-slot-remove-dialog-actions button{font-family:inherit;font-size:calc(
 body .unit-slot-remove-cancel{background:var(--ui-button-bg);border:1px solid var(--ui-button-border);color:var(--ui-button-text);}
 body .unit-slot-remove-confirm{background:linear-gradient(135deg,#663445,#422330);border:1px solid #ad6e80;color:#fff1f4;}
 body .unit-slot-remove-dialog-actions button:focus-visible{outline:2px solid var(--role-manual-active-bd);outline-offset:2px;}
-
 /* 0033: 번호 배지는 루키 특성 등에서 사용하는 01~10 스타일과 일관되게 표시. */
 body .unit-slot-heading{display:flex;align-items:center;min-width:0;gap:8px;}
 body .unit-slot-number{display:grid;place-items:center;flex:0 0 29px;width:29px;height:29px;box-sizing:border-box;border:1px solid #545e65;border-radius:7px;background:#111215;color:#cae9ff;font:calc(12px * var(--app-font-scale))/1 Consolas,monospace;font-variant-numeric:tabular-nums;letter-spacing:.2px;}

@@ -2084,13 +2084,21 @@ async function copyDpsAnalysisBoard(button){
     '[클리어 분석]',...analysisLines,
     '[빌드 설정]',...buildLines,
     '', '[선택 유닛 정보]',
-    ...rows.map(([slot,name,quantity,limitBreak,jewel])=>`${slot} ${name} ×${quantity} · 돌파${limitBreak} · ${jewel}`)
+    ...rows.map(([slot,name,quantity,limitBreak,jewel])=>`${slot} ${name} · 마리수 ${quantity} · 한계 돌파 ${limitBreak} · ${jewel}`)
   ].join('\n');
-  const htmlLines=lines=>lines.map(line=>`<div style="margin:0 0 3px;overflow-wrap:anywhere">${escapeHtml(line)}</div>`).join('');
-  const htmlSection=(title,lines)=>`<td style="width:50%;vertical-align:top;text-align:left;padding:2px 8px;overflow-wrap:anywhere"><div style="font-weight:700;margin-bottom:5px">${title}</div>${htmlLines(lines)}</td>`;
-  const htmlCell=(tag,value)=>`<${tag} style="border-bottom:1px solid #d6dae0;padding:3px 5px;text-align:center;overflow-wrap:anywhere">${escapeHtml(value)}</${tag}>`;
-  const htmlTable=`<table style="border-collapse:collapse;margin:5px auto 0;text-align:center;font-size:11px;width:100%"><thead><tr>${['슬롯 · 유닛명','수 / 돌파','쥬얼'].map(value=>htmlCell('th',value)).join('')}</tr></thead><tbody>${rows.map(([slot,name,quantity,limitBreak,jewel])=>`<tr>${[`${slot} ${name}`,`${quantity} / ${limitBreak}`,jewel].map(value=>htmlCell('td',value)).join('')}</tr>`).join('')}</tbody></table>`;
-  const html=`<div style="font-family:Arial,sans-serif;font-size:12px;line-height:1.35;max-width:700px;margin:auto"><h2 style="text-align:center;font-size:16px;margin:0 0 8px">클리어 기록 보고서</h2><table style="width:100%;table-layout:fixed;border-collapse:collapse"><tr>${htmlSection('클리어 분석',analysisLines)}${htmlSection('빌드 설정',buildLines)}</tr></table><div style="font-weight:700;margin:7px 0 3px;text-align:center">선택 유닛 정보</div>${htmlTable}</div>`;
+  // 붙여넣기 편집기에서 중첩 표가 깨지지 않도록 상단은 단일 2열 표로 구성한다.
+  // 왼쪽은 분석, 오른쪽은 빌드 설정이며 각 셀 하단 테두리로 항목을 구분한다.
+  const topCell=(value,side,heading=false)=>{
+    const border=heading?'#a5b3c4':'#cbd4df';
+    const font=heading?'font-size:13px;font-weight:700;':'font-size:12px;';
+    return `<${heading?'th':'td'} style="border-bottom:1px solid ${border};padding:3px ${side==='left'?'8px 6px 2px':'2px 2px 6px'};vertical-align:top;text-align:left;line-height:1.35;overflow-wrap:anywhere;${font}">${escapeHtml(value)}</${heading?'th':'td'}>`;
+  };
+  const topRows=Array.from({length:Math.max(analysisLines.length,buildLines.length)},(_,index)=>`<tr>${topCell(analysisLines[index]||'','left')}${topCell(buildLines[index]||'','right')}</tr>`).join('');
+  const topTable=`<table cellspacing="0" cellpadding="0" rules="rows" frame="void" style="border-collapse:collapse;width:auto;max-width:500px;table-layout:auto;margin:0;text-align:left"><thead><tr>${topCell('클리어 분석','left',true)}${topCell('빌드 설정','right',true)}</tr></thead><tbody>${topRows}</tbody></table>`;
+  const unitCell=(tag,value,index)=>`<${tag} style="border-bottom:1px solid #cbd4df;padding:3px 5px;text-align:${index===1?'center':'left'};vertical-align:middle;overflow-wrap:anywhere;line-height:1.25;${tag==='th'?'font-weight:700;':''}">${escapeHtml(value)}</${tag}>`;
+  const unitRow=values=>`<tr>${values.map((value,index)=>unitCell('td',value,index)).join('')}</tr>`;
+  const unitTable=`<table cellspacing="0" cellpadding="0" rules="rows" frame="void" style="border-collapse:collapse;width:auto;max-width:440px;table-layout:auto;margin:0;font-size:11px"><thead><tr>${['슬롯 · 유닛명','마리수 / 한계 돌파','쥬얼'].map((value,index)=>unitCell('th',value,index)).join('')}</tr></thead><tbody>${rows.map(([slot,name,quantity,limitBreak,jewel])=>unitRow([`${slot} ${name}`,`${quantity} / ${limitBreak}`,jewel])).join('')}</tbody></table>`;
+  const html=`<div style="font-family:Arial,sans-serif;font-size:12px;line-height:1.3;max-width:500px;margin:0;text-align:left"><h2 style="text-align:left;font-size:16px;margin:0 0 5px">클리어 기록 보고서</h2>${topTable}<div style="font-size:13px;font-weight:700;margin:5px 0 2px;text-align:left">선택 유닛 정보</div>${unitTable}</div>`;
   let copied=false;
   button.disabled=true;
   try{
@@ -2119,7 +2127,6 @@ async function copyDpsAnalysisBoard(button){
     showToast(copied?`클리어 기록과 ${rows.length}개 슬롯의 유닛 정보를 복사했습니다.`:'복사에 실패했습니다. 브라우저의 클립보드 권한을 확인해 주세요.',copied?'ok':'err');
   }finally{button.disabled=false;}
 }
-
 let dpsUnitSlotModalSyncing=false;
 function syncDpsUnitSlotModal(slots){
   // 입력 blur/change가 렌더링 도중 다시 호출되어 DOM을 이중 교체하지 않도록 보호
