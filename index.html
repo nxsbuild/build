@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <script>
-window.APP_VERSION = "v110";
+window.APP_VERSION = "v116";
 window.DPS_BUILD_VERSION = window.APP_VERSION;
 window.DPS_STANDALONE_VIEW = (function(){
   var requested=new URLSearchParams(window.location.search).get('dpsWindow');
@@ -224,14 +224,14 @@ html:not(.dps-booting) #dpsBootScreen{display:none}
 <meta content="개복디 빌더 - 통합 빌드 계산 HUB" property="og:title"/>
 <meta content="특성 투자·재화 사용량 계산부터 스펙·DPS 분석까지 한 번에, 통합 빌드 계산 HUB" property="og:description"/>
 <!-- OG/Twitter 이미지 캐시: 앱 버전 변경 시 아래 세 URL을 같은 버전으로 맞춥니다. -->
-<meta content="https://nxsbuild.github.io/build/logo.png?v=v110" property="og:image"/>
-<meta content="https://nxsbuild.github.io/build/logo.png?v=v110" property="og:image:secure_url"/>
+<meta content="https://nxsbuild.github.io/build/logo.png?v=v116" property="og:image"/>
+<meta content="https://nxsbuild.github.io/build/logo.png?v=v116" property="og:image:secure_url"/>
 <meta content="image/png" property="og:image:type"/>
 <meta content="개복디 빌더 로고" property="og:image:alt"/>
 <meta content="summary_large_image" name="twitter:card"/>
 <meta content="개복디 빌더 - 통합 빌드 계산 HUB" name="twitter:title"/>
 <meta content="특성 투자·재화 사용량 계산부터 스펙·DPS 분석까지 한 번에, 통합 빌드 계산 HUB" name="twitter:description"/>
-<meta content="https://nxsbuild.github.io/build/logo.png?v=v110" name="twitter:image"/>
+<meta content="https://nxsbuild.github.io/build/logo.png?v=v116" name="twitter:image"/>
 <meta content="개복디 빌더 로고" name="twitter:image:alt"/>
 <link href="https://cdn.jsdelivr.net" rel="preconnect"/>
 <link crossorigin="" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" rel="stylesheet"/>
@@ -267,6 +267,7 @@ html:not(.dps-booting) #dpsBootScreen{display:none}
       ['.font-scale-trigger','글씨 크기 조절',30],
       ['.header-nexus-link','개복디 넥서스',window.innerWidth<600?30:35],
       ['#independentWindowToggle','독립 창 선택',35],
+      ['[data-analysis-board-copy]','클리어 기록 복사',32],
     ];
     definitions.forEach(function(definition){
       document.querySelectorAll(definition[0]).forEach(function(control){
@@ -1162,7 +1163,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 <div class="col-right">
 <!-- 스펙·유닛 보드: 전환 버튼·결과 -->
 <div class="data-card stat-dps-card right-analytics-workspace">
-<div class="right-workspace-navigation"><header class="right-workspace-head"><span class="right-workspace-mark" aria-hidden="true"><svg class="ui-header-glyph" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><use href="#dpsUiSparklesGlyph"/></svg></span><span class="right-workspace-copy"><strong>분석 보드</strong></span></header>
+<div class="right-workspace-navigation"><header class="right-workspace-head"><span class="right-workspace-mark" aria-hidden="true"><svg class="ui-header-glyph" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><use href="#dpsUiSparklesGlyph"/></svg></span><span class="right-workspace-copy"><strong>분석 보드</strong></span><button type="button" class="right-workspace-copy-btn" data-analysis-board-copy aria-label="클리어 기록 복사"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="8" y="8" width="13" height="13" rx="2"/><path d="M16 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h3"/></svg></button></header>
 <section class="damage-board-analysis-view" id="damageBoardAnalysisPanel" aria-label="분석 보드 내용">
 <div class="damage-board-subtabs integrated-tabs" role="tablist" aria-label="분석 보드 세부 선택" data-damage-board-subtabs>
 <button class="integrated-tab is-active" id="damageBoardSpecTab" type="button" role="tab" aria-selected="true" aria-controls="damageBoardSpecPanel" data-damage-board-subtab="spec" tabindex="0">스펙 보드</button>

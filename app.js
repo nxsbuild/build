@@ -2015,16 +2015,17 @@ function dpsBaseUnitSlotsHtml(slots){
   if(slots[dpsUnitAutoNarudReviewSlot]!=='prodNarud') dpsUnitAutoNarudReviewSlot=-1;
   const visibleCount=dpsUnitVisibleCount(slots);
   const basicRows=[];
+  const jewelSettings=dpsJewelSettingsObject();
   const rows=slots.slice(0,visibleCount).map((unitId,index)=>{
     const unit=dpsBaseUnitById(unitId);
-    const info=unit ? dpsBaseUnitResultDisplayMap.get(String(unit.id||'')) : null;
-    const attack=unit && info ? dpsBaseUnitAttackText(info) : '—';
-    const pierce=unit && info ? dpsBaseUnitPercentText(info.effectivePierce) : '—';
-    const dps=unit && info ? dpsBaseUnitDpsText(info) : '—';
     const unitName=unit ? dpsBaseUnitDisplayLabel(unit) : '유닛 미설정';
     const quantity=unit ? (dpsBaseUnitHasQuantity(unit) ? dpsBaseUnitQuantityText(unit) : '1') : '—';
     if(unit){
-      basicRows.push(`<tr><th scope="row">${String(index+1).padStart(2,'0')}</th><td>${escapeHtml(unitName)}</td><td>${escapeHtml(quantity)}</td><td>${escapeHtml(attack)}</td><td>${escapeHtml(pierce)}</td></tr>`);
+      const advanced=dpsBaseUnitSupportsAdvancedOptions(unit);
+      const limitBreak=advanced ? normalizeDpsBaseUnitLimitBreakValue(dpsBaseUnitStoreInput('limitBreak',unit)?.value) : '사용 불가';
+      const jewelName=advanced ? dpsBaseUnitJewelName(unit) : '';
+      const jewel=advanced ? (jewelName ? `${dpsJewelFinalStats(jewelName,jewelSettings).mythic==='Y'?'신화':'전설'} ${jewelName}` : '없음') : '사용 불가';
+      basicRows.push(`<tr><th scope="row">${String(index+1).padStart(2,'0')}</th><td>${escapeHtml(unitName)}</td><td>${escapeHtml(quantity)}</td><td>${escapeHtml(limitBreak)}</td><td>${escapeHtml(jewel)}</td></tr>`);
     }
     const grade=unit ? String(unit.grade || '유닛') : '유닛 선택 대기';
     const selected=index===dpsUnitSelectedSlot && dpsUnitDetailOpen;
@@ -2038,10 +2039,85 @@ function dpsBaseUnitSlotsHtml(slots){
       </button>
       ${dpsUnitExpandedSettingsHtml(unit)}</article>`;
   }).join('');
-  const basicInfo=`<div class="unit-basic-summary"><table aria-label="설정된 유닛 기본정보"><colgroup><col class="unit-basic-number"><col class="unit-basic-name"><col class="unit-basic-quantity"><col class="unit-basic-attack"><col class="unit-basic-pierce"></colgroup><thead><tr><th scope="col">슬롯 번호</th><th scope="col">유닛명</th><th scope="col">마리수</th><th scope="col">공격력</th><th scope="col">관통</th></tr></thead><tbody>${basicRows.join('') || '<tr><td colspan="5" class="unit-basic-empty">유닛을 설정하면 기본정보가 표시됩니다.</td></tr>'}</tbody></table></div>`;
+  const basicInfo=`<div class="unit-basic-summary"><table aria-label="설정된 유닛 기본정보"><colgroup><col class="unit-basic-number"><col class="unit-basic-name"><col class="unit-basic-quantity"><col class="unit-basic-limit-break"><col class="unit-basic-jewel"></colgroup><thead><tr><th scope="col">슬롯 번호</th><th scope="col">유닛명</th><th scope="col">마리수</th><th scope="col">한계 돌파</th><th scope="col">전설·신화 쥬얼</th></tr></thead><tbody>${basicRows.join('') || '<tr><td colspan="5" class="unit-basic-empty">유닛을 설정하면 기본정보가 표시됩니다.</td></tr>'}</tbody></table></div>`;
   const next=visibleCount<slots.length
     ? `<button class="unit-slot-add-card" type="button" data-unit-slot-add="${visibleCount}" aria-label="${visibleCount+1}번 유닛 슬롯 추가"><span class="unit-slot-add-symbol" aria-hidden="true">+</span><strong>${visibleCount+1}번 슬롯 추가</strong></button>` : '';
   return `<section class="unit-list-collection" aria-label="유닛 슬롯 관리">${basicInfo}<div class="unit-slot-cards-grid" aria-label="유닛 슬롯 카드 목록">${rows}${next}</div></section>`;
+}
+
+// 복사 시점에 렌더링되어 있는 유닛 분석 수치와 선택 슬롯을 읽는다.
+async function copyDpsAnalysisBoard(button){
+  const summary=$('dpsBaseUnitSummary');
+  const table=$('dpsBaseUnitSlotStack')?.querySelector('.unit-basic-summary table');
+  if(!summary || summary.hidden || !table){showToast('현재 복사할 유닛 분석 결과가 없습니다.','warn');return;}
+  const columnCount=table.tHead.rows[0].cells.length;
+  const rows=[...table.tBodies[0].rows]
+    .filter(row=>row.cells.length===columnCount)
+    .slice(0,10)
+    .map(row=>[...row.cells].map(cell=>cell.textContent.trim()));
+  if(!rows.length){showToast('복사할 유닛이 없습니다.','warn');return;}
+  const readText=selector=>summary.querySelector(selector)?.textContent.replace(/\s+/g,' ').trim() || '—';
+  const context=[readText('.dps-base-unit-context .spec-board-mode'),readText('.dps-base-unit-context .spec-board-difficulty')].filter(value=>value!=='—').join(' · ') || '—';
+  const stage=[readText('.unit-summary-stage strong'),readText('.unit-summary-stage small')].filter(value=>value!=='—').join(' · ') || '—';
+  const summaryItems=summary.querySelectorAll('.dps-base-unit-results > .dps-base-unit-summary-item');
+  const metricText=item=>item?.querySelector('.dps-num')?.textContent.replace(/\s+/g,' ').trim() || '—';
+  const required=metricText(summaryItems[0]);
+  const expected=metricText(summaryItems[1]);
+  const achievement=readText('.unit-achievement-value');
+  const currentDps=($('dpsVal')?.textContent || '—').trim();
+  const runeNames={ap:'파이널룬',td:'카오스룬',ua:'코스모스룬',harmony:'하모니아룬'};
+  const runeName=runeNames[$('runeChoiceType')?.value] || '미분류';
+  const readOption=id=>{
+    const option=$(id)?.selectedOptions?.[0];
+    return !option ? '—' : ['none','없음'].includes(option.value) ? '없음' : option.textContent.trim() || '—';
+  };
+  const asc=readOption('rAsc');
+  const race=readOption('raceOpt');
+  const opt10=readOption('opt10');
+  const opt15=readOption('opt15');
+  const trans=readOption('transOpt');
+  const enchants=ENCHANT_INPUT_IDS.map(id=>$(id)?.value.trim() || '—').join(' · ');
+  const analysisLines=[context,stage,`기준 ${required} · 기대 ${expected}`,`달성 ${achievement} · DPS ${currentDps}`];
+  const buildLines=[`룬 ${runeName} · 각성 ${asc}`,`종족업 ${race}`,`10강 ${opt10}`,`15강 ${opt15}`,`초월 ${trans}`,`인첸트 ${enchants}`];
+  const plainText=[
+    '■ 클리어 기록 보고서',
+    '[클리어 분석]',...analysisLines,
+    '[빌드 설정]',...buildLines,
+    '', '[선택 유닛 정보]',
+    ...rows.map(([slot,name,quantity,limitBreak,jewel])=>`${slot} ${name} ×${quantity} · 돌파${limitBreak} · ${jewel}`)
+  ].join('\n');
+  const htmlLines=lines=>lines.map(line=>`<div style="margin:0 0 3px;overflow-wrap:anywhere">${escapeHtml(line)}</div>`).join('');
+  const htmlSection=(title,lines)=>`<td style="width:50%;vertical-align:top;text-align:left;padding:2px 8px;overflow-wrap:anywhere"><div style="font-weight:700;margin-bottom:5px">${title}</div>${htmlLines(lines)}</td>`;
+  const htmlCell=(tag,value)=>`<${tag} style="border-bottom:1px solid #d6dae0;padding:3px 5px;text-align:center;overflow-wrap:anywhere">${escapeHtml(value)}</${tag}>`;
+  const htmlTable=`<table style="border-collapse:collapse;margin:5px auto 0;text-align:center;font-size:11px;width:100%"><thead><tr>${['슬롯 · 유닛명','수 / 돌파','쥬얼'].map(value=>htmlCell('th',value)).join('')}</tr></thead><tbody>${rows.map(([slot,name,quantity,limitBreak,jewel])=>`<tr>${[`${slot} ${name}`,`${quantity} / ${limitBreak}`,jewel].map(value=>htmlCell('td',value)).join('')}</tr>`).join('')}</tbody></table>`;
+  const html=`<div style="font-family:Arial,sans-serif;font-size:12px;line-height:1.35;max-width:700px;margin:auto"><h2 style="text-align:center;font-size:16px;margin:0 0 8px">클리어 기록 보고서</h2><table style="width:100%;table-layout:fixed;border-collapse:collapse"><tr>${htmlSection('클리어 분석',analysisLines)}${htmlSection('빌드 설정',buildLines)}</tr></table><div style="font-weight:700;margin:7px 0 3px;text-align:center">선택 유닛 정보</div>${htmlTable}</div>`;
+  let copied=false;
+  button.disabled=true;
+  try{
+    if(navigator.clipboard?.write && typeof ClipboardItem!=='undefined'){
+      try{
+        await navigator.clipboard.write([new ClipboardItem({
+          'text/plain':new Blob([plainText],{type:'text/plain'}),
+          'text/html':new Blob([html],{type:'text/html'})
+        })]);
+        copied=true;
+      }catch{}
+    }
+    if(!copied && navigator.clipboard?.writeText){
+      try{await navigator.clipboard.writeText(plainText);copied=true;}catch{}
+    }
+    if(!copied){
+      const area=document.createElement('textarea');
+      area.value=plainText;
+      area.setAttribute('readonly','');
+      area.style.cssText='position:fixed;top:0;left:-9999px;opacity:0;';
+      document.body.appendChild(area);
+      area.select();
+      try{copied=document.execCommand('copy');}catch{}
+      area.remove();
+    }
+    showToast(copied?`클리어 기록과 ${rows.length}개 슬롯의 유닛 정보를 복사했습니다.`:'복사에 실패했습니다. 브라우저의 클립보드 권한을 확인해 주세요.',copied?'ok':'err');
+  }finally{button.disabled=false;}
 }
 
 let dpsUnitSlotModalSyncing=false;
@@ -2768,6 +2844,12 @@ function bindIndependentWindowButton(){
 }
 function bindDamageBoardTabEvents(){
   document.addEventListener('click',event=>{
+    const copyButton=event.target?.closest?.('[data-analysis-board-copy]');
+    if(copyButton){
+      event.preventDefault();
+      void copyDpsAnalysisBoard(copyButton);
+      return;
+    }
     const tab=event.target?.closest?.('[data-damage-board-subtab]');
     if(!tab || tab.disabled || tab.dataset.damageBoardSubtab==='dps') return;
     event.preventDefault();
