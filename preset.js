@@ -845,7 +845,7 @@ function cancelScheduledAutoSave(){
   }
 }
 function scheduleAutoSave(){
-  if(isStorageLocked() || (typeof dpsUnitSlotPending!=='undefined' && dpsUnitSlotPending)) return;
+  if(isStorageLocked() || (typeof dpsUnitSlotDraft!=='undefined' && dpsUnitSlotDraft)) return;
   cancelScheduledAutoSave();
   autoSaveTimer=setTimeout(()=>{
     autoSaveTimer=0;
@@ -858,7 +858,7 @@ function notifyTraitPresetBackupComplete(){
 }
 function saveState(options={}){
   const silent=!!options.silent;
-  if(isStorageLocked()) return false;
+  if(isStorageLocked() || (typeof dpsUnitSlotDraft!=='undefined' && dpsUnitSlotDraft)) return false;
   try{
     const state=options.state && typeof options.state==='object' ? options.state : makeStateObject();
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));

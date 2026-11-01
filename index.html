@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <script>
-window.APP_VERSION = "v014";
+window.APP_VERSION = "v019";
 window.DPS_BUILD_VERSION = window.APP_VERSION;
 window.DPS_STANDALONE_VIEW = (function(){
   var requested=new URLSearchParams(window.location.search).get('dpsWindow');
@@ -224,14 +224,14 @@ html:not(.dps-booting) #dpsBootScreen{display:none}
 <meta content="개복디 빌더 - 통합 빌드 계산 HUB" property="og:title"/>
 <meta content="특성 투자·재화 사용량 계산부터 스펙·DPS 분석까지 한 번에, 통합 빌드 계산 HUB" property="og:description"/>
 <!-- OG/Twitter 이미지 캐시: 앱 버전 변경 시 아래 세 URL을 같은 버전으로 맞춥니다. -->
-<meta content="https://nxsbuild.github.io/build/logo.png?v=v014" property="og:image"/>
-<meta content="https://nxsbuild.github.io/build/logo.png?v=v014" property="og:image:secure_url"/>
+<meta content="https://nxsbuild.github.io/build/logo.png?v=v019" property="og:image"/>
+<meta content="https://nxsbuild.github.io/build/logo.png?v=v019" property="og:image:secure_url"/>
 <meta content="image/png" property="og:image:type"/>
 <meta content="개복디 빌더 로고" property="og:image:alt"/>
 <meta content="summary_large_image" name="twitter:card"/>
 <meta content="개복디 빌더 - 통합 빌드 계산 HUB" name="twitter:title"/>
 <meta content="특성 투자·재화 사용량 계산부터 스펙·DPS 분석까지 한 번에, 통합 빌드 계산 HUB" name="twitter:description"/>
-<meta content="https://nxsbuild.github.io/build/logo.png?v=v014" name="twitter:image"/>
+<meta content="https://nxsbuild.github.io/build/logo.png?v=v019" name="twitter:image"/>
 <meta content="개복디 빌더 로고" name="twitter:image:alt"/>
 <link href="https://cdn.jsdelivr.net" rel="preconnect"/>
 <link crossorigin="" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" rel="stylesheet"/>
@@ -1175,7 +1175,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 <section class="damage-board-panel is-active" id="damageBoardSpecPanel" role="tabpanel" aria-labelledby="damageBoardSpecTab" data-damage-board-panel="spec">
 <section class="analytics-group analytics-summary-group" aria-label="모드 난이도 및 DPS">
 <input id="specDpsSpeedMode" type="hidden" value="OFF"/>
-<div class="dps-card stat-dps-summary right-dps-hero" id="statDpsSummary">
+<div class="dps-card stat-dps-summary right-dps-hero board-context-header" id="statDpsSummary">
   <div class="right-hero-context"><span class="spec-hero-caption">모드 / 난이도</span><strong class="right-hero-compact-mode" id="rightHeroCompactContext">—</strong><div class="dps-context-summary" id="dpsContextSummary"><strong id="dpsContextMode">—</strong><span class="right-hero-divider">/</span><strong id="dpsContextDiff">—</strong><small id="dpsContextModeDetail" hidden></small><small id="dpsContextDiffDetail" hidden></small></div></div>
   <div class="right-hero-stage" aria-label="현재 고행 및 라운드"><span class="spec-hero-caption" id="specHeroStageLabel">현재 고행 / 라운드</span><strong id="specHeroStage">—</strong><small id="specHeroRound">—</small></div>
   <div class="right-hero-metric"><span class="dps-spec-board-dps"><span class="dps-feature-heading"><span class="dps-lbl" id="dpsMainLabel">스펙 DPS</span></span><strong class="dps-num" id="dpsVal">—</strong></span></div>
@@ -1348,11 +1348,10 @@ loadScriptSequence(['data.js','calc.js','app.js','preset.js','responsive.js'],fu
   <section class="unit-slot-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="dpsUnitSlotDetailTitle" aria-describedby="unitSlotModalDescription">
     <header class="unit-slot-modal-header">
       <span class="unit-slot-modal-icon" aria-hidden="true"><svg class="ui-header-glyph" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><use href="#dpsUiSparklesGlyph"/></svg></span>
-      <span class="unit-slot-modal-heading"><strong id="dpsUnitSlotDetailTitle">슬롯 1 상세 설정</strong><small id="unitSlotModalDescription">유닛·마리수·강화·한계 돌파·쥬얼을 한곳에서 관리</small></span>
-      <button class="unit-detail-close" type="button" id="unitSlotModalClose" data-unit-detail-close aria-label="유닛 상세 설정 닫기">×</button>
+      <span class="unit-slot-modal-heading"><strong id="dpsUnitSlotDetailTitle">슬롯 1 상세 설정</strong><small id="unitSlotModalDescription">설정 완료를 누르면 적용됩니다. 취소·Esc는 변경을 취소합니다.</small></span>
     </header>
     <div class="unit-slot-modal-scroll"><div class="unit-detail-panel" id="dpsUnitSlotDetail"></div></div>
-    <footer class="unit-slot-modal-footer"><span class="unit-slot-modal-expansion" data-unit-detail-expansion></span><button type="button" class="unit-slot-modal-done" data-unit-detail-confirm>설정 완료</button></footer>
+    <footer class="unit-slot-modal-footer"><button type="button" class="unit-slot-modal-cancel" id="unitSlotModalClose" data-unit-detail-close>취소</button><button type="button" class="unit-slot-modal-done" data-unit-detail-confirm>설정 완료</button></footer>
   </section>
 </div>
 <!-- 앱 자체 슬롯 삭제 확인: 브라우저의 window.confirm 팝업 사용하지 않음 -->
