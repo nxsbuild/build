@@ -894,8 +894,16 @@ function dpsBaseUnitSupportsAdvancedOptions(unitOrId){
   const unit=resolveDpsBaseUnit(unitOrId);
   return !!unit && !dpsBaseUnitIsArtifact(unit);
 }
-function dpsBaseUnitCanUseEnhance(unitOrId){
-  return !!resolveDpsBaseUnit(unitOrId);
+function dpsBaseUnitCanUseEnhance(unitOrId,jewelName=null){
+  const unit=resolveDpsBaseUnit(unitOrId);
+  if(!unit) return false;
+  if(!unit.enhanceRequiresTanzanite) return true;
+  // 계산할 개별 기체는 탄자나이트를 장착한 경우에만 강화 기대값을 사용한다.
+  if(jewelName!==null) return normalizeDpsJewelName(jewelName)==='탄자나이트';
+  if(dpsBaseUnitJewelName(unit)==='탄자나이트') return true;
+  const count=Math.min(DPS_BASE_UNIT_EXTRA_SLOT_COUNT,Math.max(0,dpsBaseUnitQuantity(unit)-1));
+  return typeof dpsBaseUnitSlotExpanded==='function' && dpsBaseUnitSlotExpanded(unit)
+    && dpsBaseUnitExtraSlotSettings(unit).slice(0,count).some(setting=>setting.legendaryMythicJewel==='탄자나이트');
 }
 function dpsBaseUnitCanUseLimitBreak(unitOrId){
   return dpsBaseUnitSupportsAdvancedOptions(unitOrId);
@@ -1139,8 +1147,8 @@ function dpsBaseUnitQuantity(unitOrId){
   const el=typeof $==='function' ? $(dpsBaseUnitQuantityInputId(unit)) : null;
   return Number(normalizeDpsBaseUnitQuantityValue(el?.value ?? 0,unit));
 }
-function dpsBaseUnitEnhanceValue(unitOrId){
-  if(!dpsBaseUnitCanUseEnhance(unitOrId)) return 0;
+function dpsBaseUnitEnhanceValue(unitOrId,jewelName=null){
+  if(!dpsBaseUnitCanUseEnhance(unitOrId,jewelName)) return 0;
   const el=typeof $==='function' ? $(dpsBaseUnitEnhanceInputId(unitOrId)) : null;
   return Number(normalizeDpsBaseUnitEnhanceValue(el?.value, 0));
 }
@@ -1378,7 +1386,7 @@ function dpsBaseUnitUniqueAdBonus(unit,enhanceStats=unitEnhanceStats()){
 }
 function dpsBaseUnitPrivateAd(unit, quantity, jewelStats=dpsBaseUnitJewelStats(unit), jewelName=dpsBaseUnitJewelName(unit), limitBreakValue=dpsBaseUnitLimitBreakValue(unit), enhanceStats=null){
   const limitBreak=dpsBaseUnitLimitBreakStats(unit,limitBreakValue);
-  const enhance=dpsBaseUnitEnhanceValue(unit)+(Number(jewelStats?.enhanceFlat)||0);
+  const enhance=dpsBaseUnitEnhanceValue(unit,jewelName)+(Number(jewelStats?.enhanceFlat)||0);
   const uniqueBuff=dpsBaseUnitUniqueAdBonus(unit,enhanceStats || undefined);
   const duplicatePenalty=Math.max(Math.max(1,Number(quantity)||1)-8,0)*10;
   const jewelStackAd=jewelName==='라피스' ? 200 : (jewelName==='헬리오도르' ? -200 : 0);
@@ -1622,7 +1630,7 @@ function computeDpsBaseUnitBoardResult(context){
       unitPierceBonus,
       ownDurability:targetDurabilityRemain(enemyData,unitTargetEffects),
       actualM12:actualDrWithPierce(M12_dr,baseParts.effectivePierce),
-      enhance:dpsBaseUnitEnhanceValue(unit)+(Number(primaryJewelStats?.enhanceFlat)||0),
+      enhance:dpsBaseUnitEnhanceValue(unit,jewelName)+(Number(primaryJewelStats?.enhanceFlat)||0),
       limitBreak:dpsBaseUnitLimitBreakValue(unit),
       jewelName,
       jewelStats:primaryJewelStats,

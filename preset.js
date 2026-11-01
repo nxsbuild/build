@@ -1246,14 +1246,10 @@ function appendTraitPresetCustomOption(menu, select, option){
   item.setAttribute('aria-selected',selected?'true':'false');
   item.disabled=option.disabled;
   item.classList.toggle('is-selected',selected);
-  const check=document.createElement('span');
-  check.className='trait-preset-custom-check';
-  check.setAttribute('aria-hidden','true');
-  check.textContent=selected ? '✓' : '';
   const text=document.createElement('span');
   text.className='trait-preset-custom-option-text';
   text.textContent=traitPresetOptionLabel(option);
-  item.append(check,text);
+  item.append(text);
   // 선택과 삭제는 별도 버튼입니다. 삭제를 눌러도 해당 프리셋이 로드되지 않습니다.
   if(!option.disabled && option.value){
     const row=document.createElement('div');
@@ -1612,11 +1608,9 @@ function renderTraitPresetUpdateStatus(store=loadTraitPresetStore()){
   qsa('[data-action="updateTraitPreset"]').forEach(btn=>{
     btn.classList.toggle('is-change-ready',updateReady);
     btn.setAttribute('aria-label','프리셋 업데이트');
-    btn.title=compatibility.requiresUpdate ? '프리셋 데이터를 현재 형식으로 업데이트합니다.' : hasChanges ? '변경된 설정을 저장된 프리셋에 반영합니다.' : '변경이 없으면 로드를 눌러 저장된 프리셋을 적용합니다.';
   });
   qsa('[data-action="loadTraitPreset"]').forEach(btn=>{
     btn.classList.toggle('is-load-ready',loadReady);
-    btn.title=hasChanges ? '현재 변경사항을 버리고 저장된 프리셋을 로드합니다.' : '저장된 프리셋으로 현재 화면값을 복원합니다.';
   });
   return updateReady;
 }
