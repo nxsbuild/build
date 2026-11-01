@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <script>
-window.APP_VERSION = "v122";
+window.APP_VERSION = "v014";
 window.DPS_BUILD_VERSION = window.APP_VERSION;
 window.DPS_STANDALONE_VIEW = (function(){
   var requested=new URLSearchParams(window.location.search).get('dpsWindow');
@@ -224,14 +224,14 @@ html:not(.dps-booting) #dpsBootScreen{display:none}
 <meta content="개복디 빌더 - 통합 빌드 계산 HUB" property="og:title"/>
 <meta content="특성 투자·재화 사용량 계산부터 스펙·DPS 분석까지 한 번에, 통합 빌드 계산 HUB" property="og:description"/>
 <!-- OG/Twitter 이미지 캐시: 앱 버전 변경 시 아래 세 URL을 같은 버전으로 맞춥니다. -->
-<meta content="https://nxsbuild.github.io/build/logo.png?v=v122" property="og:image"/>
-<meta content="https://nxsbuild.github.io/build/logo.png?v=v122" property="og:image:secure_url"/>
+<meta content="https://nxsbuild.github.io/build/logo.png?v=v014" property="og:image"/>
+<meta content="https://nxsbuild.github.io/build/logo.png?v=v014" property="og:image:secure_url"/>
 <meta content="image/png" property="og:image:type"/>
 <meta content="개복디 빌더 로고" property="og:image:alt"/>
 <meta content="summary_large_image" name="twitter:card"/>
 <meta content="개복디 빌더 - 통합 빌드 계산 HUB" name="twitter:title"/>
 <meta content="특성 투자·재화 사용량 계산부터 스펙·DPS 분석까지 한 번에, 통합 빌드 계산 HUB" name="twitter:description"/>
-<meta content="https://nxsbuild.github.io/build/logo.png?v=v122" name="twitter:image"/>
+<meta content="https://nxsbuild.github.io/build/logo.png?v=v014" name="twitter:image"/>
 <meta content="개복디 빌더 로고" name="twitter:image:alt"/>
 <link href="https://cdn.jsdelivr.net" rel="preconnect"/>
 <link crossorigin="" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" rel="stylesheet"/>
@@ -1178,7 +1178,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 <div class="dps-card stat-dps-summary right-dps-hero" id="statDpsSummary">
   <div class="right-hero-context"><span class="spec-hero-caption">모드 / 난이도</span><strong class="right-hero-compact-mode" id="rightHeroCompactContext">—</strong><div class="dps-context-summary" id="dpsContextSummary"><strong id="dpsContextMode">—</strong><span class="right-hero-divider">/</span><strong id="dpsContextDiff">—</strong><small id="dpsContextModeDetail" hidden></small><small id="dpsContextDiffDetail" hidden></small></div></div>
   <div class="right-hero-stage" aria-label="현재 고행 및 라운드"><span class="spec-hero-caption" id="specHeroStageLabel">현재 고행 / 라운드</span><strong id="specHeroStage">—</strong><small id="specHeroRound">—</small></div>
-  <div class="right-hero-metric"><span class="dps-spec-board-dps"><span class="dps-feature-heading"><span class="dps-lbl" id="dpsMainLabel">현재 DPS</span></span><strong class="dps-num" id="dpsVal">—</strong></span></div>
+  <div class="right-hero-metric"><span class="dps-spec-board-dps"><span class="dps-feature-heading"><span class="dps-lbl" id="dpsMainLabel">스펙 DPS</span></span><strong class="dps-num" id="dpsVal">—</strong></span></div>
 </div>
 </section>
 
@@ -1217,7 +1217,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 </section>
 <input id="dpsBaseUnits" type="hidden" value=""/>
 <input id="dpsBaseUnitSlots" type="hidden" value=""/>
-<input id="dpsBaseUnitVisibleSlotCount" type="hidden" value="1"/>
+<input id="dpsBaseUnitVisibleSlotCount" type="hidden" value="0"/>
 <input id="dpsJewelSettings" type="hidden" value="{}"/>
 <input id="dpsBaseUnitExtraSettings" type="hidden" value="{}"/>
 <input id="dpsBaseUnitSlotExpansions" type="hidden" value="[]"/>
@@ -1384,49 +1384,6 @@ loadScriptSequence(['data.js','calc.js','app.js','preset.js','responsive.js'],fu
   </div>
 </dialog>
 
-<!-- 달성률 도움말: 보드 카드 바깥에 위치하여 작은 화면에서도 잘리지 않습니다. -->
-<section id="unitAchievementHelpPopover" class="unit-achievement-help-popover" role="dialog" aria-label="달성률 가이드" hidden>
-  <h3>달성률 가이드</h3>
-  <p>달성률은 일부 수집 데이터에 기반한 예측치이며 실제 결과는 달라질 수 있습니다.</p>
-  <section class="unit-achievement-help-section">
-    <h4>추천 트리</h4>
-    <div class="unit-achievement-help-tabs" role="tablist" aria-label="추천 트리">
-      <button type="button" role="tab" id="achievementTreeSoloTab" aria-controls="achievementTreeSolo" aria-selected="true" tabindex="0">개인전</button>
-      <button type="button" role="tab" id="achievementTreeCoopTab" aria-controls="achievementTreeCoop" aria-selected="false" tabindex="-1">협동전</button>
-    </div>
-    <div class="unit-achievement-help-panel" id="achievementTreeSolo" role="tabpanel" aria-labelledby="achievementTreeSoloTab">
-      <h5>개인전 추천 <span>달성률 3배 이상</span></h5>
-      <ul><li>슈퍼 히든 3마리 이상</li><li>히든 4마리 이상</li><li>레전드 4마리 이상</li></ul>
-    </div>
-    <div class="unit-achievement-help-panel is-coop" id="achievementTreeCoop" role="tabpanel" aria-labelledby="achievementTreeCoopTab" hidden>
-      <h5>협동전 추천 <span>달성률 10배 이상</span></h5>
-      <ul><li>슈퍼 히든 1마리 이상</li><li>히든 1마리 이상</li><li>유물</li><li>꽃</li></ul>
-    </div>
-  </section>
-  <section class="unit-achievement-help-section is-tip">
-    <h4>클리어가 힘들어지는 원인?</h4>
-    <div class="unit-achievement-help-tabs" role="tablist" aria-label="달성 배율 원인">
-      <button type="button" role="tab" id="achievementCauseUnitTab" aria-controls="achievementCauseUnit" aria-selected="true" tabindex="0">유닛 생산</button>
-      <button type="button" role="tab" id="achievementCauseMultiTab" aria-controls="achievementCauseMulti" aria-selected="false" tabindex="-1">멀티 타겟</button>
-      <button type="button" role="tab" id="achievementCauseCritTab" aria-controls="achievementCauseCrit" aria-selected="false" tabindex="-1">다중 크리티컬</button>
-    </div>
-    <div class="unit-achievement-help-panel" id="achievementCauseUnit" role="tabpanel" aria-labelledby="achievementCauseUnitTab">
-      <h5>유닛 생산량 부족</h5>
-      <p>슈퍼히든·히든·레전드 유닛의 생산량이 적은데 달성률만 보고 도전하면 클리어가 어려울 수 있습니다.</p>
-    </div>
-    <div class="unit-achievement-help-panel" id="achievementCauseMulti" role="tabpanel" aria-labelledby="achievementCauseMultiTab" hidden>
-      <h5>멀티 타겟 관련 특성 미투자</h5>
-      <p>관련 특성에 투자하지 않았다면 달성률 추천 배율을 더 높게 설정해야 합니다.</p>
-      <p class="unit-achievement-help-related">관련 특성: 멀티 타겟 · 멀티 확률 증가 · 멀티 크리 확률</p>
-    </div>
-    <div class="unit-achievement-help-panel" id="achievementCauseCrit" role="tabpanel" aria-labelledby="achievementCauseCritTab" hidden>
-      <h5>크리티컬 및 다중 크리티컬 투자 부족</h5>
-      <p>크리 확률 300%를 기준으로 다중 크리티컬이 최대로 발동합니다.</p>
-      <p class="unit-achievement-help-related">관련 특성: 크리 확률 · 다중 크리티컬</p>
-    </div>
-  </section>
-  <p class="unit-achievement-help-footnote">수집 사례를 바탕으로 한 추천이며, 클리어를 보장하지 않습니다.</p>
-</section>
 <div id="traitPresetBackupOverlay" class="trait-preset-backup-overlay" hidden><section id="traitPresetBackupPanel" class="trait-preset-backup-panel" role="dialog" aria-modal="true" aria-labelledby="traitPresetBackupTitle" tabindex="-1"><header class="trait-preset-modal-head"><div class="trait-preset-modal-heading"><span class="trait-preset-modal-mark" aria-hidden="true"><svg class="ui-header-glyph" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><use href="#dpsUiSparklesGlyph"/></svg></span><h2 id="traitPresetBackupTitle">프리셋 백업</h2></div><button type="button" class="ui-icon-btn trait-preset-modal-close" data-trait-preset-backup-close="1" aria-label="프리셋 백업 닫기">×</button></header><div class="trait-preset-modal-body trait-preset-backup-body" id="traitPresetBackupBody"></div></section></div>
 </body>
 </html>

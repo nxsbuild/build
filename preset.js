@@ -410,11 +410,8 @@ function normalizeTraitPresetUnitBoardState(value){
       if(extra.legendaryMythicJewel) usedLegendaryJewels.add(extra.legendaryMythicJewel);
     });
   });
-  const minVisible=units.reduce((last,item)=>Math.max(last,item.slot+1),1);
-  const requestedVisible=Number(source.visibleSlotCount);
-  const visibleSlotCount=Number.isFinite(requestedVisible)
-    ? Math.max(minVisible,Math.min(dpsBaseUnitSelectionLimit(),Math.max(1,Math.trunc(requestedVisible))))
-    : minVisible;
+  // 과거 빈 슬롯 개수는 표시 수에 반영하지 않는다. 설정된 유닛 수만 저장한다.
+  const visibleSlotCount=units.length;
   return {
     units,
     visibleSlotCount,
@@ -1013,6 +1010,13 @@ function normalizeTraitPresetStore(data){
     if(targetId) unitBoard.presets[targetId]=normalizeTraitPresetUnitBoardState(state);
   });
   const normalizedUnitBoard=normalizeTraitPresetUnitBoardStore(unitBoard,presets.map(preset=>preset.id));
+  // 별도로 저장된 표시 슬롯 수도 유닛 보드의 실제 카드 수와 일치시킨다.
+  presets.forEach(preset=>{
+    const board=normalizedUnitBoard.presets[preset.id];
+    if(board && hasOwn(preset.state.values,'dpsBaseUnitVisibleSlotCount')){
+      preset.state.values.dpsBaseUnitVisibleSlotCount=String(board.visibleSlotCount);
+    }
+  });
   const normalizedStore={...empty,webDpsVersion:currentWebDpsVersion(),presetManagement:TRAIT_PRESET_MANAGEMENT_VERSION,presets,jewelSettings,unitBoard:normalizedUnitBoard};
   return normalizedStore;
 }
@@ -2293,6 +2297,9 @@ function inspectTraitPresetImportCompatibility(parsed){
     }else{
       if(typeof raw!==typeof current || (typeof raw==='number' && !Number.isFinite(raw))) invalid(path);
       if(raw!==current){
+        // 구버전 백업은 미설정 카드를 표시 슬롯으로 세었다. 유효한 과거 값만 자동 정리한다.
+        if(path.endsWith('.유닛 보드.visibleSlotCount') && typeof raw==='number' &&
+          Number.isInteger(raw) && raw>=current && raw<=dpsBaseUnitSelectionLimit()) return;
         // 숫자 표기만 다른 경우에는 의미를 바꾸지 않고 정리할 수 있다.
         if(typeof raw==='string' && raw.trim()!=='' && current.trim()!=='' && Number.isFinite(Number(raw)) && Number(raw)===Number(current)) issues.push(path);
         else invalid(path);
