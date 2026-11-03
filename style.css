@@ -508,7 +508,7 @@ body.is-mobile .skill-setting-panel .skill-ir{grid-template-columns:96px minmax(
 body.is-mobile .skill-damage-list tr,body.is-mobile .skill-list-head{display:grid;grid-template-columns:minmax(0,1fr) 104px;gap:5px;}
 /* 스탯·특성 */
 /* DPS·달성률과 상세 표·슬롯을 통합한 분석 보드 */
-body .right-analytics-workspace{display:grid;grid-template-columns:minmax(0,1fr);gap:0;min-width:0;margin-bottom:var(--layout-card-gap);padding:0;border:0;border-radius:0;background:transparent;box-shadow:none;overflow:visible;container-type:inline-size;}
+body .right-analytics-workspace{display:grid;grid-template-columns:minmax(0,1fr);gap:0;min-width:0;margin-bottom:var(--layout-card-gap);padding:0;border:0;border-radius:0;background:transparent;box-shadow:none;overflow:visible;container-type:inline-size;--board-summary-columns:repeat(3,minmax(0,1fr));}
 body .right-workspace-navigation{position:relative;z-index:1;border:1px solid var(--ui-panel-border);border-radius:var(--ui-panel-radius);background:var(--ui-panel-body-bg);margin:0;box-shadow:var(--ui-panel-shadow);min-width:0;overflow:hidden;}
 body .right-workspace-head{display:flex;align-items:center;gap:8px;min-width:0;padding:8px 10px;border:0;border-radius:0;box-shadow:none;height:auto;min-height:var(--ui-integrated-head-height);max-height:none;background:var(--ui-integrated-head-bg);border-bottom:1px solid var(--ui-integrated-head-line);color:var(--ui-integrated-head-text);}
 body .right-workspace-mark{display:grid;place-items:center;box-sizing:border-box;flex:0 0 32px;width:32px;height:28px;min-width:32px;padding:0;border:0;border-radius:0;background:transparent;color:var(--ui-header-mark-color);font-size:17.25px;line-height:1;box-shadow:none;}
@@ -631,13 +631,9 @@ body .unit-slot-modal-scroll{min-height:0;max-height:100%;overflow-y:auto;oversc
 body .unit-slot-modal-shell .unit-detail-panel{width:100%;min-width:0;padding:0;border:0;border-radius:0;background:transparent;box-sizing:border-box;}
 body .unit-slot-modal-shell .right-unit-slot-card.dps-base-unit-card{margin:0;padding:0;border:0;box-shadow:none;background:transparent;}
 body .unit-slot-modal-shell .right-unit-slot-card .dps-base-unit-entry{grid-template-columns:minmax(0,1fr);gap:8px;}
-body .unit-slot-modal-shell .unit-slot-compact-grid{gap:10px;padding:12px 0 0;}
 body .unit-slot-modal-shell .dps-base-unit-extra-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
 body .unit-slot-modal-footer{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:stretch;gap:10px;padding:12px 18px;border-top:1px solid var(--ui-modal-border);background:var(--ui-panel-body-bg);}
-body .unit-slot-modal-footer .unit-slot-modal-expansion{display:block;min-width:0;}
-body .unit-slot-modal-footer .unit-slot-modal-expansion:empty{display:none;}
-body .unit-slot-modal-footer:not(.has-expansion) .unit-slot-modal-done{grid-column:1/-1;}
-body .unit-slot-modal-footer .unit-slot-modal-expansion .dps-base-unit-slot-expansion-btn{width:100%;min-width:0;height:100%;min-height:40px;}
+body .unit-slot-modal-footer .unit-slot-modal-done{grid-column:1/-1;}
 body .unit-slot-modal-done{width:100%;min-width:0;min-height:40px;padding:8px 19px;border:1px solid #8596a5;border-radius:9px;background:var(--ui-button-active-bg);color:var(--ui-button-active-text);cursor:pointer;border-color:var(--ui-button-active-border);box-shadow:var(--ui-button-active-shadow);}
 body .unit-slot-modal-done:disabled{opacity:.45;cursor:not-allowed;box-shadow:none;}
 @media(max-width:600px){
@@ -648,19 +644,15 @@ body .unit-slot-modal-done:disabled{opacity:.45;cursor:not-allowed;box-shadow:no
  body .unit-slot-modal-heading small{font-size:calc(8.75px * var(--app-font-scale));}
  body .unit-slot-modal-scroll{padding:10px;}
  body .unit-slot-modal-shell .right-unit-slot-card .dps-base-unit-entry{grid-template-columns:minmax(0,1fr);gap:7px;}
- body .unit-slot-modal-shell .unit-slot-compact-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;padding:9px 0 0;}
- body .unit-slot-modal-shell .unit-slot-compact-grid .dps-base-unit-field-label{font-size:calc(9.5px * var(--app-font-scale));}
  body .unit-slot-modal-shell .dps-base-unit-setting-select{padding-right:15px;}
  body .unit-slot-modal-shell .dps-base-unit-extra-grid{grid-template-columns:minmax(0,1fr);}
  body .unit-slot-modal-footer{padding:9px 11px;}
- body .unit-slot-modal-footer .unit-slot-modal-expansion .dps-base-unit-slot-expansion-btn{min-width:0;min-height:33px;}
  body .unit-slot-modal-done{padding:7px 11px;white-space:nowrap;}
 }
 body .right-unit-slot-card.dps-base-unit-card{gap:9px;margin:0 0 11px;padding:12px;border:1px solid #3d4750;border-radius:12px;background:var(--ui-panel-body-bg);box-shadow:inset 0 1px rgba(255,255,255,.055);}
 body .right-unit-slot-card.is-empty{gap:8px;padding:12px;}
 body .right-unit-slot-settings{min-width:0;}
 body .right-unit-slot-card .dps-base-unit-entry{grid-template-columns:minmax(0,1fr);gap:8px;}
-body .right-unit-slot-card .dps-base-unit-name-field{grid-column:1/-1;}
 body .right-unit-slot-card .right-unit-slot-settings{padding:0;}
 
 body .unit-detail-panel .right-unit-slot-card.dps-base-unit-card{margin:0;padding:0;border:0;background:none;box-shadow:none;}
@@ -1175,7 +1167,10 @@ body.trait-preset-backup-open{overflow:hidden;}
 .trait-preset-backup-scope.is-individual h4::before{background:#86b6ed;}
 .trait-preset-backup-scope h4 span{margin-left:auto;color:#a5b7d3;font-size:calc(10.25px * var(--app-font-scale));font-variant-numeric:tabular-nums;}
 .trait-preset-backup-change-list{display:grid;gap:5px;min-width:0;margin:0;padding:0;list-style:none;}
-.trait-preset-backup-change-list li{min-width:0;padding:6px 7px;border:1px solid var(--ui-modal-border);border-radius:6px;background:var(--ui-panel-body-bg);color:var(--ui-unified-text);font-size:calc(10.75px * var(--app-font-scale));line-height:1.35;overflow-wrap:anywhere;word-break:keep-all;}
+.trait-preset-backup-change-list li{display:grid;gap:4px;min-width:0;padding:6px 7px;border:1px solid var(--ui-modal-border);border-radius:6px;background:var(--ui-panel-body-bg);color:var(--ui-unified-text);font-size:calc(10.75px * var(--app-font-scale));line-height:1.35;overflow-wrap:anywhere;word-break:keep-all;}
+.trait-preset-backup-values{display:flex;align-items:center;flex-wrap:wrap;gap:6px;font-variant-numeric:tabular-nums;}
+.trait-preset-backup-values b{color:#81b4e5;font-weight:400;}
+.trait-preset-backup-values em{color:#a9c6ea;font-size:calc(10px * var(--app-font-scale));font-style:normal;}
 .trait-preset-backup-no-change{margin:0;padding:6px 0;color:#8197b4;font-size:calc(10.25px * var(--app-font-scale));line-height:1.4;}
 .trait-preset-backup-empty{display:grid;justify-items:center;gap:6px;min-width:0;min-height:104px;margin:12px;padding:19px 12px;border:1px dashed var(--ui-unified-line-strong);border-radius:10px;background:var(--ui-panel-body-bg);text-align:center;}
 .trait-preset-backup-empty-icon{display:flex;align-items:center;justify-content:center;width:37px;height:37px;border:0;border-radius:0;background:transparent;color:#92c6ec;font-size:calc(18.25px * var(--app-font-scale));}
@@ -1279,6 +1274,36 @@ body .basic-goal-cards .goal-mode-switch.is-active i{left:calc(50% + 2px);}
 body .basic-goal-cards .goal-mode-switch .artifact-dps-switch-text{color:#a9c9e1;font-size:calc(11.25px * var(--app-font-scale));}
 body .basic-goal-cards .goal-mode-switch:not(.is-active) .artifact-dps-switch-text:first-child,body .basic-goal-cards .goal-mode-switch.is-active .artifact-dps-switch-text:nth-child(2){color:#fff;}
 body .basic-goal-cards .goal-mode-switch:disabled{opacity:.5;cursor:not-allowed;}
+
+/* 전투 모드 설명: 기본 설정 행과 독립 대화상자에서만 사용 */
+body .xp-sp-card .basic-info-row .battle-mode-label{display:grid;grid-template-columns:minmax(0,1fr) max-content minmax(0,1fr);align-items:center;gap:0;min-width:0;min-height:30px;padding:5px 3px;box-sizing:border-box;color:var(--field-label-text);font-size:var(--ui-item-label-font);line-height:1.18;white-space:nowrap;}
+body .xp-sp-card .basic-info-row .battle-mode-label>span{grid-column:2;text-align:center;}
+body .xp-sp-card .basic-info-row .battle-mode-guide-trigger{position:relative;grid-column:3;justify-self:start;display:inline-grid;place-items:center;width:16px;min-width:16px;height:16px;min-height:16px;margin-left:5px;padding:0;border:1px solid #566170;border-radius:50%;background:#111317;color:#d0d8e4;font-size:11px;font-weight:700;line-height:1;cursor:pointer;}
+body .xp-sp-card .basic-info-row .battle-mode-guide-trigger::before{content:"";position:absolute;inset:-5px;}
+body .xp-sp-card .basic-info-row .battle-mode-guide-trigger:hover,body .xp-sp-card .basic-info-row .battle-mode-guide-trigger:focus-visible{border-color:var(--ui-button-hover-border);background:#22272e;color:#fff;outline:2px solid var(--ui-button-active-border);outline-offset:1px;}
+.battle-mode-guide-dialog{position:fixed;inset:0;box-sizing:border-box;display:flex;flex-direction:column;width:min(440px,calc(100vw - 24px));max-width:none;max-height:min(440px,calc(100vh - 28px));max-height:min(440px,calc(100dvh - 28px));margin:auto;padding:0;overflow:hidden;border:1px solid var(--ui-modal-border);border-radius:12px;background:var(--ui-panel-body-bg);color:var(--ui-text);box-shadow:0 22px 65px rgba(0,0,0,.75);font-family:var(--font-main);font-size:calc(13px * var(--app-font-scale));line-height:1.55;}
+.battle-mode-guide-dialog:not([open]){display:none;}
+.battle-mode-guide-dialog::backdrop{background:rgba(0,0,0,.68);}
+.battle-mode-guide-head,.battle-mode-guide-tabs{flex:0 0 auto;}
+.battle-mode-guide-tabs{overflow:hidden;}
+.battle-mode-guide-panel{min-height:0;padding:14px 16px 16px;overflow-y:auto;overscroll-behavior:contain;scrollbar-gutter:stable;background:var(--ui-panel-body-bg);}
+.battle-mode-guide-panel[hidden]{display:none;}
+.battle-mode-guide-panel>strong{display:block;margin:0 0 5px;color:#f0f4fa;font-size:calc(13px * var(--app-font-scale));font-weight:650;}
+.battle-mode-guide-panel p{margin:0 0 10px;line-height:1.6;word-break:keep-all;overflow-wrap:break-word;}
+.battle-mode-guide-panel p:last-child{margin-bottom:0;}
+.battle-mode-guide-note{margin:8px 0 12px;padding:10px 12px;border:1px solid #333942;border-radius:8px;background:#13161a;}
+.battle-mode-guide-note>strong{display:block;margin-bottom:5px;}
+.battle-mode-guide-note p{margin-bottom:8px;}
+.battle-mode-guide-note p:last-child{margin-bottom:0;}
+.battle-mode-guide-panel .battle-mode-guide-muted{color:#a7b2c1;font-size:calc(11.5px * var(--app-font-scale));}
+.battle-mode-guide-trait-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 8px;margin:8px 0 12px;padding:0;list-style:none;}
+.battle-mode-guide-trait-list li{min-width:0;padding:7px 8px;border:1px solid #30363e;border-radius:7px;background:#14161a;font-size:calc(11.5px * var(--app-font-scale));line-height:1.45;word-break:keep-all;overflow-wrap:anywhere;}
+.battle-mode-guide-trait-list small{display:block;margin-top:2px;color:#9ba8b8;font-size:calc(10.5px * var(--app-font-scale));}
+.battle-mode-guide-limit-table{width:100%;margin:8px 0 12px;border-collapse:collapse;text-align:center;font-size:calc(11.5px * var(--app-font-scale));}
+.battle-mode-guide-limit-table th,.battle-mode-guide-limit-table td{padding:7px 4px;border-bottom:1px solid #30353c;word-break:keep-all;}
+.battle-mode-guide-limit-table th:first-child{text-align:left;}
+.battle-mode-guide-limit-table thead th{color:#d2dce9;background:#14171b;}
+@media(max-width:420px){.battle-mode-guide-panel{padding:11px 12px 13px;}.battle-mode-guide-trait-list{gap:5px;}.battle-mode-guide-trait-list li{padding:6px;}}
 
 @media (max-width:700px){body .xp-sp-card .xp-sp-split.basic-info-grid{--basic-label-width:clamp(105px,42%,160px);padding:10px 9px;}}
 body .xp-sp-card .basic-info-row{display:grid;grid-template-columns:var(--basic-label-width) minmax(0,1fr);gap:7px;align-items:center;min-width:0;width:100%;margin:0;padding:0;border:0;border-radius:0;background:transparent;box-shadow:none;}
@@ -1392,15 +1417,6 @@ body .dps-base-unit-card{--dps-base-unit-columns:minmax(0,2.35fr) minmax(0,.90fr
 body .dps-base-unit-card.is-empty{gap:0;padding:4px 0 14px;}
 body .dps-base-unit-field{display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:13px 31px;gap:5px;align-items:stretch;min-width:0;box-sizing:border-box;}
 body .dps-base-unit-field-label{display:flex;align-items:center;justify-content:center;min-width:0;color:#dbeafe;font-size:calc(10.25px * var(--app-font-scale));line-height:1;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-body .unit-slot-compact-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;min-width:0;width:100%;}
-body .unit-slot-compact-grid .dps-base-unit-field{grid-template-rows:19px minmax(31px,auto);gap:4px;min-height:54px;}
-body .unit-slot-compact-grid .dps-base-unit-field-label{height:19px;line-height:1.25;white-space:normal;overflow:visible;overflow-wrap:anywhere;}
-body .unit-slot-compact-value{display:flex;align-items:center;justify-content:center;width:100%;min-width:0;min-height:31px;padding:3px;border:1px solid var(--role-readonly-bd,#373c43);border-radius:var(--ui-control-radius);background:var(--role-readonly-bg,transparent);box-sizing:border-box;color:#eaf2ff;text-align:center;font:calc(10.5px * var(--app-font-scale))/1.25 Consolas,monospace;overflow-wrap:anywhere;}
-body .unit-slot-compact-grid .is-max-speed .dps-base-unit-field-label,body .unit-slot-compact-grid .is-max-speed .unit-slot-compact-value{color:#f5cd65;}
-body .unit-slot-compact-grid .dps-base-unit-setting-input:disabled,body .unit-slot-compact-grid .dps-base-unit-setting-select:disabled,body .unit-slot-compact-grid .dps-base-unit-option-btn:disabled{color:var(--ui-unified-muted);opacity:.68;cursor:not-allowed;}
-body .unit-slot-compact-grid .dps-base-unit-board-quantity{height:31px;}
-body .unit-slot-compact-grid .dps-base-unit-qty-control{grid-template-columns:23px minmax(0,1fr) 23px;gap:2px;}
-body .unit-slot-compact-grid .dps-base-unit-qty-input{padding:0 2px;}
 body .dps-base-unit-select-wrap{display:grid;grid-template-columns:minmax(0,1fr);align-items:center;min-width:0;height:31px;}
 body .dps-base-unit-select,body .dps-base-unit-fixed-qty,body .dps-base-unit-qty-btn,body .dps-base-unit-qty-input{width:100%;min-width:0;min-height:31px;padding:0 7px;font-size:calc(11px * var(--app-font-scale));text-align:center;text-align-last:center;box-sizing:border-box;}
 body .dps-base-unit-select,body .dps-base-unit-qty-btn,body .dps-base-unit-qty-input{height:31px;}
@@ -1466,7 +1482,6 @@ body.is-mobile .dps-base-unit-slot-stack,body.is-narrow-mobile .dps-base-unit-sl
 body.is-mobile .dps-base-unit-card,body.is-narrow-mobile .dps-base-unit-card{gap:10px;padding:10px 8px 16px;border:1px solid rgba(74,82,93,.42);border-radius:10px;background:rgba(11,12,15,.38);}
 body.is-mobile .dps-base-unit-card.is-empty,body.is-narrow-mobile .dps-base-unit-card.is-empty{gap:0;padding:10px 8px 14px;}
 body.is-mobile .dps-base-unit-entry,body.is-narrow-mobile .dps-base-unit-entry{grid-template-columns:minmax(0,1fr);gap:8px;align-items:stretch;min-height:49px;}
-body.is-mobile .dps-base-unit-name-field,body.is-narrow-mobile .dps-base-unit-name-field{grid-column:1/-1;}
 body.is-mobile .dps-base-unit-field,body.is-narrow-mobile .dps-base-unit-field{grid-template-rows:14px 38px;gap:5px;}
 body.is-mobile .dps-base-unit-field-label,body.is-narrow-mobile .dps-base-unit-field-label{font-size:calc(10.5px * var(--app-font-scale));}
 body.is-mobile .dps-base-unit-select-wrap,body.is-narrow-mobile .dps-base-unit-select-wrap{height:33px;}
@@ -1476,7 +1491,6 @@ body.is-mobile .dps-base-unit-board-quantity,body.is-narrow-mobile .dps-base-uni
 body.is-mobile .dps-base-unit-board-quantity>.dps-base-unit-fixed-qty,body.is-mobile .dps-base-unit-board-quantity>.dps-base-unit-qty-control,body.is-narrow-mobile .dps-base-unit-board-quantity>.dps-base-unit-fixed-qty,body.is-narrow-mobile .dps-base-unit-board-quantity>.dps-base-unit-qty-control{min-height:33px;}
 body.is-mobile .dps-base-unit-fixed-qty,body.is-mobile .dps-base-unit-qty-btn,body.is-mobile .dps-base-unit-qty-input,body.is-narrow-mobile .dps-base-unit-fixed-qty,body.is-narrow-mobile .dps-base-unit-qty-btn,body.is-narrow-mobile .dps-base-unit-qty-input{height:33px;min-height:33px;}
 body.is-mobile .dps-base-unit-qty-control,body.is-narrow-mobile .dps-base-unit-qty-control{grid-template-columns:38px minmax(38px,1fr) 38px;gap:4px;}
-body.is-mobile .unit-slot-compact-grid .dps-base-unit-qty-control,body.is-narrow-mobile .unit-slot-compact-grid .dps-base-unit-qty-control{grid-template-columns:20px minmax(0,1fr) 20px;gap:2px;}
 body.is-mobile .dps-base-unit-setting-input,body.is-mobile .dps-base-unit-setting-select,body.is-mobile .dps-base-unit-option-btn,body.is-narrow-mobile .dps-base-unit-setting-input,body.is-narrow-mobile .dps-base-unit-setting-select,body.is-narrow-mobile .dps-base-unit-option-btn{height:33px;min-height:33px;font-size:calc(11.25px * var(--app-font-scale));}
 body.is-mobile .dps-base-unit-void-power-control,body.is-narrow-mobile .dps-base-unit-void-power-control{height:33px;}
 body.is-mobile .dps-base-unit-extra-grid,body.is-narrow-mobile .dps-base-unit-extra-grid{grid-template-columns:repeat(2,minmax(0,1fr));width:100%;}
@@ -1735,7 +1749,7 @@ body.is-tablet .font-scale-ctrl,body.is-mobile .font-scale-ctrl{display:none;}
 body.is-mobile .header-reference-actions{gap:4px;}
 
 /* 공통 헤더와 하위 기능 제목의 타이포그래피 기준 */
-body :is(.col-left>.basic-goal-cards>.basic-goal-title,.right-workspace-head,.trait-build-merged-panel>.integrated-build-heading,.trait-utility-section-head){--v0030-head-font:calc(14px * var(--app-font-scale));--v0030-head-mark-width:28px;--v0030-head-mark-height:24px;--v0030-head-mark-font:15px;height:42px;min-height:42px;max-height:42px;padding:8px;gap:8px;box-sizing:border-box;background:var(--ui-integrated-head-bg);border-bottom:1px solid var(--ui-integrated-head-line);color:var(--ui-integrated-head-text);font-size:var(--v0030-head-font);font-weight:var(--ui-main-title-weight);line-height:1.25;}
+body :is(.col-left>.basic-goal-cards>.basic-goal-title,.right-workspace-head,.trait-build-merged-panel>.integrated-build-heading,.trait-utility-section-head){--v0030-head-font:calc(14px * var(--app-font-scale));--v0030-head-mark-width:28px;--v0030-head-mark-height:24px;--v0030-head-mark-font:15px;height:42px;min-height:42px;max-height:42px;padding:8px;gap:8px;box-sizing:border-box;border-bottom:1px solid var(--ui-integrated-head-line);color:var(--ui-integrated-head-text);font-size:var(--v0030-head-font);font-weight:var(--ui-main-title-weight);line-height:1.25;background:linear-gradient(105deg,#161d26,#10151b 78%);border-bottom-color:#2a3541;}
 body .trait-scope-heading{min-height:var(--v0030-sub-height);height:auto;box-sizing:border-box;}
 body :is(.basic-goal-brand-copy,.right-workspace-copy,.trait-scope-heading){gap:0;}
 body .trait-preset-form-heading>small,body .trait-scope-heading>small,body .board-modal-panel-label small,body .unit-slot-modal-heading small{display:none;}
@@ -1761,11 +1775,6 @@ body .unit-slot-card-actions{display:flex;align-items:center;gap:5px;flex:0 0 au
 body .unit-slot-card-actions .unit-list-remove{display:grid;place-items:center;height:29px;min-height:29px;width:auto;min-width:31px;padding:2px 6px;border-radius:6px;font-size:16.75px;}
 body .unit-slot-card-main{display:flex;flex-direction:column;align-items:stretch;flex:1;gap:8px;width:100%;min-width:0;margin:0;padding:9px;background:transparent;border:0;color:inherit;font:inherit;text-align:left;cursor:pointer;}
 body .unit-slot-card-main:hover,body .unit-slot-card-main:focus-visible{background:rgba(29,30,33,.07);outline-offset:-2px;}
-body .unit-slot-overview-card.is-narud-review{border-color:rgba(240,190,112,.65);}
-body .unit-slot-overview-card.is-narud-review .unit-slot-card-main{position:relative;isolation:isolate;}
-body .unit-slot-narud-review-note{position:absolute;inset:0;z-index:1;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:9px;padding:12px 8px;box-sizing:border-box;text-align:center;background:rgba(9,12,19,.83);pointer-events:none;}
-body .unit-slot-narud-review-note strong{color:#ffe6af;font-size:calc(16px * var(--app-font-scale));line-height:1.3;text-shadow:0 1px 10px rgba(240,177,86,.4);}
-body .unit-slot-narud-review-note small{color:#ccdae9;font-size:calc(11px * var(--app-font-scale));line-height:1.4;}
 
 body .unit-slot-add-card{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;min-width:0;min-height:160px;border:1.5px dashed #53636b;border-radius:10px;background:rgba(17,18,21,.36);color:#cfeeff;cursor:pointer;transition:background .15s ease,border-color .15s ease;}
 body .unit-slot-add-card:hover,body .unit-slot-add-card:focus-visible{background:rgba(20,21,24,.54);border-color:#8b9ba5;outline-offset:2px;}
@@ -1797,12 +1806,6 @@ body.is-mobile .hdr-title-wrap h1{font-size:calc(13px * var(--app-font-scale));}
 /* 0031 · one touch target per unit slot; visible speed uses actual battle calculations. */
 body .unit-slot-card-head .unit-list-remove{min-width:30px;height:30px;min-height:30px;padding:0 6px;}
 /* 유닛 카드: 등급과 유닛명, 상세 모달과 같은 3열 지표 가운데 정렬 */
-body .unit-slot-identity{display:grid;justify-items:center;align-content:start;gap:4px;min-width:0;text-align:center;}
-body .unit-slot-identity .unit-slot-grade{color:#9ec4da;font-size:calc(10.75px * var(--app-font-scale));line-height:1.3;overflow-wrap:anywhere;}
-body .unit-slot-identity>b{min-width:0;color:#f1faff;font-size:calc(12px * var(--app-font-scale));line-height:1.35;overflow-wrap:anywhere;}
-body .unit-slot-overview-card .unit-slot-compact-grid{gap:5px;}
-body .unit-slot-overview-card .unit-slot-compact-grid .dps-base-unit-field{grid-template-rows:20px minmax(31px,auto);}
-body .unit-slot-overview-card .unit-slot-compact-value{font-size:calc(10px * var(--app-font-scale));border:0;border-radius:0;background:transparent;padding:3px 0;}
 body .unit-slot-expansion{display:grid;gap:8px;padding:0 9px 9px;min-width:0;}
 body .unit-slot-expansion-toggle{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;min-height:27px;padding:3px 8px;border:0;border-top:1px solid rgba(130,143,151,.19);background:transparent;color:#c4e2f5;font-size:calc(10px * var(--app-font-scale));cursor:pointer;}
 body .unit-slot-expansion-toggle>span{font-size:16px;line-height:1;}
@@ -1813,8 +1816,6 @@ body .unit-slot-expansion-row>span{display:flex;justify-content:space-between;ga
 body .unit-slot-expansion-row small{color:#99bed3;font-size:calc(9.75px * var(--app-font-scale));white-space:nowrap;}
 body .unit-slot-expansion-row b{color:#e1f0fb;font-size:calc(9.75px * var(--app-font-scale));overflow-wrap:anywhere;text-align:right;}
 @media(max-width:520px){
- body .unit-slot-identity{gap:3px;}
- body .unit-slot-identity>b{font-size:calc(12.5px * var(--app-font-scale));}
  body .unit-slot-expansion-row>span{flex-wrap:wrap;}
 }
 
@@ -1827,6 +1828,18 @@ body .preset-recovery-dialog::backdrop{background:var(--ui-modal-backdrop-bg);ba
 .preset-recovery-head h2{margin:0;font-size:var(--ui-main-title-font);font-weight:var(--ui-main-title-weight);line-height:1.3;color:var(--ui-integrated-head-text);}
 .preset-recovery-body{display:flex;flex:0 1 auto;flex-direction:column;min-height:0;padding:10px 12px;overflow:hidden;overscroll-behavior:contain;}
 #traitPresetRecoveryNote{flex:0 0 auto;margin:0 0 9px;color:var(--ui-unified-muted);font-size:calc(10.75px * var(--app-font-scale));line-height:1.5;overflow-wrap:anywhere;}
+.preset-recovery-common{flex:0 0 auto;margin-bottom:9px;padding:10px 11px;border:1px solid var(--ui-integrated-head-line);border-radius:9px;background:var(--ui-input);font-size:calc(11px * var(--app-font-scale));line-height:1.5;}
+.preset-recovery-common strong{display:flex;align-items:center;justify-content:space-between;gap:8px;color:var(--ui-unified-text);font-weight:600;}
+.preset-recovery-common strong span{font-size:10px;font-weight:400;color:var(--ui-integrated-subhead-text);}
+.preset-recovery-common ul{display:flex;flex-wrap:wrap;gap:5px 9px;margin:8px 0 0;padding:0;list-style:none;color:var(--ui-integrated-subhead-text);}
+.preset-recovery-common li{display:grid;gap:3px;padding:5px 7px;border:1px solid var(--ui-modal-border);border-radius:5px;}
+.preset-recovery-common li span{color:var(--ui-unified-text);font-variant-numeric:tabular-nums;overflow-wrap:anywhere;}
+.preset-recovery-common li b{color:#81b4e5;font-weight:400;}
+.preset-recovery-common li em{color:#a9c6ea;font-style:normal;}
+.preset-recovery-common p{margin:7px 0 0;color:var(--ui-unified-muted);overflow-wrap:anywhere;}
+.preset-recovery-shared-source{display:grid;gap:5px;margin-top:9px;color:var(--ui-unified-text);}
+.preset-recovery-shared-source[hidden]{display:none;}
+.preset-recovery-shared-source select{min-width:0;width:100%;box-sizing:border-box;padding:8px;border:1px solid var(--ui-button-border);border-radius:var(--ui-control-radius);background:var(--ui-panel-body-bg);color:var(--ui-unified-text);font:inherit;}
 .preset-recovery-list{display:grid;align-content:start;gap:6px;min-height:0;max-height:min(48dvh,440px);padding:0 3px 1px 0;overflow-y:auto;overscroll-behavior:contain;scrollbar-color:#466484 #0b0d11;}
 .preset-recovery-row{min-width:0;padding:10px 11px;border:1px solid var(--ui-modal-border);border-radius:9px;background:var(--ui-panel-body-bg);}
 .preset-recovery-row.has-error{border-color:#835268;}
@@ -1840,23 +1853,18 @@ body .preset-recovery-dialog::backdrop{background:var(--ui-modal-backdrop-bg);ba
 .preset-recovery-row p{margin:6px 0;color:var(--ui-unified-muted);font-size:11px;line-height:1.4;overflow-wrap:anywhere;}
 .preset-recovery-row .preset-recovery-error{color:#eec2ce;}
 .preset-recovery-details{min-width:0;margin:8px 0;}
-.preset-recovery-count{font-size:calc(11px * var(--app-font-scale));font-weight:600;color:var(--ui-integrated-subhead-text);}
 .preset-recovery-row ul{display:grid;gap:5px;margin:7px 0 0;padding:0;list-style:none;}
 .preset-recovery-row li{min-width:0;padding:7px 8px;border:1px solid var(--ui-modal-border);border-radius:6px;background:var(--ui-input);font-size:calc(11px * var(--app-font-scale));line-height:1.45;}
 .preset-recovery-row li strong{display:block;margin-bottom:3px;color:var(--ui-integrated-subhead-text);font-weight:500;}
 .preset-recovery-row li span{display:flex;align-items:center;flex-wrap:wrap;gap:8px;color:#edf5ff;overflow-wrap:anywhere;}
 .preset-recovery-row li b{color:#81b4e5;font-weight:400;}
-.preset-recovery-choices{display:flex;flex-wrap:wrap;gap:7px;margin-top:9px;}
-.preset-recovery-row .preset-recovery-choice{display:inline-flex;align-items:center;justify-content:center;gap:6px;flex:1 1 120px;box-sizing:border-box;min-height:34px;padding:7px 10px;border:1px solid var(--ui-button-border);border-radius:var(--ui-control-radius);background:var(--ui-button-bg);color:var(--ui-button-text);font-family:inherit;font-size:calc(11px * var(--app-font-scale));line-height:1.3;cursor:pointer;}
-.preset-recovery-row .preset-recovery-choice:hover{border-color:var(--ui-button-hover-border);color:var(--ui-unified-text);}
-.preset-recovery-row .preset-recovery-choice[aria-pressed="true"]{border-color:var(--ui-button-active-border);background:var(--ui-button-active-bg);color:var(--ui-button-active-text);}
-.preset-recovery-row .preset-recovery-choice.is-exclude[aria-pressed="true"]{border-color:#d18ca4;background:#422c38;color:#ffdae6;}
+.preset-recovery-row li em{color:#a9c6ea;font-style:normal;}
 .preset-recovery-actions{display:grid;flex:0 0 auto;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;padding:10px 12px;border-top:1px solid var(--ui-modal-border);background:var(--ui-panel-body-bg);}
 .preset-recovery-actions button{min-width:0;min-height:39px;padding:8px 10px;border:1px solid var(--ui-button-border);border-radius:var(--ui-control-radius);background:var(--ui-button-bg);color:var(--ui-button-text);font-family:inherit;font-size:calc(11.5px * var(--app-font-scale));line-height:1.4;cursor:pointer;}
 .preset-recovery-actions button[value="apply"]{border-color:var(--ui-button-active-border);background:var(--ui-button-active-bg);color:var(--ui-button-active-text);}
 .preset-recovery-actions button:disabled{opacity:.4;cursor:not-allowed;}
 .preset-recovery-dialog button:focus-visible{outline:2px solid var(--ui-field-focus-border);outline-offset:2px;}
-@media(max-width:420px){.preset-recovery-head{padding:10px 12px;}.preset-recovery-body{padding:9px;}.preset-recovery-actions{padding:9px;}.preset-recovery-row{padding:9px;}.preset-recovery-list{max-height:min(46dvh,360px);}.preset-recovery-row .preset-recovery-choice{flex-basis:110px;}}
+@media(max-width:420px){.preset-recovery-head{padding:10px 12px;}.preset-recovery-body{padding:9px;}.preset-recovery-actions{padding:9px;}.preset-recovery-row{padding:9px;}.preset-recovery-list{max-height:min(46dvh,360px);}}
 body .unit-slot-remove-dialog{box-sizing:border-box;width:min(380px,calc(100vw - 34px));max-height:calc(100dvh - 32px);margin:auto;padding:0;color:#e5f6ff;border:1px solid var(--ui-modal-border);border-radius:var(--ui-modal-radius);background:var(--ui-panel-body-bg);box-shadow:var(--ui-modal-shadow);overflow:auto;}
 body .unit-slot-remove-dialog::backdrop{background:var(--ui-modal-backdrop-bg);}
 body .unit-slot-remove-dialog-inner{display:grid;gap:12px;padding:20px;}
@@ -1870,8 +1878,7 @@ body .unit-slot-remove-dialog-actions button:focus-visible{outline:2px solid var
 /* 0033: 번호 배지는 루키 특성 등에서 사용하는 01~10 스타일과 일관되게 표시. */
 body .unit-slot-heading{display:flex;align-items:center;min-width:0;gap:8px;}
 body .unit-slot-number{display:grid;place-items:center;flex:0 0 29px;width:29px;height:29px;box-sizing:border-box;border:1px solid #545e65;border-radius:7px;background:#111215;color:#cae9ff;font:calc(12px * var(--app-font-scale))/1 Consolas,monospace;font-variant-numeric:tabular-nums;letter-spacing:.2px;}
-body .unit-slot-heading-label{font-size:calc(12px * var(--app-font-scale));white-space:nowrap;color:#e6f6ff;}
-@media(max-width:520px){body .unit-slot-heading{gap:5px;}body .unit-slot-number{flex-basis:26px;width:26px;height:26px;font-size:calc(11.25px * var(--app-font-scale));}body .unit-slot-heading-label{font-size:calc(10.75px * var(--app-font-scale));}}
+@media(max-width:520px){body .unit-slot-heading{gap:5px;}body .unit-slot-number{flex-basis:26px;width:26px;height:26px;font-size:calc(11.25px * var(--app-font-scale));}}
 
 /* 헤더 버튼 표시 및 레이아웃 */
 body .nexus-labelled-control{position:relative!important;display:inline-flex!important;align-items:center!important;justify-content:flex-start!important;flex:0 0 auto!important;width:var(--nexus-control-base,34px)!important;min-width:var(--nexus-control-base,34px)!important;max-width:100%;gap:0!important;padding:0!important;overflow:hidden!important;white-space:nowrap;transition:width .18s ease,background .15s ease,border-color .15s ease!important;}
@@ -1914,7 +1921,7 @@ body #dpsBaseUnitSummary .dps-base-unit-top{display:grid;grid-template-columns:m
 body #dpsBaseUnitSummary .dps-base-unit-top>div{min-width:0;min-height:96px;padding:14px 10px;gap:7px;}
 body #dpsBaseUnitSummary .unit-summary-stage strong{font-size:calc(21px * var(--app-font-scale));}
 body #dpsBaseUnitSummary .unit-summary-stage small{font-size:calc(11px * var(--app-font-scale));}
-body #dpsBaseUnitSummary .dps-base-unit-results{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));border-top:1px solid var(--ui-panel-border);}
+body #dpsBaseUnitSummary .dps-base-unit-results{display:grid;border-top:1px solid var(--ui-panel-border);grid-template-columns:repeat(3,minmax(0,1fr));grid-template-columns:var(--board-summary-columns);}
 body #dpsBaseUnitSummary .dps-base-unit-results>.dps-base-unit-summary-item{min-height:100px;padding:16px 10px;gap:10px;border:0;}
 body #dpsBaseUnitSummary .dps-base-unit-results>.dps-base-unit-expected{border-left:1px solid var(--ui-panel-border);}
 body #dpsBaseUnitSummary .dps-base-unit-summary-item .dps-num{font-size:calc(28px * var(--app-font-scale));line-height:1.2;white-space:normal;overflow-wrap:anywhere;}
@@ -1926,18 +1933,18 @@ body .ub-collection-head{display:flex;justify-content:space-between;align-items:
 body .ub-collection-head h3{display:flex;align-items:center;gap:9px;margin:0;color:var(--ui-text);font-size:calc(13px * var(--app-font-scale));}
 .ub-collection-head h3>span{padding:2px 7px;border:1px solid var(--ui-panel-border);border-radius:5px;color:#a9c8ff;font:calc(10px * var(--app-font-scale))/1.5 Consolas,monospace;}
 .ub-collection-head small{color:#9daec5;font-size:calc(10px * var(--app-font-scale));}
-body #dpsBaseUnitSlotStack .unit-slot-cards-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;padding:0;}
+body #dpsBaseUnitSlotStack .unit-slot-cards-grid{gap:12px;padding:0;grid-template-columns:minmax(0,1fr);gap:12px;}
 body #dpsBaseUnitSlotStack .unit-slot-overview-card{border-color:var(--ui-panel-border);border-radius:12px;box-shadow:none;transition:border-color .15s;}
 body #dpsBaseUnitSlotStack .unit-slot-overview-card:hover{border-color:var(--ui-button-hover-border);}
-body #dpsBaseUnitSlotStack .unit-slot-card-head{min-height:66px;padding:12px;gap:8px;}
+body #dpsBaseUnitSlotStack .unit-slot-card-head{padding:12px;gap:8px;min-height:48px;padding:9px 12px;}
 body #dpsBaseUnitSlotStack .unit-slot-heading{gap:10px;}
-body #dpsBaseUnitSlotStack .unit-slot-number{flex:0 0 28px;width:28px;height:30px;font-size:11px;}
+body #dpsBaseUnitSlotStack .unit-slot-number{flex:0 0 28px;width:28px;font-size:11px;height:26px;}
 .ub-card-title{display:grid;gap:2px;min-width:0;}
 body .ub-card-title .unit-slot-grade{color:#9ec4da;font-size:calc(10px * var(--app-font-scale));}
 .ub-card-title strong{color:#f1faff;font-size:calc(14px * var(--app-font-scale));line-height:1.4;overflow-wrap:anywhere;}
 body #dpsBaseUnitSlotStack .unit-slot-card-actions .unit-list-remove{width:28px;min-width:28px;height:28px;min-height:28px;background:transparent;border-color:transparent;color:#9daec5;}
 body #dpsBaseUnitSlotStack .unit-list-remove:hover{border-color:#9b6571;color:#ffccd4;}
-body #dpsBaseUnitSlotStack .unit-slot-card-main{padding:14px 12px 0;gap:10px;}
+body #dpsBaseUnitSlotStack .unit-slot-card-main{gap:10px;padding:14px 12px;padding:12px;}
 body #dpsBaseUnitSlotStack .unit-slot-card-main:focus-visible{outline:2px solid var(--ui-field-focus-border);outline-offset:-3px;}
 .ub-card-data{width:100%;min-width:0;}
 .ub-auto-label{display:flex;align-items:center;gap:6px;color:#9daec5;font-size:calc(10px * var(--app-font-scale));line-height:1.5;}
@@ -1957,9 +1964,8 @@ body #dpsBaseUnitSlotStack .unit-slot-card-main:focus-visible{outline:2px solid 
 .ub-setting>span{color:#9daec5;font-size:calc(10px * var(--app-font-scale));}
 .ub-setting>b{color:#e2e7f0;font-size:calc(12px * var(--app-font-scale));line-height:1.4;overflow-wrap:anywhere;}
 .ub-wide{grid-column:1/-1;}
-.ub-review-note{color:#ffe6af;font-size:calc(11px * var(--app-font-scale));line-height:1.5;text-align:left;}
-body #dpsBaseUnitSlotStack .unit-slot-add-card{min-height:130px;gap:7px;border:1px dashed #53636b;border-radius:12px;padding:18px 12px;background:transparent;}
-body #dpsBaseUnitSlotStack .unit-slot-add-symbol{font-size:35px;}
+body #dpsBaseUnitSlotStack .unit-slot-add-card{gap:7px;border:1px dashed #53636b;border-radius:12px;background:transparent;flex-direction:row;min-height:64px;gap:10px;padding:12px;}
+body #dpsBaseUnitSlotStack .unit-slot-add-symbol{font-size:25px;}
 body #dpsBaseUnitSlotStack .unit-slot-add-card small{color:#9daec5;font-size:calc(10px * var(--app-font-scale));}
 body #dpsUnitSlotModal .unit-slot-modal-dialog{width:min(780px,calc(100vw - 32px));border-radius:18px;}
 body #dpsUnitSlotModal .unit-slot-modal-header{padding:18px 22px;}
@@ -1967,9 +1973,8 @@ body #dpsUnitSlotModal .unit-slot-modal-heading{gap:5px;}
 body #dpsUnitSlotModal .unit-slot-modal-heading strong{font-size:calc(17px * var(--app-font-scale));}
 body #dpsUnitSlotModal .unit-slot-modal-heading small{display:block;color:#9daec5;font-size:calc(11px * var(--app-font-scale));line-height:1.5;}
 body #dpsUnitSlotModal .unit-slot-modal-scroll{padding:22px;}
-body #dpsUnitSlotModal .ub-unit-picker{display:flex;align-items:end;gap:14px;padding:0 0 20px;margin:0;border-bottom:1px solid var(--ui-panel-border);}
+body #dpsUnitSlotModal .ub-unit-picker{align-items:end;padding:0 0 20px;margin:0;border-bottom:1px solid var(--ui-panel-border);display:grid;grid-template-columns:minmax(0,1fr);gap:10px;padding-bottom:20px;}
 body #dpsUnitSlotModal .ub-unit-picker>.dps-base-unit-field{flex:1;max-width:480px;min-width:0;gap:8px;}
-body #dpsUnitSlotModal .ub-picker-note{color:#9ec4da;font-size:calc(11px * var(--app-font-scale));line-height:1.5;flex:0 1 auto;padding:10px 0;}
 body #dpsUnitSlotModal .dps-base-unit-field-label{height:auto;min-height:0;justify-content:center;text-align:center;font-size:calc(11px * var(--app-font-scale));color:#9daec5;white-space:normal;}
 .ub-editor-layout{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);align-items:start;gap:22px;padding-top:20px;}
 .ub-editor-sections{display:grid;gap:22px;min-width:0;}
@@ -1978,8 +1983,8 @@ body #dpsUnitSlotModal .ub-edit-section h3{display:flex;align-items:center;gap:7
 .ub-edit-section h3>span{color:#9ec4da;font:10px/1 Consolas,monospace;}
 .ub-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 12px;}
 body #dpsUnitSlotModal .ub-editor-field{display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:auto auto;gap:7px;align-content:start;min-width:0;padding:0;}
-body #dpsUnitSlotModal .ub-editor-field :is(input,select,.ui-custom-select-button,.dps-base-unit-void-power-control){min-height:40px;height:40px;font-size:calc(12px * var(--app-font-scale));}
-body #dpsUnitSlotModal .ub-unit-picker :is(select,.ui-custom-select-button){min-height:44px;height:44px;font-size:calc(14px * var(--app-font-scale));}
+body #dpsUnitSlotModal .ub-editor-field :is(input,select,.dps-base-unit-void-power-control){min-height:40px;height:40px;font-size:calc(12px * var(--app-font-scale));}
+body #dpsUnitSlotModal .ub-unit-picker :is(select){min-height:44px;height:44px;font-size:calc(14px * var(--app-font-scale));}
 body #dpsUnitSlotModal .ub-fields .dps-base-unit-qty-control{display:grid;grid-template-columns:32px minmax(0,1fr) 32px;gap:3px;min-width:0;width:100%;height:40px;}
 body #dpsUnitSlotModal .ub-fields .dps-base-unit-qty-btn{width:100%;height:40px;min-height:40px;}
 body #dpsUnitSlotModal .ub-fields .dps-base-unit-board-quantity{height:40px;min-height:40px;width:100%;padding:0;}
@@ -1994,41 +1999,35 @@ body #dpsUnitSlotModal .ub-editor-field :is(input,select,button):disabled{opacit
 .ub-live-result .ub-metric{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 0;border-top:1px solid var(--ui-panel-border);}
 .ub-live-result p{margin:14px 0 0;color:#9daec5;font-size:calc(10px * var(--app-font-scale));line-height:1.6;}
 body #dpsUnitSlotModal .unit-slot-empty-guidance{margin-top:14px;color:#9daec5;font-size:11px;}
-body #dpsUnitSlotModal .unit-slot-modal-footer{padding:16px 22px;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px;}
-body #dpsUnitSlotModal .unit-slot-modal-footer:not(.has-expansion){grid-template-columns:minmax(0,1fr) minmax(160px,.65fr);}
-body #dpsUnitSlotModal .unit-slot-modal-footer:not(.has-expansion) .unit-slot-modal-done{grid-column:2;}
+body #dpsUnitSlotModal .unit-slot-modal-footer{padding:16px 22px;gap:14px;grid-template-columns:minmax(0,1fr) minmax(160px,.65fr);grid-template-columns:repeat(2,minmax(0,1fr));}
+body #dpsUnitSlotModal .unit-slot-modal-footer .unit-slot-modal-done{grid-column:2;}
 body #dpsUnitSlotModal .dps-base-unit-extra-settings{margin-top:20px;padding-top:18px;border-top:1px solid var(--ui-panel-border);}
-body #dpsUnitSlotModal .dps-base-unit-extra-settings h4{margin-bottom:12px;color:#e2e7f0;font-size:12px;}
-@container(max-width:460px){body #dpsBaseUnitSlotStack .unit-slot-cards-grid{grid-template-columns:minmax(0,1fr);}body #dpsBaseUnitSlotStack .unit-slot-add-card{min-height:110px;}.ub-settings-list{grid-template-columns:repeat(4,minmax(0,1fr));}.ub-setting.ub-wide{grid-column:1/-1;}.ub-dps>b{font-size:calc(29px * var(--app-font-scale));}}
-@media(max-width:600px){body #dpsUnitSlotModal .unit-slot-modal-dialog{width:100%;max-height:calc(100dvh - 14px);border-radius:14px;}body #dpsUnitSlotModal .unit-slot-modal-header{padding:14px;gap:8px;}body #dpsUnitSlotModal .unit-slot-modal-heading strong{font-size:15px;}body #dpsUnitSlotModal .unit-slot-modal-scroll{padding:16px;}body #dpsUnitSlotModal .ub-unit-picker{display:block;padding-bottom:16px;}body #dpsUnitSlotModal .ub-picker-note{display:none;}.ub-editor-layout{grid-template-columns:minmax(0,1fr);gap:20px;padding-top:16px;}.ub-editor-sections{gap:20px;}.ub-live-result .ub-dps{display:flex;margin:12px 0 16px;}.ub-live-result .ub-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;}.ub-live-result .ub-metric{display:grid;gap:6px;padding:10px 0 0;}.ub-live-result p{margin-top:12px;}body #dpsUnitSlotModal .unit-slot-modal-footer{padding:12px 16px;}body #dpsBaseUnitSummary .dps-base-unit-top>div{padding:10px 5px;min-height:90px;}body #dpsBaseUnitSummary .dps-base-unit-spec-dps .dps-num{font-size:calc(19px * var(--app-font-scale));}body #dpsBaseUnitSummary .unit-summary-stage strong{font-size:calc(18px * var(--app-font-scale));}}
+body #dpsUnitSlotModal .dps-base-unit-extra-settings h4{margin-bottom:12px;color:#e2e7f0;font-size:12px;text-align:left;margin:0 0 14px;padding:0;}
+@container(max-width:460px){body #dpsBaseUnitSlotStack .unit-slot-cards-grid{grid-template-columns:minmax(0,1fr);}.ub-settings-list{grid-template-columns:repeat(4,minmax(0,1fr));}.ub-setting.ub-wide{grid-column:1/-1;}.ub-dps>b{font-size:calc(29px * var(--app-font-scale));}}
+@media(max-width:600px){body #dpsUnitSlotModal .unit-slot-modal-dialog{width:100%;max-height:calc(100dvh - 14px);border-radius:14px;}body #dpsUnitSlotModal .unit-slot-modal-header{padding:14px;gap:8px;}body #dpsUnitSlotModal .unit-slot-modal-heading strong{font-size:15px;}body #dpsUnitSlotModal .unit-slot-modal-scroll{padding:16px;}.ub-editor-layout{grid-template-columns:minmax(0,1fr);gap:20px;padding-top:16px;}.ub-editor-sections{gap:20px;}.ub-live-result .ub-dps{display:flex;margin:12px 0 16px;}.ub-live-result .ub-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;}.ub-live-result .ub-metric{display:grid;gap:6px;padding:10px 0 0;}.ub-live-result p{margin-top:12px;}body #dpsUnitSlotModal .unit-slot-modal-footer{padding:12px 16px;}body #dpsBaseUnitSummary .dps-base-unit-top>div{padding:10px 5px;min-height:90px;}body #dpsBaseUnitSummary .dps-base-unit-spec-dps .dps-num{font-size:calc(19px * var(--app-font-scale));}body #dpsBaseUnitSummary .unit-summary-stage strong{font-size:calc(18px * var(--app-font-scale));}}
 @media(max-width:360px){.ub-settings-list{grid-template-columns:repeat(2,minmax(0,1fr));}.ub-collection-head small{display:none;}body #dpsBaseUnitSummary .dps-base-unit-top{grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);}body #dpsBaseUnitSummary .dps-base-unit-spec-dps{grid-column:1/-1;border-top:1px solid var(--ui-panel-border);min-height:65px!important;}}
-body #dpsUnitSlotModal .dps-base-unit-extra-settings h4{text-align:left;margin:0 0 14px;padding:0;}
 body #dpsUnitSlotModal .dps-base-unit-extra-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:10px;}
 body #dpsUnitSlotModal .dps-base-unit-extra-slot{display:grid;grid-template-columns:38px minmax(0,.8fr) minmax(0,1.2fr);align-items:center;gap:12px;padding:12px;border:1px solid var(--ui-panel-border);border-radius:10px;}
 body #dpsUnitSlotModal .dps-base-unit-extra-slot-title{width:34px;min-width:0;min-height:32px;display:grid;place-items:center;border:1px solid var(--ui-panel-border);border-radius:6px;font-size:11px;color:#a9c8ff;}
 body #dpsUnitSlotModal .dps-base-unit-extra-slot>label{display:grid;gap:6px;min-width:0;text-align:center;}
-body #dpsUnitSlotModal .dps-base-unit-extra-slot>label>span{color:#9daec5;font-size:11px;}
-body #dpsUnitSlotModal .dps-base-unit-extra-slot :is(select,.ui-custom-select-button){height:40px;min-height:40px;font-size:12px;}
+body #dpsUnitSlotModal .dps-base-unit-extra-slot>label>span{color:#9daec5;font-size:11px;display:block;text-align:center;}
+body #dpsUnitSlotModal .dps-base-unit-extra-slot :is(select){height:40px;min-height:40px;font-size:12px;}
 @media(max-width:420px){body #dpsUnitSlotModal .dps-base-unit-extra-slot{grid-template-columns:28px minmax(0,1fr);gap:10px;}body #dpsUnitSlotModal .dps-base-unit-extra-slot>label:last-child{grid-column:2;}body #dpsUnitSlotModal .dps-base-unit-extra-slot-title{width:28px;}}
-body #dpsUnitSlotModal .dps-base-unit-extra-slot>label>span{display:block;text-align:center;}
 body #dpsUnitSlotModal :is(.ub-unit-picker,.ub-editor-field,.dps-base-unit-extra-slot) .app-select-trigger{min-height:40px;font-size:calc(12px * var(--app-font-scale));}
 body #dpsUnitSlotModal .ub-unit-picker .app-select-trigger{min-height:44px;font-size:calc(14px * var(--app-font-scale));}
 
 /* v016 · 슬롯 확장 제어와 해당 설정을 같은 영역에 배치 */
 body #dpsUnitSlotModal .ub-expansion-section{margin-top:22px;padding-top:20px;border-top:1px solid var(--ui-panel-border);}
 body #dpsUnitSlotModal .ub-expansion-head{display:flex;justify-content:space-between;align-items:center;gap:16px;}
-body #dpsUnitSlotModal .ub-expansion-head>div{min-width:0;}
+body #dpsUnitSlotModal .ub-expansion-head>div{min-width:0;flex:1 1 auto;}
 body #dpsUnitSlotModal .ub-expansion-head h4{margin:0 0 5px;padding:0;color:#e2e7f0;font-size:calc(12px * var(--app-font-scale));text-align:left;}
 body #dpsUnitSlotModal .ub-expansion-head p{margin:0;color:#9daec5;font-size:calc(11px * var(--app-font-scale));line-height:1.5;}
-body #dpsUnitSlotModal .ub-expansion-head .dps-base-unit-slot-expansion-btn{display:flex;justify-content:center;align-items:center;gap:9px;flex:0 0 auto;min-width:125px;min-height:40px;padding:8px 12px;font-size:calc(12px * var(--app-font-scale));}
+body #dpsUnitSlotModal .ub-expansion-head .dps-base-unit-slot-expansion-btn{display:flex;justify-content:center;align-items:center;gap:9px;flex:0 0 auto;min-width:125px;min-height:40px;padding:8px 12px;font-size:calc(12px * var(--app-font-scale));width:auto;max-width:100%;height:40px;margin:0;align-self:center;}
 body #dpsUnitSlotModal .ub-expansion-head .dps-base-unit-slot-expansion-btn>span{font:calc(10px * var(--app-font-scale))/1.2 Consolas,monospace;}
 body #dpsUnitSlotModal .ub-expansion-section .dps-base-unit-extra-settings{margin-top:16px;padding:0;border:0;}
 @media(max-width:420px){body #dpsUnitSlotModal .ub-expansion-head{align-items:flex-start;gap:10px;}body #dpsUnitSlotModal .ub-expansion-head .dps-base-unit-slot-expansion-btn{min-width:112px;padding:8px;}}
-body #dpsUnitSlotModal .ub-expansion-head>div{flex:1 1 auto;}
-body #dpsUnitSlotModal .ub-expansion-head .dps-base-unit-slot-expansion-btn{width:auto;max-width:100%;height:40px;margin:0;align-self:center;}
 
 /* v017 · 취소/완료를 하단에 나란히 배치하고 슬롯 요약표를 상단에 상시 표시 */
-body #dpsUnitSlotModal .unit-slot-modal-footer:not(.has-expansion){grid-template-columns:repeat(2,minmax(0,1fr));}
 body #dpsUnitSlotModal .unit-slot-modal-cancel{grid-column:1;min-width:0;min-height:40px;padding:8px 19px;border:1px solid var(--ui-button-border);border-radius:9px;background:var(--ui-button-bg);color:var(--ui-button-text);font:inherit;cursor:pointer;}
 body #dpsUnitSlotModal .unit-slot-modal-cancel:focus-visible{outline:2px solid var(--ui-field-focus-border);outline-offset:2px;}
 body #dpsBaseUnitSlotStack .unit-basic-summary{margin:0 0 14px;border:1px solid var(--ui-panel-border);border-radius:10px;}
@@ -2044,7 +2043,7 @@ body #dpsBaseUnitSlotStack .unit-basic-jewel{width:32%;}
 @media(max-width:420px){body #dpsBaseUnitSlotStack .unit-basic-summary :is(th,td){padding:8px 3px;}body #dpsBaseUnitSlotStack .unit-basic-summary table{font-size:calc(10px * var(--app-font-scale));}}
 
 /* v018 · 스펙/유닛 보드의 제목·주요 값·보조 정보 행을 같은 기준으로 정렬 */
-body .right-analytics-workspace :is(#statDpsSummary.board-context-header,#dpsBaseUnitSummary .board-context-header){--context-caption-row:calc(26px * var(--app-font-scale));--context-value-row:calc(32px * var(--app-font-scale));--context-detail-row:calc(18px * var(--app-font-scale));--context-row-gap:5px;--context-pad-y:14px;display:grid;grid-template-columns:minmax(0,1.5fr) repeat(2,minmax(0,1fr));grid-template-rows:auto;align-items:stretch;width:100%;min-width:0;min-height:0;}
+body .right-analytics-workspace :is(#statDpsSummary.board-context-header,#dpsBaseUnitSummary .board-context-header){--context-caption-row:calc(26px * var(--app-font-scale));--context-value-row:calc(32px * var(--app-font-scale));--context-detail-row:calc(18px * var(--app-font-scale));--context-row-gap:5px;--context-pad-y:14px;display:grid;grid-template-rows:auto;align-items:stretch;width:100%;min-width:0;min-height:0;grid-template-columns:var(--board-summary-columns);}
 body .right-analytics-workspace :is(#statDpsSummary.board-context-header,#dpsBaseUnitSummary .board-context-header)>div{display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:var(--context-caption-row) var(--context-value-row) var(--context-detail-row);align-items:center;align-content:center;justify-items:center;gap:var(--context-row-gap);min-width:0;min-height:0;height:auto;margin:0;padding:var(--context-pad-y) 8px;text-align:center;grid-column:auto;border-right:1px solid var(--ui-panel-border);border-bottom:0;border-top:0;}
 body .right-analytics-workspace :is(#statDpsSummary.board-context-header,#dpsBaseUnitSummary .board-context-header)>div:last-child{border-right:0;}
 body .right-analytics-workspace :is(#statDpsSummary.board-context-header,#dpsBaseUnitSummary .board-context-header) :is(.right-hero-compact-mode,.dps-spec-board-dps,.dps-feature-heading){display:contents;}
@@ -2063,8 +2062,7 @@ body .right-analytics-workspace :is(#statDpsSummary.board-context-header,#dpsBas
 @media(max-width:360px){body .right-analytics-workspace :is(#statDpsSummary.board-context-header,#dpsBaseUnitSummary .board-context-header) :is(#dpsVal,.dps-base-unit-spec-dps>.dps-num){font-size:calc(17px * var(--app-font-scale));}}
 
 /* v018 · 클리어 기준 / 기대값 / 달성률을 가로 3열로 복원 */
-body #dpsBaseUnitSummary .dps-base-unit-results{grid-template-columns:repeat(3,minmax(0,1fr));}
-body #dpsBaseUnitSummary .dps-base-unit-results>:is(.dps-base-unit-summary-item,.unit-achievement){display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:calc(22px * var(--app-font-scale)) calc(34px * var(--app-font-scale));grid-column:auto;align-items:center;align-content:center;justify-items:center;gap:8px;min-width:0;min-height:100px;padding:14px 6px;border:0;border-left:1px solid var(--ui-panel-border);text-align:center;}
+body #dpsBaseUnitSummary .dps-base-unit-results>:is(.dps-base-unit-summary-item,.unit-achievement){display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:calc(22px * var(--app-font-scale)) calc(34px * var(--app-font-scale));grid-column:auto;align-items:center;align-content:center;justify-items:center;gap:8px;min-width:0;min-height:100px;padding:14px 6px;border:0;text-align:center;border-left:0;border-right:1px solid var(--ui-panel-border);}
 body #dpsBaseUnitSummary .dps-base-unit-results>:is(.dps-base-unit-summary-item,.unit-achievement):first-child{border-left:0;}
 body #dpsBaseUnitSummary .dps-base-unit-results :is(.dps-feature-heading,.unit-achievement-label){display:flex;grid-row:1;align-items:center;justify-content:center;min-width:0;margin:0;color:#9daec5;font-size:calc(11px * var(--app-font-scale));line-height:1.3;}
 body #dpsBaseUnitSummary .dps-base-unit-results .dps-lbl{margin:0;line-height:1.3;}
@@ -2073,33 +2071,24 @@ body #dpsBaseUnitSummary .dps-base-unit-results .dps-num{grid-row:2;max-width:10
 @media(max-width:360px){body #dpsBaseUnitSummary .dps-base-unit-results .dps-num{font-size:calc(18px * var(--app-font-scale));}}
 
 /* v019 · 카드 안내 문구 제거 및 추가 유닛별 설정 카드 */
-body #dpsBaseUnitSlotStack .unit-slot-card-main{padding:14px 12px;}
 body #dpsBaseUnitSlotStack .unit-slot-expansion{gap:10px;padding:0 12px 12px;background:var(--role-readonly-bg);border-top:1px solid var(--ui-panel-border);}
 body #dpsBaseUnitSlotStack .unit-slot-expansion-toggle{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:42px;padding:10px 0 0;border:0;color:#c4e2f5;text-align:left;}
 body #dpsBaseUnitSlotStack .ub-extra-heading{display:flex;align-items:center;gap:7px;font-size:calc(11px * var(--app-font-scale));line-height:1.4;}
 body #dpsBaseUnitSlotStack .ub-extra-heading>b{display:grid;place-items:center;min-width:20px;min-height:20px;padding:1px 5px;border:1px solid var(--ui-panel-border);border-radius:5px;color:#a9c8ff;font:calc(10px * var(--app-font-scale))/1.4 Consolas,monospace;}
 body #dpsBaseUnitSlotStack .ub-extra-chevron{color:#9daec5;font-size:16px;line-height:1;}
-body #dpsBaseUnitSlotStack .unit-slot-expansion-rows{display:grid;grid-template-columns:minmax(0,1fr);gap:7px;}
+body #dpsBaseUnitSlotStack .unit-slot-expansion-rows{display:grid;gap:7px;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;}
 body #dpsBaseUnitSlotStack .unit-slot-expansion-rows[hidden]{display:none;}
-body #dpsBaseUnitSlotStack .ub-extra-card{display:grid;grid-template-columns:30px minmax(0,1fr) auto;gap:10px;align-items:center;min-width:0;padding:10px;border:1px solid var(--ui-panel-border);border-radius:8px;background:var(--ui-panel-body-bg);}
-body #dpsBaseUnitSlotStack .ub-extra-number{display:grid;place-items:center;width:30px;min-height:30px;border:1px solid var(--ui-panel-border);border-radius:6px;background:var(--role-readonly-bg);color:#a9c8ff;font-size:calc(11px * var(--app-font-scale));line-height:1.3;}
+body #dpsBaseUnitSlotStack .ub-extra-card{display:grid;gap:10px;align-items:center;min-width:0;border:1px solid var(--ui-panel-border);border-radius:8px;background:var(--ui-panel-body-bg);grid-template-columns:minmax(0,1fr) auto;gap:8px 4px;padding:9px;align-items:start;}
+body #dpsBaseUnitSlotStack .ub-extra-number{display:grid;place-items:center;min-height:30px;border:1px solid var(--ui-panel-border);border-radius:6px;background:var(--role-readonly-bg);color:#a9c8ff;line-height:1.3;grid-column:1;grid-row:1;justify-self:start;width:auto;min-height:22px;padding:2px 5px;font-size:calc(10px * var(--app-font-scale));}
 body #dpsBaseUnitSlotStack :is(.ub-extra-jewel,.ub-extra-break){display:grid;align-content:center;min-width:0;gap:4px;}
 body #dpsBaseUnitSlotStack .ub-extra-card small{color:#9daec5;font-size:calc(9px * var(--app-font-scale));line-height:1.4;white-space:nowrap;}
 body #dpsBaseUnitSlotStack .ub-extra-card b{color:#e1f0fb;font-size:calc(11px * var(--app-font-scale));line-height:1.4;overflow-wrap:anywhere;}
-body #dpsBaseUnitSlotStack .ub-extra-break{justify-items:end;text-align:right;}
+body #dpsBaseUnitSlotStack .ub-extra-break{justify-items:end;text-align:right;grid-column:2;grid-row:1;display:flex;align-items:center;justify-content:flex-end;gap:5px;min-height:22px;}
 body #dpsBaseUnitSlotStack .ub-extra-break>b{font-family:Consolas,monospace;font-variant-numeric:tabular-nums;}
 
 /* v019 · 상하 요약의 3열 기준선과 가로형 유닛 카드 */
-body .right-analytics-workspace{--board-summary-columns:repeat(3,minmax(0,1fr));}
-body .right-analytics-workspace :is(#statDpsSummary.board-context-header,#dpsBaseUnitSummary .board-context-header){grid-template-columns:var(--board-summary-columns);}
-body #dpsBaseUnitSummary .dps-base-unit-results{grid-template-columns:var(--board-summary-columns);}
-body #dpsBaseUnitSummary .dps-base-unit-results>:is(.dps-base-unit-summary-item,.unit-achievement){border-left:0;border-right:1px solid var(--ui-panel-border);}
 body #dpsBaseUnitSummary .dps-base-unit-results>div:last-child{border-right:0;}
-body #dpsBaseUnitSlotStack .unit-slot-cards-grid{grid-template-columns:minmax(0,1fr);gap:12px;}
-body #dpsBaseUnitSlotStack .unit-slot-card-head{min-height:48px;padding:9px 12px;}
-body #dpsBaseUnitSlotStack .unit-slot-number{height:26px;}
 body #dpsBaseUnitSlotStack .ub-card-title{display:flex;flex-direction:row;align-items:center;flex-wrap:wrap;gap:4px 9px;}
-body #dpsBaseUnitSlotStack .unit-slot-card-main{padding:12px;}
 body #dpsBaseUnitSlotStack .ub-card-data{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);grid-template-rows:auto auto 1fr;column-gap:16px;}
 body #dpsBaseUnitSlotStack .ub-auto-label{grid-column:1;grid-row:1;}
 body #dpsBaseUnitSlotStack .ub-dps{grid-column:1;grid-row:2;margin:6px 0 10px;}
@@ -2108,14 +2097,8 @@ body #dpsBaseUnitSlotStack .ub-metrics{grid-column:1;grid-row:3;align-self:start
 body #dpsBaseUnitSlotStack .ub-applied{grid-column:2;grid-row:1/4;padding:0 0 0 16px;border-top:0;border-left:1px solid var(--ui-panel-border);}
 body #dpsBaseUnitSlotStack .ub-settings-list{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px 10px;}
 body #dpsBaseUnitSlotStack .ub-setting.ub-wide{grid-column:2/4;}
-body #dpsBaseUnitSlotStack .unit-slot-expansion-rows{grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;}
-body #dpsBaseUnitSlotStack .ub-extra-card{grid-template-columns:minmax(0,1fr) auto;gap:8px 4px;padding:9px;align-items:start;}
-body #dpsBaseUnitSlotStack .ub-extra-number{grid-column:1;grid-row:1;justify-self:start;width:auto;min-height:22px;padding:2px 5px;font-size:calc(10px * var(--app-font-scale));}
 body #dpsBaseUnitSlotStack .ub-extra-jewel{grid-column:1/-1;grid-row:2;gap:3px;}
-body #dpsBaseUnitSlotStack .ub-extra-break{grid-column:2;grid-row:1;display:flex;align-items:center;justify-content:flex-end;gap:5px;min-height:22px;}
 body #dpsBaseUnitSlotStack .ub-extra-break small{font-size:calc(8px * var(--app-font-scale));}
-body #dpsBaseUnitSlotStack .unit-slot-add-card{flex-direction:row;min-height:64px;gap:10px;padding:12px;}
-body #dpsBaseUnitSlotStack .unit-slot-add-symbol{font-size:25px;}
 @container(max-width:420px){
  body #dpsBaseUnitSlotStack .ub-card-data{grid-template-columns:minmax(0,.95fr) minmax(0,1.05fr);column-gap:10px;}
  body #dpsBaseUnitSlotStack .ub-applied{padding-left:10px;}
@@ -2128,14 +2111,11 @@ body #dpsBaseUnitSlotStack .unit-slot-add-symbol{font-size:25px;}
 }
 
 /* 최상위 기능 헤더는 글로벌 헤더를 제외하고 블랙 테마에 맞춘 낮은 톤 사용 */
-body :is(.col-left>.basic-goal-cards>.basic-goal-title,.right-workspace-head,.trait-build-merged-panel>.integrated-build-heading,.trait-utility-section-head){background:linear-gradient(105deg,#161d26,#10151b 78%);border-bottom-color:#2a3541;}
 
 
 /* v021 · 등급과 유닛명을 하나의 선택 영역으로 통합 */
-body #dpsUnitSlotModal .ub-unit-picker{display:grid;grid-template-columns:minmax(0,1fr);gap:10px;padding-bottom:20px;}
 body #dpsUnitSlotModal .ub-picker-heading{display:flex;align-items:center;gap:9px;min-width:0;color:#9daec5;font-size:calc(12px * var(--app-font-scale));line-height:1.4;}
 body #dpsUnitSlotModal .ub-picker-heading strong{color:#e2e7f0;font-size:calc(13px * var(--app-font-scale));font-weight:500;}
-body #dpsUnitSlotModal .ub-picker-divider{width:1px;height:12px;margin:0 3px;background:var(--ui-panel-border);}
 body #dpsUnitSlotModal .ub-unit-picker .dps-base-unit-select-wrap{min-width:0;width:100%;}
 
 
@@ -2200,9 +2180,12 @@ body :is(.settings-polish,.build-polish) :is(button,input,select){font-variant-n
 body :is(.settings-polish,.build-polish) button:focus-visible{outline:2px solid #a9c8ff;outline-offset:-3px;}
 body .settings-polish .basic-goal-brand-copy strong,
 body .build-polish :is(.optimizer-head-title,.trait-utility-section-label strong){font-weight:500;letter-spacing:.01em;}
-body .settings-polish .basic-settings-tabs .integrated-tab{min-width:0;padding-inline:5px;line-height:1.4;white-space:normal;overflow-wrap:anywhere;text-shadow:none;box-shadow:none;}
-body .settings-polish .basic-settings-tabs .integrated-tab.is-active{background:linear-gradient(180deg,#17232f,#1b2b40);box-shadow:inset 0 -2px #6194d4;}
-body .settings-polish .basic-settings-tabs .integrated-tab:hover:not(.is-active){background:#11151b;}
+body .settings-polish .basic-settings-tabs .integrated-tab,
+.battle-mode-guide-tabs .integrated-tab{min-width:0;padding-inline:5px;line-height:1.4;white-space:normal;overflow-wrap:anywhere;text-shadow:none;box-shadow:none;}
+body .settings-polish .basic-settings-tabs .integrated-tab.is-active,
+.battle-mode-guide-tabs .integrated-tab.is-active{background:linear-gradient(180deg,#17232f,#1b2b40);box-shadow:inset 0 -2px #6194d4;}
+body .settings-polish .basic-settings-tabs .integrated-tab:hover:not(.is-active),
+.battle-mode-guide-tabs .integrated-tab:hover:not(.is-active){background:#11151b;}
 
 /* 프리셋의 원래 2행 관리 메뉴와 입력 배치 보존 */
 body .settings-polish .trait-preset-panel .trait-preset-body .btn.preset-command{box-shadow:none;text-shadow:none;border-radius:8px;}

@@ -337,7 +337,7 @@ function syncBuffChoiceButtons(){
 function syncDonationBuffControl(){
   const select=$('donationBuffType');
   if(!select) return;
-  const value=normalizeDonationBuffType(select.value);
+  const value=activeDonationBuffType();
   if(select.value!==value) select.value=value;
   qsa('.donation-buff-grid button[data-value]').forEach(button=>{
     const selected=button.dataset.value===value;
@@ -349,6 +349,7 @@ function setDonationBuffType(value){
   const select=$('donationBuffType');
   if(!select) return false;
   const normalized=normalizeDonationBuffType(value);
+  INV[116]=donationInvestmentFromType(normalized);
   select.value=normalized;
   syncDonationBuffControl();
   syncSelectButtons();
@@ -538,7 +539,7 @@ function renderDpsSummary(s){
   updateDpsContextSummary();
   syncDpsBaseUnitControl();
   const artifactView=isArtifactDpsViewEnabled();
-  setText('dpsMainLabel', artifactView ? '유물 스펙 DPS' : '스펙 DPS');
+  setText('dpsMainLabel', artifactView ? '유물 DPS' : '스펙 DPS');
   if(shouldHideDpsForRound()){
     setText('dpsVal', '—');
     renderDpsBaseUnitSummary(s,true);
@@ -806,6 +807,12 @@ function syncArtifactDpsViewSwitch(){
   const disabled=artifactDpsUnavailableDifficulty();
   if(disabled) toggle.setAttribute('aria-checked','false');
   const active=isArtifactDpsViewEnabled();
+  const dpsTableTitle=active ? '유물 DPS표' : 'DPS표';
+  setText('dpsCompareOpen',dpsTableTitle);
+  setText('dpsCompareModalLabel',dpsTableTitle);
+  setText('traitOptimizeScopeTitle',active ? '유물 최적화 범위' : '특성 최적화 범위');
+  const optimizeButton=document.querySelector('[data-action="optimizeSP"]');
+  if(optimizeButton) optimizeButton.textContent=active ? '유물 최적화' : '특성 최적화';
   syncOnOffSwitch(toggle,{
     active,disabled,label:'유물 DPS',disabledLabel:'유물 DPS 사용 불가',
     containerSelector:'.artifact-dps-switch-wrap'
@@ -1101,7 +1108,7 @@ const FIELD_REGISTRY={
   flowerSkill2:{kind:'룬효과 버프',name:'바람의 꽃가루',save:true},
   flowerSkill3:{kind:'룬효과 버프',name:'안개의 꽃가루',save:true},
   specBoardPierce:{kind:'룬효과 버프',name:'방어력 관통',save:true},
-  donationBuffType:{kind:'룬효과 버프',name:'나눔 유저 적용',save:true},
+  donationBuffType:{kind:'룬효과 버프',name:'나눔 유저 적용',save:false},
   rAD:{kind:'룬정보',name:'공격력',save:true},
   rModAD:{kind:'룬정보',name:'공격력 개조',save:true},
   runeChoiceType:{kind:'룬정보',name:'룬 특수 옵션',save:true},
@@ -1926,7 +1933,9 @@ function dpsBaseUnitSelectOptionsHtml(selectedId, selectedIds){
     const options=units.map(unit=>{
       const selected=unit.id===selectedId;
       const disabled=!selected && selectedSet.has(unit.id);
-      return `<option value="${escapeHtml(unit.id)}"${selected ? ' selected' : ''}${disabled ? ' disabled' : ''}>${escapeHtml(dpsBaseUnitDisplayLabel(unit))}</option>`;
+      const race=unit.kind==='artifact' ? '' : unit.raceGroup==='프바' ? '토바' : unit.raceGroup==='프메' ? '토메' : (unit.raceGroup || '');
+      const label=race ? `[${race}] ${dpsBaseUnitDisplayLabel(unit)}` : dpsBaseUnitDisplayLabel(unit);
+      return `<option value="${escapeHtml(unit.id)}"${selected ? ' selected' : ''}${disabled ? ' disabled' : ''}>${escapeHtml(label)}</option>`;
     }).join('');
     return `<optgroup label="${escapeHtml(grade)}">${options}</optgroup>`;
   }).join('');
@@ -2906,6 +2915,42 @@ function bindDamageBoardTabEvents(){
   });
 }
 function bindDamageBoardSwitchEvents(){
+  const guide=$('battleModeGuideDialog');
+  const guideOpen=$('battleModeGuideOpen');
+  if(guide && guideOpen){
+    const tabs=[...guide.querySelectorAll('[data-battle-mode-guide-tab]')];
+    const selectTab=(next,focus=false)=>{
+      tabs.forEach((tab,index)=>{
+        const selected=index===next;
+        tab.classList.toggle('is-active',selected);
+        tab.setAttribute('aria-selected',String(selected));
+        tab.tabIndex=selected?0:-1;
+        $(tab.getAttribute('aria-controls')).hidden=!selected;
+      });
+      if(focus) tabs[next]?.focus({preventScroll:true});
+    };
+    guideOpen.addEventListener('click',()=>{
+      selectTab(0);
+      if(!guide.open) guide.showModal();
+    });
+    guide.querySelector('[data-battle-mode-guide-close]')?.addEventListener('click',()=>guide.close());
+    guide.addEventListener('close',()=>guideOpen.focus({preventScroll:true}));
+    guide.addEventListener('click',event=>{
+      const tab=event.target.closest('[data-battle-mode-guide-tab]');
+      if(tab){selectTab(tabs.indexOf(tab));return;}
+      if(event.target!==guide) return;
+      const bounds=guide.getBoundingClientRect();
+      if(event.clientX<bounds.left || event.clientX>bounds.right || event.clientY<bounds.top || event.clientY>bounds.bottom) guide.close();
+    });
+    guide.addEventListener('keydown',event=>{
+      const tab=event.target.closest('[data-battle-mode-guide-tab]');
+      if(!tab || !['ArrowLeft','ArrowRight','Home','End'].includes(event.key)) return;
+      event.preventDefault();
+      const current=tabs.indexOf(tab);
+      const next=event.key==='Home'?0:event.key==='End'?tabs.length-1:(current+(event.key==='ArrowRight'?1:-1)+tabs.length)%tabs.length;
+      selectTab(next,true);
+    });
+  }
   document.addEventListener('click', e=>{
     const speedToggle=e.target?.closest?.('[data-spec-dps-speed-toggle]');
     if(speedToggle){
@@ -3189,7 +3234,6 @@ function masterTier(tier){
 }
 function resetTier(tier){
   forEachTraitInTier(tier,(_,row)=>{ INV[row]=0; });
-  if(116 in INV) INV[116]=0;
   commitTraitInvestmentChange();
 }
 /* 특성 초기화·유틸 최적화 */
@@ -3244,7 +3288,6 @@ function clearTraitInvestmentsBy(predicate){
       changed++;
     }
   });
-  if(116 in INV) INV[116]=0;
   commitTraitInvestmentChange();
   return changed;
 }
@@ -3913,7 +3956,7 @@ function bindReactiveInputs(){
       syncTeamSelect({preserveCurrent:true});
     }
     if(TRAIT_LIMIT_INPUT_IDS.has(target.id) && String(target.value).replace(/,/g,'').trim()==='0') syncTraitLimitInputDisplay(target);
-    if(target.id==='donationBuffType') syncDonationBuffControl();
+    if(target.id==='donationBuffType'){ INV[116]=donationInvestmentFromType(target.value); syncDonationBuffControl(); }
     if(target.matches('select')) syncSelectButtons();
     if(target.matches('.buff-choice-input')){
       if(DPS_UNIT_LINKED_BUFF_UNITS[target.id]) updateDpsUnitFromLinkedBuff(target);
@@ -3969,7 +4012,7 @@ function bindAppEvents(){
 function initAppSelectDropdowns(){
   if(window.__dpsAppSelectDropdownsReady) return;
   window.__dpsAppSelectDropdownsReady=true;
-  const nativeSelector='select:not([data-preview-board]):not(#traitPresetSelect):not(.hidden-field):not(.trait-limit-source):not(.trait-preset-native-select):not([hidden]):not([aria-hidden="true"])';
+  const nativeSelector='select:not([data-preview-board]):not(#traitPresetSelect):not(#traitPresetRecoverySharedSource):not(.hidden-field):not(.trait-limit-source):not(.trait-preset-native-select):not([hidden]):not([aria-hidden="true"])';
   const triggerClass='app-select-trigger';
   const menu=document.createElement('div');
   menu.className='app-select-menu';

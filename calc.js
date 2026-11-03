@@ -506,17 +506,11 @@ function roundTimeAfterSpeedAndLoss(baseTime,speedEnabled,timeLoss=0){
 function unifiedDpsSpeedModeEnabled(diffName=vs('diff')){
   return speedModeSupported(diffName) && (storedSpeedModeEnabled('specDpsSpeedMode') || storedSpeedModeEnabled('dpsBaseUnitSpeedMode'));
 }
-function specDpsSpeedModeEnabled(diffName=vs('diff')){
-  return unifiedDpsSpeedModeEnabled(diffName);
-}
-function dpsBaseUnitSpeedModeEnabled(diffName=vs('diff')){
-  return unifiedDpsSpeedModeEnabled(diffName);
-}
 function specDpsRoundTimeParts(round,diffName=vs('diff')){
   const timeLoss=specDpsInvulnerabilityTimeLoss(diffName);
   return roundTimeAfterSpeedAndLoss(
     enemyRoundTime(round,diffName),
-    specDpsSpeedModeEnabled(diffName),
+    unifiedDpsSpeedModeEnabled(diffName),
     timeLoss
   );
 }
@@ -532,7 +526,7 @@ function dpsContextModeValues(diffName=vs('diff')){
   const players=isCoopActive(diffName) ? ` · ${effectiveTeamCount(diffName)}인` : '';
   const displayMode=(isTowerDifficulty(diffName) || isPlanetExplorationDifficulty(diffName)) ? '클래식' : enemyDisplayModeLabel(diffName);
   return {
-    primary:specDpsSpeedModeEnabled(diffName) ? '스피드' : '일반',
+    primary:unifiedDpsSpeedModeEnabled(diffName) ? '스피드' : '일반',
     secondary:`${battleModeLabel(diffName)} · ${displayMode}${players}`
   };
 }
@@ -819,9 +813,15 @@ function normalizeDonationBuffType(value){
   const key=String(value ?? '').trim().toLowerCase();
   return DONATION_BUFF_TYPES.has(key) ? key : 'none';
 }
+function donationInvestmentFromType(value){
+  const type=normalizeDonationBuffType(value);
+  return type==='sp' ? 1 : type==='paid' ? 2 : 0;
+}
+function donationTypeFromInvestment(value){
+  return value===1 ? 'sp' : value===2 ? 'paid' : 'none';
+}
 function activeDonationBuffType(){
-  const el=(typeof $==='function' ? $('donationBuffType') : (typeof document!=='undefined' ? document.getElementById('donationBuffType') : null));
-  return normalizeDonationBuffType(el?.value);
+  return donationTypeFromInvestment(INV[116]);
 }
 function donationBuffStats(){
   return activeDonationBuffType()==='none' ? EMPTY_DONATION_BUFF : SYSTEM_COMMON_BUFFS.shareUser;
@@ -1273,7 +1273,7 @@ function dpsBaseUnitInvulnerabilityTimeLoss(diffName=vs('diff')){
 function dpsBaseUnitRoundTime(round,diffName=vs('diff')){
   return roundTimeAfterSpeedAndLoss(
     enemyRoundTime(round,diffName),
-    dpsBaseUnitSpeedModeEnabled(diffName),
+    unifiedDpsSpeedModeEnabled(diffName),
     dpsBaseUnitInvulnerabilityTimeLoss(diffName)
   ).finalTime;
 }
@@ -1412,7 +1412,7 @@ function dpsBaseUnitAttackRate(unit, context){
   const flowerAs=Number(context?.flowerAttackSpeed)||0;
   const uniqueSpeed=Math.max(0.000001,1+(Number(unit?.attackSpeedMultiplier)||0));
   const speedMultiplier=Math.max(0.000001,(1+(speedStat+flowerAs+voidPowerAs)/100)*difficultySlow*ua*dt*privateUa*uniqueSpeed);
-  const speedModeMultiplier=dpsBaseUnitSpeedModeEnabled() ? SPEED_MODE_MULTIPLIER : 1;
+  const speedModeMultiplier=unifiedDpsSpeedModeEnabled() ? SPEED_MODE_MULTIPLIER : 1;
   const adjustedCooldown=Math.round((weaponSpeed/(speedMultiplier*speedModeMultiplier))*10000)/10000;
   const asLimit=Math.max(0,Number(unit?.asLimit)||0);
   const configuredMaxCooldown=Math.max(0,Number(unit?.maxCooldown)||0);
@@ -1478,7 +1478,7 @@ function dpsBaseUnitArtifactWaveTiming(context){
   const energyRegenMultiplier=Math.max(0.000001,Number(context?.artifactEnergyRegen)||artifactEnergyRegenMultiplier());
   const speedModeEnabled=context && Object.prototype.hasOwnProperty.call(context,'speedModeEnabled')
     ? !!context.speedModeEnabled
-    : dpsBaseUnitSpeedModeEnabled(context?.diffName);
+    : unifiedDpsSpeedModeEnabled(context?.diffName);
   const speedModeMultiplier=speedModeEnabled ? SPEED_MODE_MULTIPLIER : 1;
   const accelerationMultiplier=difficultySlow*uaMultiplier*dtMultiplier*energyRegenMultiplier*speedModeMultiplier;
   const interval=Math.max(minimumInterval,baseCooldown/Math.max(0.000001,accelerationMultiplier));
@@ -1538,7 +1538,7 @@ function computeSpecBoardResult(context){
   const AB4=(1+M4/100)*(M11/100);
   const AB5=dps2(M8,M10,M9,M16,M17,M18,0);
   const gradeAs=UNIT_GRADE_AS[activeUnitGrade()] ?? 0;
-  const AB6=(1+(M7+upperStats.actualAs+gradeAs)/100)*(1-diff.as/100)*M13*dt*(specDpsSpeedModeEnabled() ? SPEED_MODE_MULTIPLIER : 1);
+  const AB6=(1+(M7+upperStats.actualAs+gradeAs)/100)*(1-diff.as/100)*M13*dt*(unifiedDpsSpeedModeEnabled() ? SPEED_MODE_MULTIPLIER : 1);
   const roundTime=specDpsRoundTime(targetRound);
   const rawM19=AB3*AB4*AB5*AB6;
   const displayMultiplier=contentDpsDisplayMultiplier(vs('diff'),targetRound,displayHR,displaySR)*specDpsRoundTimeDpsMultiplier(targetRound,vs('diff'));
@@ -1567,7 +1567,7 @@ function computeDpsBaseUnitBoardResult(context){
       const unitContext={
         globalAd:M4,M11,M8,M10,M9,M16,M17,M18,M13,dt,difficultyAs:diff.as,roundTime,
         enemyData,diffName:vs('diff'),displayHR,displaySR,clearDefenseReduce:M12_dr,
-        artifactEnergyRegen:artifactEnergyRegenMultiplier(),speedModeEnabled:dpsBaseUnitSpeedModeEnabled(vs('diff')),
+        artifactEnergyRegen:artifactEnergyRegenMultiplier(),speedModeEnabled:unifiedDpsSpeedModeEnabled(vs('diff')),
         enemyArmor:enemyData.armor,M12:M12_dr,targetRound,weaponAttack:artifactWeapon.weaponAttack
       };
       const parts=dpsBaseUnitArtifactDpsParts(unit,unitContext);
@@ -1842,7 +1842,7 @@ function calculateArtifactDpsRaw(stats=computeLightweightStatsRaw()){
   const flowerMultiplier=on('flowerSkill3') ? 1.15 : 1;
   const adTdMultiplier=(1 + (stats.M4||0) / 100) * ((stats.M11||0) / 100);
   const critMultiplier=dps2(stats.M8||0, stats.M10||0, stats.M9||0, stats.M16||0, stats.M17||0, stats.M18||0, 1);
-  const speedModeMultiplier=specDpsSpeedModeEnabled() ? SPEED_MODE_MULTIPLIER : 1;
+  const speedModeMultiplier=unifiedDpsSpeedModeEnabled() ? SPEED_MODE_MULTIPLIER : 1;
   const uaMultiplier=(1 - (stats.diff?.as||0) / 100) * (stats.M13||0) * artifactEnergyRegenMultiplier() * personalUaDtMultiplier() * speedModeMultiplier;
   const displayMultiplier=contentDpsDisplayMultiplier(vs('diff'), ctx.targetRound, stats.displayHR||0, stats.displaySR||0);
   const rawArtifactDps=dps0Part * flowerMultiplier * adTdMultiplier * critMultiplier * uaMultiplier;
@@ -2375,6 +2375,7 @@ function traitLimitAllowsTrait(t){
 function traitLimitStatsOk(stats){
   if(!stats) return true;
   for(const item of TRAIT_LIMIT_CONFIG){
+    if(traitV1IsArtifactMode() && item.key==='AS') continue;
     const limit=Number(normalizeTraitLimitStorageValue(vs(item.id)));
     if(!Number.isFinite(limit) || limit<=0) continue;
     const current=Number(item.value(stats));
@@ -2427,9 +2428,12 @@ function traitOptimizationDeltaCost(row, add){
   const total=cumCost(row,n+add)-cumCost(row,n);
   return Number.isFinite(total) && total>0 ? total : Infinity;
 }
+function traitV1AllowedInMode(t){
+  return !traitV1IsArtifactMode() || (t?.[3]!=='AS' && t?.[3]!=='PIERCE');
+}
 function isTraitOptimizationTarget(t){
   const row=t?.[0];
-  if(AUTO_INVEST_EXCLUDED_ROWS.has(row) || !traitLimitAllowsTrait(t)) return false;
+  if(AUTO_INVEST_EXCLUDED_ROWS.has(row) || !traitLimitAllowsTrait(t) || !traitV1AllowedInMode(t)) return false;
   const info=traitOptimizationResourceInfo(row);
   if(!info) return false;
   const normalSet=TRAIT_OPT_NORMAL_ROWS[info.kind];
@@ -2454,8 +2458,7 @@ function traitV1TargetRows(kind){
   const artifact=traitV1IsArtifactMode();
   return (TRAIT_V1_TARGET_ROWS[kind]||[]).filter(row=>{
     if(kind==='SP' && [44,54,62,79].includes(row) && !artifact) return false;
-    const t=traitByRow(row);
-    return t && isTraitOptimizationTarget(t) && (!artifact || t[3]!=='AS');
+    return isTraitOptimizationTarget(traitByRow(row));
   });
 }
 function traitV1DpsValue(stats){
@@ -2612,7 +2615,7 @@ function traitV1RestoreNegativeStats(guard){
  * 웹에서는 기본 자동 실행하며 기존 투자, 선택 종료 구간, 투자 제한 및 재화 한도를 보존한다. */
 function traitV1PreInvestSet(row,wanted){
   const t=traitByRow(row);
-  if(!t || !allowedRowsByTier().has(row) || !traitLimitAllowsTrait(t)) return false;
+  if(!t || !allowedRowsByTier().has(row) || !traitLimitAllowsTrait(t) || !traitV1AllowedInMode(t)) return false;
   if((row===131 || row===132) && !isAbyssDifficulty()) return false;
   if((INV[row]||0)>=wanted) return false;
   const kind=traitOptimizationResourceInfo(row)?.kind;
@@ -2688,7 +2691,6 @@ function optimizeSP(){
     return !guard.aborted;
   }catch(error){
     Object.keys(INV).forEach(row=>{INV[row]=before[row] ?? 0;});
-    if(116 in INV) INV[116]=0;
     rememberAppIssue('error','특성 최적화 계산',error);
     showToast('특성 최적화 계산 중 오류가 발생해 변경사항을 되돌렸습니다.','err');
     commitAppUpdate({recalculate:'now'});

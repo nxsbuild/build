@@ -13,6 +13,8 @@ const CLIENT_KEY=DPS_CONFIG.storage.clientKey;
 const TRAIT_PRESET_STORAGE_KEY=DPS_CONFIG.storage.traitPresetKey || 'gbd_dps_calculator:trait_presets';
 const TRAIT_PRESET_FILE_TYPE='sld_dps_total_preset';
 const TRAIT_PRESET_MANAGEMENT_VERSION=2;
+const PRESET_BATTLE_MODE_VALUE_ID='battleDpsMode';
+function normalizePresetBattleMode(value){return value==='artifact' ? 'artifact' : 'normal';}
 const APP_STATE_SCHEMA_VERSION=2;
 // 화면의 선택 제한과 무관하게 현재 스키마의 전체 허용값을 보관한다.
 const TRAIT_PRESET_FIELD_OPTIONS=new Map([...qsa('select[id]')].map(el=>[
@@ -30,7 +32,7 @@ const TRAIT_PRESET_NAME_PLACEHOLDER='예: 내 첫 프리셋';
 const TRAIT_PRESET_INVALID_FILE_MESSAGE='특성 프리셋 파일 형식이 아닙니다.';
 const TRAIT_PRESET_SINGLE_UPDATE_VALUE_IDS=new Set([
   'diff','penance','round','soloMode','coopMode','coopPassenger2Dr','coopPassenger3Dr','team','pbless','spBankApply',
-  'specDpsSpeedMode','dpsBaseUnitSpeedMode',
+  'specDpsSpeedMode','dpsBaseUnitSpeedMode',PRESET_BATTLE_MODE_VALUE_ID,
   'overEnhance','repairEnhance','enhanceMaster',
   'prodArtifact','prodNova','prodTeratron','prodAmon','prodAdun','prodKerrigan','prodOvermind','prodNarud',
   'flowerSkill1','flowerSkill2','flowerSkill3'
@@ -78,7 +80,7 @@ function syncSpBankPresetState(values, inv){
   inv[SP_BANK_TRAIT_ROW]=bankLevel;
   values.spBankApply=applyState;
 }
-function isUserStateValueId(id){ return USER_STATE_VALUE_IDS.has(id); }
+function isUserStateValueId(id){ return USER_STATE_VALUE_IDS.has(id) || id===PRESET_BATTLE_MODE_VALUE_ID; }
 function userStateElementIds(){ return storageElementIds().filter(id=>USER_STATE_VALUE_IDS.has(id)); }
 const storageState={isLoading:false,suppressSave:false,factoryState:null,saveFailCount:0,hasSavedState:false,presetMutationInProgress:false};
 function isStorageLocked(){return storageState.isLoading || storageState.suppressSave;}
@@ -181,7 +183,7 @@ function makePublicDefaultState(){
     const el=$(id);
     if(el) values[id]=elementDefaultValue(el);
   });
-  Object.assign(values,{optTier:values.optTier ?? '루키', utilOptTier:values.utilOptTier ?? '루키'});
+  Object.assign(values,{optTier:values.optTier ?? '루키', utilOptTier:values.utilOptTier ?? '루키', [PRESET_BATTLE_MODE_VALUE_ID]:'normal'});
   Object.entries(TRAIT_LIMIT_DEFAULTS).forEach(([id,value])=>{ if(!hasOwn(values,id)) values[id]=value; });
   normalizeShardStorageValues(values);
   const inv={};
@@ -195,11 +197,20 @@ function makePublicDefaultState(){
   });
 }
 function captureFactoryState(){ storageState.factoryState=makePublicDefaultState(); }
+function canonicalDonationState(values,inv){
+  const nextValues={...(values || {})};
+  const nextInv={...(inv || {})};
+  if(hasOwn(nextValues,'donationBuffType')) nextInv[116]=donationInvestmentFromType(nextValues.donationBuffType);
+  else if(!hasOwn(nextInv,'116')) nextInv[116]=0;
+  delete nextValues.donationBuffType;
+  return {values:nextValues,inv:nextInv};
+}
 function makeStorageEnvelope(partial){
+  const donation=canonicalDonationState(partial.values,partial.inv);
   return {
     schemaVersion:+partial.schemaVersion || APP_STATE_SCHEMA_VERSION,
-    values:partial.values || {},
-    inv:partial.inv || {},
+    values:donation.values,
+    inv:donation.inv,
     recommendations:partial.recommendations,
     zeroScore:partial.zeroScore ? normalizeZeroScoreState(partial.zeroScore) : undefined,
     savedAt:+partial.savedAt || Date.now(),
@@ -228,6 +239,7 @@ function makeStateObject(){
   });
   values.optTier=vs('optTier') || values.optTier || '루키';
   values.utilOptTier=vs('utilOptTier') || values.utilOptTier || '루키';
+  values[PRESET_BATTLE_MODE_VALUE_ID]=isArtifactDpsViewEnabled() ? 'artifact' : 'normal';
   Object.entries(TRAIT_LIMIT_DEFAULTS).forEach(([id,value])=>{ values[id]=vs(id) || values[id] || value; });
   if(hasOwn(values,'spBankApply')) values.spBankApply=normalizeSpBankApplyValue(values.spBankApply);
   TRAIT_LIMIT_INPUT_IDS.forEach(id=>{ values[id]=normalizeTraitLimitStorageValue(values[id] ?? TRAIT_LIMIT_DEFAULTS[id] ?? '0'); });
@@ -237,7 +249,6 @@ function makeStateObject(){
   normalizeShardStorageValues(values);
   normalizeMoneyStorageValues(values);
   const inv={...INV};
-  if(116 in inv) inv[116]=0;
   syncSpBankPresetState(values, inv);
   return makeStorageEnvelope({
     values,
@@ -256,6 +267,7 @@ function sanitizeSavedValues(values){
   const out=normalizeRuneChoiceValues(values);
   IGNORED_SAVED_VALUE_IDS.forEach(id=>delete out[id]);
   Object.keys(out).forEach(id=>{ if(!isUserStateValueId(id)) delete out[id]; });
+  out[PRESET_BATTLE_MODE_VALUE_ID]=normalizePresetBattleMode(out[PRESET_BATTLE_MODE_VALUE_ID]);
   out.challengeTowerFloor=savedTowerFloorValue(out);
   if(hasOwn(out,'overEnhance')) out.overEnhance=String(normalizeOverEnhanceValue(out.overEnhance));
   const coopMode=normalizeOnOffValue(out.coopMode,'OFF')==='ON';
@@ -274,7 +286,6 @@ function sanitizeSavedValues(values){
     if(hasOwn(out,id)) out[id]=normalizeDecimalDisplayValue(out[id]);
   });
   if(hasOwn(out,'spBankApply')) out.spBankApply=normalizeSpBankApplyValue(out.spBankApply);
-  if(hasOwn(out,'donationBuffType')) out.donationBuffType=normalizeDonationBuffType(out.donationBuffType);
   if(hasOwn(out,'specBoardPierce')) out.specBoardPierce=normalizeSpecBoardPierceValue(out.specBoardPierce);
   out.dpsBaseUnits=normalizeDpsBaseUnitsValue(out.dpsBaseUnits ?? '');
   if(hasOwn(out,'dpsBaseUnitSlots')) out.dpsBaseUnitSlots=serializeDpsBaseUnitSlots(out.dpsBaseUnitSlots);
@@ -326,9 +337,9 @@ function makeNormalizedStateEnvelope(source,values,inv,{requireRawValues=false,r
 function normalizeSavedState(data){
   if(!data || typeof data!=='object') return null;
   const sourceValues=(data.values && typeof data.values==='object') ? data.values : {};
-  const values=sanitizeSavedValues({...sourceValues});
-  const inv=(data.inv && typeof data.inv==='object') ? {...data.inv} : {};
-  if(116 in inv) inv[116]=0;
+  const donation=canonicalDonationState(sourceValues,data.inv);
+  const values=sanitizeSavedValues(donation.values);
+  const inv=donation.inv;
   syncSpBankPresetState(values, inv);
   return makeNormalizedStateEnvelope(data,values,inv,{requireRawValues:true,requireContent:false});
 }
@@ -341,7 +352,7 @@ function sanitizeTraitPresetValues(values){
   return out;
 }
 function makeTraitPresetStateEnvelope(source,values,inv){
-  const out={values:values || {},inv:inv || {}};
+  const out=canonicalDonationState(values,inv);
   if(source?.zeroScore) out.zeroScore=normalizeZeroScoreState(source.zeroScore);
   return out;
 }
@@ -475,7 +486,6 @@ function applyTraitPresetUnitBoardState(value,options={}){
     slots[item.slot]=item.unitId;
     writeTraitPresetUnitBoardStoreValues(unit,item);
   });
-  if(options.resetArtifactView!==false) setArtifactDpsViewEnabled(false);
   // The preset, never the previous unsaved editing session, owns the visible slot count.
   const visibleCountInput=$('dpsBaseUnitVisibleSlotCount');
   if(visibleCountInput) visibleCountInput.value=String(state.visibleSlotCount);
@@ -558,9 +568,11 @@ function mergeTraitPresetWithLocalState(presetState, localState, options={}){
     ? {...preset.values, ...local.values}
     : {...local.values, ...preset.values};
   values=resetTraitPresetUnitBoardValues(values);
+  // 전투 모드는 공통 설정 유지 여부와 무관하게 해당 프리셋의 값으로 복원한다.
+  values[PRESET_BATTLE_MODE_VALUE_ID]=normalizePresetBattleMode(preset.values[PRESET_BATTLE_MODE_VALUE_ID]);
   return makeStorageEnvelope({
     values,
-    inv:{...preset.inv},
+    inv:{...preset.inv,116:options.preserveSharedValues===true ? local.inv[116] : preset.inv[116]},
     zeroScore:preset.zeroScore,
     savedAt:local.savedAt || Date.now(),
     storageVersion:local.storageVersion,
@@ -577,7 +589,8 @@ function applyStateObject(data, options={}){
   storageState.isLoading=true;
   try{
     if(data.ui && Number.isFinite(+data.ui.fontScale)) applyFontScale(+data.ui.fontScale, {silent:true});
-    const sanitizedValues=sanitizeSavedValues(data.values || {});
+    const donation=canonicalDonationState(data.values,data.inv);
+    const sanitizedValues=sanitizeSavedValues(donation.values);
     setArtifactDpsViewEnabled(false);
     syncDifficultyOptions({restoreAll:true});
     const teamSelect=$('team');
@@ -603,17 +616,17 @@ function applyStateObject(data, options={}){
     if(teamSelect && hasOwn(sanitizedValues,'team')) writeElementValue(teamSelect,sanitizedValues.team);
     syncTeamSelect({preserveCurrent:true});
     syncDifficultyTargetControls();
+    setArtifactDpsViewEnabled(sanitizedValues[PRESET_BATTLE_MODE_VALUE_ID]==='artifact');
     normalizeRoundInput('skillRound');
     syncPowerBlessOptions();
     normalizeXpInput();
     syncAutoEP();
     Object.keys(INV).forEach(k=>{ INV[k]=0; });
-    Object.entries(data.inv || {}).forEach(([row,val])=>{
+    Object.entries(donation.inv).forEach(([row,val])=>{
       const r=+row;
       if(!Number.isFinite(r) || !(r in INV)) return;
       INV[r]=Math.max(0, Math.min(TMAX[r]||999, Math.round(+val||0)));
     });
-    if(116 in INV) INV[116]=0;
     redrawJanRuneInvestment(true);
     // 프리셋에는 보유 재화보다 큰 투자값도 그대로 보존한다. 잔여량은 음수로 표시한다.
     restoreTraitRecommendationSaveState(data.recommendations);
@@ -646,7 +659,7 @@ function safeJsonParse(raw){
 const TRAIT_PRESET_STATUS_STORAGE_KEY=DPS_CONFIG.storage.traitPresetStatusKey || 'gbd_dps_calculator:trait_preset_status';
 const TRAIT_PRESET_DRAFT_STORAGE_KEY=DPS_CONFIG.storage.traitPresetDraftKey || 'gbd_dps_calculator:trait_preset_drafts';
 function emptyTraitPresetStatusData(){
-  return {updatedPresetIds:[],backupNeeded:false,lastAction:'latest',selectedTraitPresetId:'',pendingJewelSettings:false,pendingUnitBoardPresetIds:[],pendingCommonPresetIds:[],pendingCommonChangeKeys:[],pendingSingleChangeKeysByPreset:{}};
+  return {updatedPresetIds:[],backupNeeded:false,lastAction:'latest',selectedTraitPresetId:'',pendingJewelSettings:false,pendingUnitBoardPresetIds:[],pendingCommonPresetIds:[],pendingCommonChangeKeys:[],pendingSingleChangeKeysByPreset:{},pendingChangeDetails:[]};
 }
 function normalizeTraitPresetStatusData(data){
   const base=emptyTraitPresetStatusData();
@@ -672,7 +685,11 @@ function normalizeTraitPresetStatusData(data){
       }
     });
   }
-  return {updatedPresetIds,backupNeeded,lastAction,selectedTraitPresetId,pendingJewelSettings,pendingUnitBoardPresetIds,pendingCommonPresetIds,pendingCommonChangeKeys,pendingSingleChangeKeysByPreset};
+  const pendingChangeDetails=Array.isArray(data.pendingChangeDetails) ? data.pendingChangeDetails.filter(row=>
+    row && typeof row==='object' && typeof row.key==='string' && typeof row.presetId==='string' &&
+    (row.scope==='common' || row.scope==='single') && typeof row.before==='string' && typeof row.after==='string'
+  ).slice(0,800).map(row=>({presetId:row.presetId,key:row.key,scope:row.scope,before:row.before,after:row.after})) : [];
+  return {updatedPresetIds,backupNeeded,lastAction,selectedTraitPresetId,pendingJewelSettings,pendingUnitBoardPresetIds,pendingCommonPresetIds,pendingCommonChangeKeys,pendingSingleChangeKeysByPreset,pendingChangeDetails};
 }
 /* 프리셋 상태 */
 function loadTraitPresetStatusData(){
@@ -713,6 +730,7 @@ function currentTraitPresetStatusData(partial={}){
   status.pendingUnitBoardPresetIds=status.pendingUnitBoardPresetIds.filter(id=>validIds.has(id));
   status.pendingCommonPresetIds=status.pendingCommonPresetIds.filter(id=>validIds.has(id));
   status.pendingSingleChangeKeysByPreset=Object.fromEntries(Object.entries(status.pendingSingleChangeKeysByPreset).filter(([id])=>validIds.has(id)));
+  status.pendingChangeDetails=status.pendingChangeDetails.filter(row=>row.scope==='common' || validIds.has(row.presetId));
   if(status.selectedTraitPresetId && !validIds.has(status.selectedTraitPresetId)) status.selectedTraitPresetId='';
   status.pendingCommonChangeKeys=[...new Set(status.pendingCommonChangeKeys.map(key=>String(key || '').trim()).filter(Boolean))];
   return {status,store};
@@ -744,7 +762,12 @@ function renderTraitPresetRequiredNotice(status,store){
     manager.classList.toggle('is-migration-pending',required);
     manager.classList.toggle('is-compatibility-error',incompatible);
     const message=manager.querySelector('.trait-preset-status-copy');
-    if(message) message.textContent=incompatible ? compatibility.error : required ? '프리셋 데이터 업데이트가 필요합니다. 업데이트 후 사용할 수 있습니다.' : '';
+    const donationMigration=compatibility.issues?.some(issue=>issue.endsWith('.donationBuffType'));
+    if(message) message.textContent=incompatible ? compatibility.error : required
+      ? donationMigration
+        ? '나눔 설정의 이전 저장 방식이 발견되었습니다. 업데이트하면 전체 프리셋의 공통 나눔 설정을 정리합니다. 완료 후 백업해 주세요.'
+        : '프리셋 데이터 업데이트가 필요합니다. 업데이트 후 사용할 수 있습니다.'
+      : '';
   }
   const indicator=$('basicSettingsTab0')?.querySelector('.trait-preset-tab-alert');
   if(indicator) indicator.hidden=!required && !incompatible;
@@ -808,7 +831,11 @@ function markTraitPresetUpdated(ids, action='update', options={}){
     if(presetId) pendingSingleChangeKeysByPreset[presetId]=[...new Set([...(pendingSingleChangeKeysByPreset[presetId] || []), ...singleKeys, ...specific])];
   });
   const pendingCommonChangeKeys=[...new Set([...previous.pendingCommonChangeKeys, ...optionCommonKeys].map(key=>String(key || '').trim()).filter(Boolean))];
-  updateTraitPresetStatus({updatedPresetIds,pendingUnitBoardPresetIds,pendingCommonPresetIds,pendingCommonChangeKeys,pendingSingleChangeKeysByPreset,backupNeeded:true,lastAction:action},{persist:true});
+  const pendingChangeDetails=mergeTraitPresetChangeDetails(previous.pendingChangeDetails,[
+    ...(options.beforeStore && options.afterStore ? traitPresetChangeDetailsForStores(options.beforeStore,options.afterStore) : []),
+    ...(options.changeDetails || [])
+  ]);
+  updateTraitPresetStatus({updatedPresetIds,pendingUnitBoardPresetIds,pendingCommonPresetIds,pendingCommonChangeKeys,pendingSingleChangeKeysByPreset,pendingChangeDetails,backupNeeded:true,lastAction:action},{persist:true});
 }
 function clearTraitPresetUpdatedStatus(action='latest',options={}){
   const partial={updatedPresetIds:[],backupNeeded:false,lastAction:action};
@@ -818,6 +845,7 @@ function clearTraitPresetUpdatedStatus(action='latest',options={}){
     partial.pendingCommonPresetIds=[];
     partial.pendingCommonChangeKeys=[];
     partial.pendingSingleChangeKeysByPreset={};
+    partial.pendingChangeDetails=[];
   }
   updateTraitPresetStatus(partial,{persist:true});
 }
@@ -1385,6 +1413,7 @@ function saveTraitPreset(){
   }
   try{
     let store=loadTraitPresetStore();
+    const beforeStore=JSON.parse(JSON.stringify(store));
     const now=Date.now();
     const state=makeTraitPresetStateObject();
     if(!state) throw new Error('현재 화면값을 프리셋 상태로 저장할 수 없습니다.');
@@ -1401,16 +1430,26 @@ function saveTraitPreset(){
       id=makeTraitPresetId();
       store.presets.push({id,name,createdAt:now,updatedAt:now,meta:traitPresetMetaFromState(),state});
     }
+    // 프리셋 신규 저장/덮어쓰기에도 공통 설정은 현재 화면값을 기준으로 한 번만 반영한다.
+    const sharedKeys=traitPresetSharedStateKeys(state);
+    const commonUpdatedIds=[];
+    store.presets=store.presets.map(item=>{
+      if(item.id===id) return item;
+      const synced=buildSyncedTraitPresetState(state,item.state,sharedKeys);
+      if(!synced || stableTraitPresetValue(synced)===stableTraitPresetValue(item.state)) return item;
+      commonUpdatedIds.push(item.id);
+      return {...item,updatedAt:now,meta:traitPresetMetaFromSavedState(synced),state:synced};
+    });
     setTraitPresetUnitBoardState(store,id,captureTraitPresetUnitBoardState());
     store.jewelSettings=currentJewelSettings;
     store=saveTraitPresetStore(store,{source:'saveTraitPreset'});
     clearTraitPresetDraft(id);
-    const commonPresetIds=jewelChanged ? store.presets.map(item=>item.id) : [];
-    markTraitPresetUpdated(jewelChanged ? commonPresetIds : [id],'update',{
-      commonChangeKeys:jewelChanged ? ['jewelSettings'] : [],
+    const commonPresetIds=(jewelChanged || commonUpdatedIds.length) ? store.presets.map(item=>item.id) : [];
+    markTraitPresetUpdated(commonPresetIds.length ? commonPresetIds : [id],'update',{
+      commonChangeKeys:[...(jewelChanged ? ['jewelSettings'] : []),...(commonUpdatedIds.length ? ['state:shared'] : [])],
       commonPresetIds,
       singleChangeKeys:['storedPreset'],
-      singlePresetIds:[id]
+      singlePresetIds:[id],beforeStore,afterStore:store
     });
     updateTraitPresetStatus({pendingJewelSettings:false},{persist:true});
     acknowledgeTraitPresetAction(id);
@@ -1511,7 +1550,164 @@ function buildSyncedTraitPresetState(baseState, targetState, changedSharedKeys){
     else delete values[id];
   }
   const zeroScore=changedSharedKeys?.has('zeroScore') ? base.zeroScore : target.zeroScore;
-  return makeTraitPresetStateEnvelope({zeroScore},values,{...target.inv});
+  return makeTraitPresetStateEnvelope({zeroScore},values,{...target.inv,...(changedSharedKeys?.has('inv:116') ? {116:base.inv[116]} : {})});
+}
+// 프리셋별 값과 공통 값을 구별하는 단일 기준 (업데이트·저장·가져오기에서 공유).
+function traitPresetSharedStateKeys(state){
+  const keys=new Set(['inv:116','zeroScore']);
+  Object.keys(state?.values || {}).forEach(id=>{
+    if(id!=='dpsBaseUnitVisibleSlotCount' && !TRAIT_PRESET_SINGLE_UPDATE_VALUE_IDS.has(id)) keys.add(`value:${id}`);
+  });
+  return keys;
+}
+function traitPresetSharedStateSignature(state){
+  const values=Object.fromEntries(Object.entries(state?.values || {}).filter(([id])=>
+    id!=='dpsBaseUnitVisibleSlotCount' && !TRAIT_PRESET_SINGLE_UPDATE_VALUE_IDS.has(id)));
+  return stableTraitPresetValue({values,donation:state?.inv?.[116] ?? 0,zeroScore:normalizeZeroScoreState(state?.zeroScore || {rows:[]})});
+}
+function traitPresetImportChangeIsShared(key){
+  if(key==='donationMigration' || key==='zeroScore' || key==='inv:116') return true;
+  return key?.startsWith('value:') && !TRAIT_PRESET_SINGLE_UPDATE_VALUE_IDS.has(key.slice(6));
+}
+function traitPresetImportReadableName(id){
+  if(id==='donationBuffType' || id==='116' || id==='inv:116') return '나눔 설정';
+  if(id==='zeroScore') return '더제로 전당 계산값';
+  if(id==='inv') return '특성 투자';
+  if(id==='unitBoard') return '유닛 보드';
+  const name=traitPresetChangeKeyLabel(id?.startsWith('inv:') || id?.startsWith('value:') ? id : `value:${id}`);
+  if(name && name!==id && name!==`value:${id}`) return name;
+  const field=document.querySelector(`label[for="${CSS.escape(String(id))}"]`);
+  return field?.textContent?.trim() || '저장 항목';
+}
+function traitPresetImportErrorLocation(path){
+  const text=String(path || '');
+  const suffix=text.match(/^(프리셋 .*?번째\))\.(.*)$/);
+  if(suffix){
+    const detail=suffix[2];
+    if(detail.startsWith('inv.')) return `${suffix[1]} · ${traitPresetImportReadableName(`inv:${detail.split('.')[1]}`)}`;
+    if(detail.startsWith('zeroScore')) return `${suffix[1]} · 더제로 전당 계산값`;
+    if(detail.startsWith('donationBuffType')) return `${suffix[1]} · 나눔 설정`;
+    return `${suffix[1]} · ${traitPresetImportReadableName(detail.split(/[.[]/)[0])}`;
+  }
+  if(text.includes('유닛 보드')) return '유닛 보드 저장 정보';
+  return text;
+}
+function traitPresetImportPresetPath(item,index){
+  const name=typeof item?.name==='string' && item.name.trim() ? item.name.trim() : '저장된 이름 없음';
+  return `프리셋 "${name}" (${index+1}번째)`;
+}
+function traitPresetDonationDisplay(type){
+  return ({none:'미적용',sp:'일반 나눔',paid:'특별 나눔'})[type] || '나눔 설정';
+}
+function traitPresetChangeValueText(key,value,state=null){
+  if(value===undefined) return '저장값 없음';
+  if(key==='inv:116') return traitPresetDonationDisplay(state?.values?.donationBuffType ?? donationTypeFromInvestment(value));
+  if(key==='value:donationBuffType') return traitPresetDonationDisplay(value);
+  if(key==='value:gameMode') return state?.values?.coopMode==='ON' ? '협동전' : '개인전';
+  if(key===`value:${PRESET_BATTLE_MODE_VALUE_ID}`) return normalizePresetBattleMode(value)==='artifact' ? '유물' : '일반';
+  if(value===true) return '사용';
+  if(value===false) return '미사용';
+  if(value===null) return '없음';
+  if(typeof value==='object') return '구성 데이터';
+  return String(value);
+}
+function traitPresetChangeDetail(key,before,after,scope,presetId=''){
+  return {key,scope,presetId,before:String(before),after:String(after)};
+}
+function mergeTraitPresetChangeDetails(previous=[],incoming=[]){
+  const rows=new Map();
+  [...previous,...incoming].forEach(row=>{
+    const id=`${row.scope}:${row.presetId}:${row.key}`;
+    const old=rows.get(id);
+    rows.set(id,old ? {...old,after:row.after} : {...row});
+  });
+  return [...rows.values()].filter(row=>row.before!==row.after).slice(0,800);
+}
+// 변경되는 순간의 값만 보관한다. 이전 버전에서 기록되지 않은 과거 값은 추정하지 않는다.
+function traitPresetChangeDetailsForStores(beforeStore,afterStore){
+  const beforePresets=new Map((beforeStore?.presets || []).map(row=>[row.id,row]));
+  const afterPresets=afterStore?.presets || [];
+  const details=[];
+  const add=(key,oldValue,newValue,scope,id='',oldState=null,newState=null)=>{
+    if(stableTraitPresetValue(oldValue)===stableTraitPresetValue(newValue)) return;
+    const before=traitPresetChangeValueText(key,oldValue,oldState);
+    const after=traitPresetChangeValueText(key,newValue,newState);
+    if(before===after && typeof oldValue!=='object' && typeof newValue!=='object') return;
+    details.push(traitPresetChangeDetail(key,typeof oldValue==='object' ? '이전 구성' : before,
+      typeof newValue==='object' ? '변경된 구성' : after,scope,id));
+  };
+  afterPresets.forEach(next=>{
+    const prev=beforePresets.get(next.id);
+    if(!prev) return;
+    const oldState=prev.state || {},newState=next.state || {};
+    const oldValues=oldState.values || {},newValues=newState.values || {};
+    if(hasOwn(oldValues,'donationBuffType') && !hasOwn(newValues,'donationBuffType'))
+      details.push(traitPresetChangeDetail('donationMigration','기존 중복 저장','통합 저장','common',next.id));
+    const valueIds=new Set([...Object.keys(oldValues),...Object.keys(newValues)]);
+    valueIds.forEach(id=>{
+      if(id==='dpsBaseUnitVisibleSlotCount' || id==='donationBuffType' || id==='soloMode' || id==='coopMode') return;
+      add(`value:${id}`,oldValues[id],newValues[id],TRAIT_PRESET_SINGLE_UPDATE_VALUE_IDS.has(id)?'single':'common',next.id,oldState,newState);
+    });
+    if(oldValues.soloMode!==newValues.soloMode || oldValues.coopMode!==newValues.coopMode){
+      add('value:gameMode',`${oldValues.soloMode}/${oldValues.coopMode}`,`${newValues.soloMode}/${newValues.coopMode}`,'single',next.id,oldState,newState);
+    }
+    const oldInv=oldState.inv || {},newInv=newState.inv || {};
+    const invIds=new Set([...Object.keys(oldInv),...Object.keys(newInv)]);
+    invIds.forEach(id=>{
+      const before=id==='116' && oldValues.donationBuffType!==undefined ? donationInvestmentFromType(oldValues.donationBuffType) : oldInv[id];
+      add(`inv:${id}`,before,newInv[id],id==='116'?'common':'single',next.id,oldState,newState);
+    });
+    if(stableTraitPresetZeroScore(oldState.zeroScore)!==stableTraitPresetZeroScore(newState.zeroScore))
+      details.push(traitPresetChangeDetail('zeroScore','이전 구성','변경된 구성','common',next.id));
+    const oldBoard=beforeStore?.unitBoard?.presets?.[next.id];
+    const newBoard=afterStore?.unitBoard?.presets?.[next.id];
+    if(stableTraitPresetValue(oldBoard)!==stableTraitPresetValue(newBoard))
+      details.push(traitPresetChangeDetail('unitBoard',oldBoard?'이전 보드':'보드 없음',newBoard?'변경된 보드':'보드 없음','single',next.id));
+  });
+  if(stableTraitPresetValue(beforeStore?.jewelSettings)!==stableTraitPresetValue(afterStore?.jewelSettings))
+    details.push(traitPresetChangeDetail('jewelSettings','이전 구성','변경된 구성','common'));
+  // 공통 값은 하나만 보여주되 기존 값이 서로 다르면 그 사실을 명시한다.
+  const common=new Map(),individual=[];
+  details.forEach(row=>{
+    if(row.scope!=='common'){individual.push(row);return;}
+    const previous=common.get(row.key);
+    if(!previous) common.set(row.key,{...row,presetId:''});
+    else if(previous.before!==row.before) previous.before='프리셋마다 다름';
+  });
+  common.forEach(row=>{
+    if(row.key.startsWith('value:')){
+      const id=row.key.slice(6);
+      const previousValues=(beforeStore?.presets || []).map(preset=>preset.state?.values?.[id]);
+      const nextValues=afterPresets.map(preset=>preset.state?.values?.[id]);
+      if(new Set(previousValues.map(value=>stableTraitPresetValue(value))).size>1) row.before='프리셋마다 다름';
+      if(new Set(nextValues.map(value=>stableTraitPresetValue(value))).size>1) row.after='프리셋마다 다름';
+    }else if(row.key==='inv:116'){
+      const donation=value=>traitPresetDonationDisplay(value?.state?.values?.donationBuffType ?? donationTypeFromInvestment(value?.state?.inv?.[116]));
+      if(new Set((beforeStore?.presets || []).map(donation)).size>1) row.before='프리셋마다 다름';
+      if(new Set(afterPresets.map(donation)).size>1) row.after='프리셋마다 다름';
+    }
+  });
+  return [...common.values(),...individual];
+}
+// 비교 화면에만 천 단위 구분자를 표시한다. 저장된 원본 숫자와 코드값은 유지한다.
+function traitPresetChangeNumberText(value,key=''){
+  const text=String(value);
+  if(key==='presetName' || key==='value:enchantCode' || /^[+-]?0\d/.test(text)) return text;
+  const numeric=/^([+-]?)(\d+)(\.\d+)?$/.exec(text);
+  return numeric ? `${numeric[1]}${numeric[2].replace(/\B(?=(\d{3})+(?!\d))/g,',')}${numeric[3] || ''}` : text;
+}
+function traitPresetChangeVariation(before,after,key=''){
+  if(key==='value:enchantCode') return '변경';
+  const numberPattern=/^-?\d+(?:\.\d+)?$/;
+  if(!numberPattern.test(before) || !numberPattern.test(after)) return '변경';
+  if(!before.includes('.') && !after.includes('.')){
+    const delta=BigInt(after)-BigInt(before);
+    return traitPresetChangeNumberText(delta>0n ? `+${delta}` : String(delta));
+  }
+  const delta=Number(after)-Number(before);
+  if(!Number.isFinite(delta)) return '변경';
+  const rounded=Number(delta.toFixed(8));
+  return traitPresetChangeNumberText(rounded>0 ? `+${rounded}` : String(rounded));
 }
 function comparableTraitPresetValue(values,id){
   return hasOwn(values,id) ? values[id] : undefined;
@@ -1546,7 +1742,7 @@ function traitPresetStateChangeSummary(previousState,currentState){
   invRows.forEach(row=>{
     const before=Math.max(0,Math.round(+previousInv[row] || 0));
     const after=Math.max(0,Math.round(+currentInv[row] || 0));
-    if(before!==after) singleKeys.add(`inv:${row}`);
+    if(before!==after) (row==='116' ? sharedKeys : singleKeys).add(`inv:${row}`);
   });
   if(stableTraitPresetZeroScore(previous.zeroScore)!==stableTraitPresetZeroScore(current.zeroScore)) sharedKeys.add('zeroScore');
   return {
@@ -1631,8 +1827,9 @@ function updateTraitPreset(options={}){
       const store=saveTraitPresetStore(completed,{source:'schemaUpdate'});
       const id=selectedTraitPresetId() || store.presets[0]?.id;
       if(!loadTraitPresetById(id,{notifySuccess:false,useDraft:false,discardDraft:false})) throw new Error('업데이트 결과를 적용할 수 없습니다.');
-      // 스키마 업데이트도 실제 값이 바뀐 프리셋과 공통 정보만 변경 대상으로 기록한다.
+      // 공통 저장 방식의 변환은 프리셋별 변경이 아니라 전체 프리셋 공통 변경으로 기록한다.
       const changesByPreset={};
+      const donationMigrated=raw.presets.some(item=>hasOwn(item.state?.values,'donationBuffType'));
       store.presets.forEach(preset=>{
         const original=raw.presets.find(item=>item.id===preset.id);
         if(!original) return;
@@ -1642,16 +1839,20 @@ function updateTraitPreset(options={}){
         delete after.values.dpsBaseUnitVisibleSlotCount;
         const originalBoard=raw.unitBoard?.presets?.[preset.id];
         const currentBoard=store.unitBoard?.presets?.[preset.id];
-        if(stableTraitPresetValue(before)!==stableTraitPresetValue(after) ||
+        const donated=canonicalDonationState(before.values,before.inv);
+        const withoutLegacy={...before,values:donated.values,inv:donated.inv};
+        if(stableTraitPresetValue(withoutLegacy)!==stableTraitPresetValue(after) ||
            stableTraitPresetValue(originalBoard)!==stableTraitPresetValue(currentBoard)){
-          changesByPreset[preset.id]=['importRepair'];
+          changesByPreset[preset.id]=['storedPreset'];
         }
       });
       const sharedChanged=stableTraitPresetValue(raw.jewelSettings)!==stableTraitPresetValue(store.jewelSettings);
-      const commonIds=sharedChanged ? store.presets.map(preset=>preset.id) : [];
+      const commonChangeKeys=[...(donationMigrated ? ['donationMigration'] : []),...(sharedChanged ? ['jewelSettings'] : [])];
+      const commonIds=commonChangeKeys.length ? store.presets.map(preset=>preset.id) : [];
       markTraitPresetUpdated([...new Set([...Object.keys(changesByPreset),...commonIds])],'update',{
-        commonChangeKeys:sharedChanged ? ['importShared'] : [],commonPresetIds:commonIds,
-        singlePresetIds:[],singleChangeKeysByPreset:changesByPreset
+        commonChangeKeys,commonPresetIds:commonIds,
+        singlePresetIds:[],singleChangeKeysByPreset:changesByPreset,
+        beforeStore:raw,afterStore:store
       });
       if(options.silent!==true) notifyStorageAction('프리셋 데이터 업데이트 및 검증 완료','ok',{toast:true,skipHeaderStatus:true});
       return true;
@@ -1712,7 +1913,8 @@ function updateTraitPreset(options={}){
     const statusIds=new Set(updatedIds.length ? updatedIds : [id]);
     if(jewelChanged) store.presets.forEach(item=>statusIds.add(item.id));
     
-    markTraitPresetUpdated([...statusIds],'update',{commonChangeKeys:[...statusCommonChangeKeys],commonPresetIds:statusCommonChangeKeys.size ? store.presets.map(item=>item.id) : [],singleChangeKeys:[...statusSingleChangeKeys],singlePresetIds:statusSingleChangeKeys.size ? [id] : []});
+    const beforeStore=safeJsonParse(snapshot.storage.find(([key])=>key===TRAIT_PRESET_STORAGE_KEY)?.[1]);
+    markTraitPresetUpdated([...statusIds],'update',{commonChangeKeys:[...statusCommonChangeKeys],commonPresetIds:statusCommonChangeKeys.size ? store.presets.map(item=>item.id) : [],singleChangeKeys:[...statusSingleChangeKeys],singlePresetIds:statusSingleChangeKeys.size ? [id] : [],beforeStore,afterStore:store});
     updateTraitPresetStatus({pendingJewelSettings:false},{persist:true});
     acknowledgeTraitPresetAction(id);
     if(options.rememberSelection!==false) finishTraitPresetSelection(id,{refresh:options.refresh!==false});
@@ -1881,6 +2083,8 @@ function makeTraitPresetFileName(customName=''){
 }
 const TRAIT_PRESET_CHANGE_LABEL_OVERRIDES=Object.freeze({
   gameMode:'게임 모드',
+  [PRESET_BATTLE_MODE_VALUE_ID]:'전투 모드',
+  rp:'RP',sp:'SP',xp:'XP',bxp:'BXP',soul:'혼',
   diff:'난이도',
   round:'목표 라운드',
   penance:'고행 단계',
@@ -1893,17 +2097,19 @@ function traitPresetChangeKeyLabel(key,values=null){
   const normalized=String(key || '');
   if(normalized.startsWith('value:')){
     const id=normalized.slice(6);
-    if(id==='gameMode') return normalizeOnOffValue(values?.coopMode ?? vs('coopMode'),'OFF')==='ON'?'협동전':'개인전';
+    if(id==='gameMode') return '게임 모드';
     const field=FIELD_REGISTRY[id];
     if(field?.kind==='에디셔널') return '에디셔널 버프';
     if(field?.kind==='인첸트 레벨 / 결과') return '룬 인첸트 레벨';
     if(field?.kind==='룬정보' && /^(rAD|rAS|rCRI|rCD)$/.test(id)) return `룬 ${field.name}`;
     if(field?.kind==='특성 투자 제한') return `특성 투자 제한 ${field.name}`;
-    return TRAIT_PRESET_CHANGE_LABEL_OVERRIDES[id] || field?.name || id;
+    return TRAIT_PRESET_CHANGE_LABEL_OVERRIDES[id] || field?.name || '기타 설정';
   }
+  if(normalized.startsWith('import:')) return traitPresetImportIssueChange(normalized.slice(7)).label;
   if(normalized.startsWith('inv:')){
     const row=normalized.slice(4);
     const trait=TRAITS.find(item=>String(item[0])===row);
+    if(trait?.[0]===116) return '나눔 설정';
     if(trait?.[0]===SP_BANK_TRAIT_ROW) return 'SP 은행 투자';
     if(trait?.[1]==='심연 내성' && trait?.[2]==='심연특성') return '심연 특성 심연 내성';
     if(trait?.[1]==='등급재설정 보정') return `${trait[2]} ${trait[1]}`;
@@ -1915,14 +2121,12 @@ function traitPresetChangeKeyLabel(key,values=null){
     jewelSettings:'쥬얼 설정',
     presetName:'프리셋 이름',
     storedPreset:'프리셋 저장 내용',
-    importShared:'공통 저장 정보 복구',
-    importRepair:'프리셋 오류 복구',
+    importShared:'이전 가져오기 공통 항목 정리',
+    importRepair:'누락된 프리셋 설정 보완',
+    donationMigration:'나눔 저장 방식',
     'state:shared':'전체 프리셋 대상',
     'state:single':'현재 프리셋 대상'
   })[normalized] || normalized;
-}
-function traitPresetChangeLabels(keys,values=null){
-  return [...new Set([...keys].map(key=>traitPresetChangeKeyLabel(key,values)).filter(Boolean))];
 }
 function traitPresetBackupPresetRows(store,commonScopeIds,singleScopeIds){
   const presets=Array.isArray(store?.presets) ? store.presets : [];
@@ -1962,6 +2166,7 @@ function traitPresetBackupChangePlan(store=loadTraitPresetStore(),currentSnapsho
   const singleScopeIds=new Set();
   const commonChangeKeys=new Set(status.pendingCommonChangeKeys || []);
   const singleChangeKeysByPreset=new Map();
+  let pendingChangeDetails=status.pendingChangeDetails;
   const addSingleKeys=(id,keys)=>{
     const presetId=String(id || '').trim();
     if(!validIds.has(presetId)) return;
@@ -1981,17 +2186,24 @@ function traitPresetBackupChangePlan(store=loadTraitPresetStore(),currentSnapsho
     if(!commonScopeIds.has(id) && !singleScopeIds.has(id)) addSingleKeys(id,['storedPreset']);
   });
   storedUnitBoardIds.forEach(id=>addSingleKeys(id,['unitBoard']));
-  const idToPresetValues=id=>store.presets.find(preset=>preset.id===id)?.state?.values || null;
   const details=()=>{
+    const commonDetails=pendingChangeDetails.filter(row=>row.scope==='common');
+    if(commonDetails.length){
+      if(commonChangeKeys.has('state:shared')) commonChangeKeys.delete('state:shared');
+      commonDetails.forEach(row=>commonChangeKeys.add(row.key));
+      store.presets.forEach(preset=>commonScopeIds.add(preset.id));
+    }
+    const singleDetails=pendingChangeDetails.filter(row=>row.scope==='single' && validIds.has(row.presetId));
+    singleDetails.forEach(row=>{
+      const existing=singleChangeKeysByPreset.get(row.presetId);
+      if(existing?.has('storedPreset')) existing.delete('storedPreset');
+      addSingleKeys(row.presetId,[row.key]);
+    });
     const presetRows=traitPresetBackupPresetRows(store,commonScopeIds,singleScopeIds);
     const singleChangesByPreset=presetRows.filter(row=>row.single).map(row=>({
-      ...row,names:traitPresetChangeLabels(singleChangeKeysByPreset.get(row.id) || new Set(['storedPreset']),idToPresetValues(row.id))
+      ...row,keys:[...(singleChangeKeysByPreset.get(row.id) || new Set(['storedPreset']))]
     }));
-    return {
-      presetRows,singleChangesByPreset,unclassifiedImport,singleChangeTargetCount:singleScopeIds.size,
-      commonChangeNames:traitPresetChangeLabels(commonChangeKeys),
-      singleChangeNames:traitPresetChangeLabels(new Set([...singleChangeKeysByPreset.values()].flatMap(keys=>[...keys])))
-    };
+    return {presetRows,singleChangesByPreset,unclassifiedImport,commonChangeKeys:[...commonChangeKeys],pendingChangeDetails};
   };
   const hasStoredPending=status.backupNeeded || storedUpdatedIds.size>0 || storedUnitBoardIds.size>0;
   if(!selectedPreset){
@@ -2029,6 +2241,24 @@ function traitPresetBackupChangePlan(store=loadTraitPresetStore(),currentSnapsho
       hasDraftPending=true;
     }
   });
+  const previewStore=JSON.parse(JSON.stringify(store));
+  if(stateChangeSummary.stateChanged){
+    previewStore.presets=previewStore.presets.map(item=>item.id===selectedId ? {...item,state:currentState} :
+      stateChangeSummary.sharedChanged ? {...item,state:buildSyncedTraitPresetState(currentState,item.state,stateChangeSummary.sharedKeys)} : item);
+  }
+  if(unitBoardChanged){
+    if(!previewStore.unitBoard) previewStore.unitBoard={presets:{}};
+    if(!previewStore.unitBoard.presets) previewStore.unitBoard.presets={};
+    previewStore.unitBoard.presets[selectedId]=currentUnitBoard;
+  }
+  if(jewelChanged) previewStore.jewelSettings=currentJewelSettings;
+  Object.entries(loadTraitPresetDrafts()).forEach(([id,draft])=>{
+    if(id===selectedId || !validIds.has(id)) return;
+    const item=previewStore.presets.find(row=>row.id===id);
+    if(item && draft.state) item.state=draft.state;
+    if(draft.unitBoard && previewStore.unitBoard?.presets) previewStore.unitBoard.presets[id]=draft.unitBoard;
+  });
+  pendingChangeDetails=mergeTraitPresetChangeDetails(pendingChangeDetails,traitPresetChangeDetailsForStores(store,previewStore));
   const hasCurrentPending=stateChangeSummary.stateChanged || unitBoardChanged || jewelChanged;
   return {
     store,selectedId,selectedPreset,currentState,currentUnitBoard,currentJewelSettings,
@@ -2036,9 +2266,17 @@ function traitPresetBackupChangePlan(store=loadTraitPresetStore(),currentSnapsho
     hasPending:hasCurrentPending || hasStoredPending || hasDraftPending
   };
 }
-function traitPresetBackupChangeListHtml(names){
-  if(!names.length) return '<p class="trait-preset-backup-no-change">업데이트 없음</p>';
-  return `<ul class="trait-preset-backup-change-list">${names.map(name=>`<li>${escapeHtml(name)}</li>`).join('')}</ul>`;
+function traitPresetBackupChangeListHtml(keys,details=[],presetId=''){
+  if(!keys.length) return '<p class="trait-preset-backup-no-change">업데이트 없음</p>';
+  const rows=keys.map(key=>{
+    const item=details.find(row=>row.key===key && (presetId ? row.scope==='single' && row.presetId===presetId : row.scope==='common'));
+    const label=traitPresetChangeKeyLabel(key);
+    if(!item) return `<li><strong>${escapeHtml(label)}</strong><span class="trait-preset-backup-values">과거 변경 기록에 세부 값이 저장되지 않았습니다.</span></li>`;
+    const before=item.before,after=item.after;
+    const variation=traitPresetChangeVariation(before,after,key);
+    return `<li><strong>${escapeHtml(label)}</strong><span class="trait-preset-backup-values"><span>${escapeHtml(traitPresetChangeNumberText(before,key))}</span><b aria-label="변경 후">→</b><span>${escapeHtml(traitPresetChangeNumberText(after,key))}</span><em>${escapeHtml(variation)}</em></span></li>`;
+  });
+  return `<ul class="trait-preset-backup-change-list">${rows.join('')}</ul>`;
 }
 function traitPresetBackupTargetsHtml(plan){
   const rows=Array.isArray(plan?.presetRows) ? plan.presetRows : [];
@@ -2046,29 +2284,30 @@ function traitPresetBackupTargetsHtml(plan){
   const commonRows=updatedRows.filter(row=>row.common);
   const individualRows=updatedRows.filter(row=>row.single);
   const untouched=rows.length-updatedRows.length;
-  const singleChanges=new Map((plan.singleChangesByPreset || []).map(row=>[row.id,row.names]));
-  const commonNames=plan.commonChangeNames?.length ? plan.commonChangeNames : ['공통 저장 설정'];
+  const singleChanges=new Map((plan.singleChangesByPreset || []).map(row=>[row.id,row.keys]));
+  const commonKeys=plan.commonChangeKeys?.length ? plan.commonChangeKeys : ['state:shared'];
+  const details=plan.pendingChangeDetails || [];
   const commonSummary=commonRows.length ? `<section class="trait-preset-backup-common">
     <h4>${commonRows.length===rows.length ? '전체 프리셋 변경' : '여러 프리셋 공통 변경'} <span>${commonRows.length}개 프리셋 적용</span></h4>
-    ${traitPresetBackupChangeListHtml(commonNames)}
+    ${traitPresetBackupChangeListHtml(commonKeys,details)}
   </section>` : '';
   const cards=individualRows.map(row=>{
     const preset=plan.store.presets.find(item=>item.id===row.id);
     const group=TRAIT_PRESET_SELECT_GROUPS.find(item=>item.key===traitPresetCategoryKey(preset));
     const mode=group?.label || '개인전';
-    const individualNames=singleChanges.get(row.id) || [];
+    const individualKeys=singleChanges.get(row.id) || [];
     return `<article class="trait-preset-backup-card">
       <header class="trait-preset-backup-card-head">
         <span class="trait-preset-backup-mode-mark" aria-hidden="true"><svg class="ui-header-glyph" viewBox="0 0 24 24" focusable="false"><use href="#dpsUiSparklesGlyph"></use></svg></span>
         <div class="trait-preset-backup-card-identity"><span>${escapeHtml(mode)}</span><h3>${escapeHtml(row.name)}</h3></div>
       </header>
       <div class="trait-preset-backup-card-changes">
-        <section class="trait-preset-backup-scope is-individual"><h4>이 프리셋만 변경 <span>${individualNames.length}</span></h4>${traitPresetBackupChangeListHtml(individualNames)}</section>
+        <section class="trait-preset-backup-scope is-individual"><h4>이 프리셋만 변경 <span>${individualKeys.length}</span></h4>${traitPresetBackupChangeListHtml(individualKeys,details,row.id)}</section>
       </div>
     </article>`;
   }).join('');
   const list=commonSummary || cards ? `${commonSummary}${cards ? `<div class="trait-preset-backup-cards">${cards}</div>` : ''}` : (plan.unclassifiedImport
-    ? '<div class="trait-preset-backup-empty" role="status"><strong>이전 버전의 변경 기록은 구분할 수 없습니다</strong><p>실제 프리셋은 모두 백업됩니다. 변경 내역을 확인하려면 프리셋을 다시 가져오세요.</p></div>'
+    ? '<div class="trait-preset-backup-empty" role="status"><strong>이전 버전의 변경 기록은 구분할 수 없습니다</strong><p>실제 프리셋은 모두 백업됩니다.</p></div>'
     : '<div class="trait-preset-backup-empty" role="status"><span class="trait-preset-backup-empty-icon" aria-hidden="true">✓</span><strong>업데이트된 프리셋이 없습니다</strong><p>현재 저장된 프리셋을 그대로 백업할 수 있습니다.</p></div>');
   const backupNote=untouched && updatedRows.length ? `<p class="trait-preset-backup-included">변경 없는 ${untouched}개 프리셋도 백업 파일에 포함됩니다.</p>` : '';
   return `<section class="trait-preset-backup-targets">
@@ -2266,9 +2505,9 @@ function completeTraitPresetStoreSchema(raw){
   return completed;
 }
 // 원본 검사 전에는 정규화하지 않는다. 누락은 업데이트 대상, 해석할 수 없는 값은 오류다.
-function inspectTraitPresetImportCompatibility(parsed){
+function inspectTraitPresetImportCompatibility(parsed,options={}){
   const object=value=>value && typeof value==='object' && !Array.isArray(value);
-  const invalid=path=>{throw new Error(`${path}: 현재 형식 또는 허용값과 다릅니다. 원본 데이터는 보존됩니다. JSON 값을 수정한 뒤 다시 가져와 주세요.`);};
+  const invalid=path=>{throw new Error(`${traitPresetImportErrorLocation(path)}: 현재 형식 또는 허용값과 다릅니다. 원본 데이터는 보존됩니다. 저장 파일의 값을 확인한 뒤 다시 가져와 주세요.`);};
   if(!object(parsed) || !Array.isArray(parsed.presets)) invalid('프리셋 목록');
   if(parsed.type!==undefined && !isTraitPresetFileType(parsed.type)) invalid('파일 종류');
   const schema=parsed.presetManagement;
@@ -2302,17 +2541,20 @@ function inspectTraitPresetImportCompatibility(parsed){
   };
   const ids=new Set(),names=new Set();
   parsed.presets.forEach((item,index)=>{
-    const path=`프리셋 ${index+1}`;
+    const path=traitPresetImportPresetPath(item,index+(options.indexOffset || 0));
     if(!object(item) || typeof item.id!=='string' || !item.id.trim() || item.id!==item.id.trim() || ids.has(item.id) ||
        typeof item.name!=='string' || !normalizeTraitPresetName(item.name) || names.has(normalizeTraitPresetName(item.name)) ||
        !object(item.state) || !object(item.state.values)) invalid(path);
     ids.add(item.id);names.add(normalizeTraitPresetName(item.name));
     const values=item.state.values;
+    const hasLegacyDonation=hasOwn(values,'donationBuffType');
+    if(hasLegacyDonation && !['none','sp','paid'].includes(values.donationBuffType)) invalid(`${path}.donationBuffType`);
     const canonical=sanitizeTraitPresetValues(values);
     Object.entries(defaults.values).forEach(([id,fallback])=>{
       // 유닛 보드에 별도 저장되는 칸 수는 과거 프리셋의 필수 항목이 아니다.
       if(!hasOwn(values,id)){
-        if(id!=='dpsBaseUnitVisibleSlotCount') issues.push(`${path}.${id}`);
+        // 이전 버전 프리셋에는 전투 모드가 없으며, 해당 경우 '일반'이 기본값이다.
+        if(id!=='dpsBaseUnitVisibleSlotCount' && id!==PRESET_BATTLE_MODE_VALUE_ID) issues.push(`${path}.${id}`);
         return;
       }
       const value=values[id];
@@ -2336,7 +2578,9 @@ function inspectTraitPresetImportCompatibility(parsed){
     Object.keys(defaults.inv).forEach(row=>{
       if(!hasOwn(inv,row)){issues.push(`${path}.inv.${row}`);return;}
       const value=inv[row];
-      if(typeof value!=='number' || !Number.isInteger(value) || value<0 || value>(TMAX[row] || 999) || (row==='116' && value!==0)) invalid(`${path}.inv.${row}`);
+      // The legacy field is authoritative; its redundant old 116 value is replaced during update.
+      if(row==='116' && hasLegacyDonation) return;
+      if(typeof value!=='number' || !Number.isInteger(value) || value<0 || value>(TMAX[row] || 999)) invalid(`${path}.inv.${row}`);
     });
     Object.keys(inv).filter(row=>!hasOwn(defaults.inv,row)).forEach(row=>issues.push(`${path}.inv.${row}`));
     if(item.state.zeroScore===undefined) issues.push(`${path}.zeroScore`);
@@ -2366,7 +2610,22 @@ function inspectTraitPresetImportCompatibility(parsed){
   }
   return {schema,issues,requiresUpdate:issues.length>0};
 }
-function prepareTraitPresetImportRecovery(parsed){
+function traitPresetImportIssueChange(issue,source={}){
+  const path=String(issue || '');
+  const missing='저장 항목 없음';
+  const info={
+    '프리셋 관리 버전':['프리셋 저장 형식',source.presetManagement ?? missing,TRAIT_PRESET_MANAGEMENT_VERSION],
+    '파일 종류':['프리셋 파일 종류',source.type ?? missing,TRAIT_PRESET_FILE_TYPE],
+    '웹 버전 정보':['백업 생성 웹 버전',source.webDpsVersion ?? missing,currentWebDpsVersion()],
+    '쥬얼 설정':['쥬얼 설정 저장 항목',missing,'기본 쥬얼 설정 추가'],
+    '유닛 보드':['유닛 보드 저장 항목',missing,'기본 유닛 보드 추가'],
+    '유닛 보드.presets':['유닛 보드별 프리셋 목록',missing,'프리셋별 보드 목록 추가'],
+    '유닛 보드 목록':['유닛 보드별 프리셋 목록',missing,'프리셋별 보드 목록 추가']
+  }[path] || [path,missing,'현재 저장 형식으로 보완'];
+  const key=path==='유닛 보드 목록' ? '유닛 보드.presets' : path;
+  return {key:`import:${key}`,label:info[0],before:String(info[1]),after:String(info[2])};
+}
+function prepareTraitPresetImportRecovery(parsed,fileName=''){
   if(!isTraitPresetFileType(parsed?.type)) throw new Error(TRAIT_PRESET_INVALID_FILE_MESSAGE);
   if(!Array.isArray(parsed.presets)) throw new Error(TRAIT_PRESET_INVALID_FILE_MESSAGE);
   inspectTraitPresetImportCompatibility({...parsed,presets:[]});
@@ -2380,6 +2639,10 @@ function prepareTraitPresetImportRecovery(parsed){
     sharedIssues=inspectTraitPresetImportCompatibility({...source,presets:[{id:'schema_probe',name:'검사',state:defaults}],unitBoard:{presets:{schema_probe:defaults.unitBoard}}}).issues;
     if(source.unitBoard===undefined || source.unitBoard.presets===undefined) sharedIssues.push('유닛 보드 목록');
   }catch(error){sharedError=error.message;}
+  const sharedChanges=[...new Map(sharedIssues.map(issue=>{
+    const change=traitPresetImportIssueChange(issue,source);
+    return [change.key,change];
+  })).values()];
   const idCounts=new Map(),nameCounts=new Map();
   source.presets.forEach(item=>{
     if(typeof item?.id==='string') idCounts.set(item.id,(idCounts.get(item.id)||0)+1);
@@ -2392,7 +2655,7 @@ function prepareTraitPresetImportRecovery(parsed){
     const name=typeof raw?.name==='string' ? raw.name : `이름 없는 프리셋 ${index+1}`;
     const row={index,name,raw,changes:[],issues:[],error:'',candidate:null};
     try{
-      if(idCounts.get(raw?.id)>1 || nameCounts.get(normalizeTraitPresetName(raw?.name))>1) throw new Error('다른 프리셋과 이름 또는 ID가 중복됩니다. 중복 항목을 제외하거나 원본에서 구분해 주세요.');
+      if(idCounts.get(raw?.id)>1 || nameCounts.get(normalizeTraitPresetName(raw?.name))>1) throw new Error('다른 프리셋과 이름 또는 저장 식별자가 중복됩니다. 원본 파일에서 구분해 주세요.');
       const candidate=JSON.parse(JSON.stringify(raw));
       const values=candidate?.state?.values;
       if(values && PLANET_EXPLORATION_MONTHLY_DIFFICULTIES.includes(values.diff)){
@@ -2401,96 +2664,135 @@ function prepareTraitPresetImportRecovery(parsed){
       }
       const single={...source,presets:[candidate],jewelSettings:defaults.jewelSettings,unitBoard:{presets:{}}};
       if(hasOwn(source.unitBoard?.presets,raw?.id)) single.unitBoard.presets[raw.id]=source.unitBoard.presets[raw.id];
-      const check=inspectTraitPresetImportCompatibility(single);
-      row.issues=check.issues.filter(issue=>issue.startsWith('프리셋 1.') || issue.startsWith(`${name}.`));
+      const check=inspectTraitPresetImportCompatibility(single,{indexOffset:index});
+      row.issues=check.issues.filter(issue=>issue.startsWith(`${traitPresetImportPresetPath(candidate,index)}.`) || issue.startsWith(`${name}.`));
       const completed=completeTraitPresetStoreSchema(single);
       row.candidate=completed;
       const next=completed.presets[0];
       Object.entries(next.state.values).forEach(([id,value])=>{
         if(id==='dpsBaseUnitVisibleSlotCount') return;
-        if(!hasOwn(raw.state.values,id)) row.changes.push({key:`value:${id}`,label:FIELD_REGISTRY[id]?.name || id,before:'저장값 없음',after:'저장값 복원됨'});
+        if(!hasOwn(raw.state.values,id)) row.changes.push({key:`value:${id}`,label:traitPresetImportReadableName(id),before:'저장값 없음',after:traitPresetChangeValueText(`value:${id}`,value,next.state)});
       });
-      const missingInvestments=Object.keys(defaults.inv).filter(key=>!hasOwn(raw.state.inv,key)).length;
-      if(missingInvestments) row.changes.push({key:'importRepair',label:`누락된 특성 투자 항목 ${missingInvestments}개`,before:'항목 없음',after:'기본값 0'});
+      if(hasOwn(raw.state.values,'donationBuffType')) row.changes.push({key:'donationMigration',label:'나눔 저장 방식',before:'기존 중복 저장',after:'통합 저장'});
+      const missingInvestments=Object.keys(defaults.inv).filter(key=>!hasOwn(raw.state.inv || {},key));
+      if(missingInvestments.includes('116')) row.changes.push({key:'inv:116',label:'나눔 설정',before:'저장값 없음',after:traitPresetChangeValueText('inv:116',next.state.inv[116],next.state)});
+      if(missingInvestments.some(key=>key!=='116')) row.changes.push({key:'importRepair',label:`누락된 특성 투자 항목 ${missingInvestments.filter(key=>key!=='116').length}개`,before:'항목 없음',after:'기본값 0'});
       if(raw.state.zeroScore===undefined) row.changes.push({key:'zeroScore',label:'더제로 전당 계산값',before:'항목 없음',after:'기본값'});
       if(!hasOwn(source.unitBoard?.presets,raw.id)) row.changes.push({key:'unitBoard',label:'유닛 보드',before:'항목 없음',after:'빈 보드'});
       if(row.issues.length && !row.changes.length) row.changes.push({key:'importRepair',label:'저장 항목 형식',before:'일부 항목 보완 필요',after:'현재 형식'});
-    }catch(error){row.error=error.message;row.candidate=null;}
+    }catch(error){
+      row.error=String(error?.message || '저장 상태를 확인해 주세요.').replace(traitPresetImportPresetPath(raw,0),traitPresetImportPresetPath(raw,index));
+      row.candidate=null;
+    }
     return row;
   });
-  return {source,rows,sharedError,sharedIssues,needsReview:!!sharedError || sharedIssues.length>0 || rows.some(row=>row.error || row.changes.length)};
-}
-function resolveTraitPresetRecoveryPlan(plan,choices){
-  if(plan.sharedError) throw new Error(plan.sharedError);
-  const presets=[],boards={};
-  plan.rows.forEach(row=>{
-    const choice=choices[row.index];
-    if(choice==='exclude') return;
-    if(row.error || (choice!=='keep' && choice!=='repair') || (row.changes.length && choice!=='repair')) throw new Error(`${row.name}: 수정 또는 제외를 선택해 주세요.`);
-    const candidate=row.candidate;
-    if(!candidate) throw new Error(`${row.name}: 가져올 수 없는 프리셋입니다.`);
-    presets.push(candidate.presets[0]);
-    boards[candidate.presets[0].id]=candidate.unitBoard.presets[candidate.presets[0].id];
+  const commonChanges=new Map();
+  rows.forEach(row=>{
+    row.individualChanges=[];
+    row.changes.forEach(change=>{
+      if(traitPresetImportChangeIsShared(change.key)){
+        if(!commonChanges.has(change.key)) commonChanges.set(change.key,{...change,count:0});
+        commonChanges.get(change.key).count++;
+      }else row.individualChanges.push(change);
+    });
   });
-  if(!presets.length) throw new Error('가져올 프리셋을 최소 1개 남겨 주세요.');
+  const commonChangeRows=[...commonChanges.values()];
+  const candidates=rows.filter(row=>row.candidate);
+  const conflicting=candidates.length>1 && new Set(candidates.map(row=>traitPresetSharedStateSignature(row.candidate.presets[0].state))).size>1;
+  return {source,rows,fileName,sharedError,sharedIssues,sharedChanges,commonChanges:commonChangeRows,
+    needsReview:!!sharedError || !!sharedIssues.length || !!commonChangeRows.length || conflicting || rows.some(row=>row.error || row.individualChanges.length)};
+}
+function resolveTraitPresetRecoveryPlan(plan,sharedSourceIndex=''){
+  if(plan.sharedError) throw new Error(plan.sharedError);
+  const selected=plan.rows;
+  if(!selected.length) throw new Error('가져올 프리셋이 없습니다.');
+  selected.forEach(row=>{
+    if(row.error || !row.candidate) throw new Error(`${row.name}: 원본 파일을 수정한 뒤 다시 가져와 주세요.`);
+  });
+  const distinct=new Set(selected.map(row=>traitPresetSharedStateSignature(row.candidate.presets[0].state)));
+  const conflicting=distinct.size>1;
+  const source=conflicting ? selected.find(row=>String(row.index)===String(sharedSourceIndex)) : selected[0];
+  if(!source) throw new Error('공통 설정 값이 서로 다릅니다. 적용할 프리셋을 선택해 주세요.');
+  const baseState=source.candidate.presets[0].state;
+  const sharedKeys=traitPresetSharedStateKeys(baseState);
+  const presets=[],boards={};
+  let syncedCount=0;
+  selected.forEach(row=>{
+    const candidate=row.candidate;
+    const item=candidate.presets[0];
+    const nextState=buildSyncedTraitPresetState(baseState,item.state,sharedKeys);
+    if(!nextState) throw new Error(`${row.name}: 공통 설정을 적용할 수 없습니다.`);
+    if(stableTraitPresetValue(nextState)!==stableTraitPresetValue(item.state)) syncedCount++;
+    presets.push({...item,state:nextState});
+    boards[item.id]=candidate.unitBoard.presets[item.id];
+  });
   const imported={...plan.source,presets,unitBoard:{presets:boards}};
   inspectTraitPresetImportCompatibility(imported);
   const completed=completeTraitPresetStoreSchema(imported);
-  const repairedRows=plan.rows.filter(row=>choices[row.index]==='repair' && row.changes.length && row.candidate);
-  const singleChangeKeysByPreset=Object.fromEntries(repairedRows.map(row=>[row.candidate.presets[0].id,[...new Set(row.changes.map(change=>change.key || 'importRepair'))]]));
-  return {data:completed,excluded:plan.rows.length-presets.length,repaired:repairedRows.length,sharedUpdated:plan.sharedIssues.length>0,singleChangeKeysByPreset};
+  const repairedRows=selected.filter(row=>row.individualChanges.length);
+  const singleChangeKeysByPreset=Object.fromEntries(repairedRows.map(row=>[
+    row.candidate.presets[0].id,[...new Set(row.individualChanges.map(change=>change.key || 'importRepair'))]
+  ]));
+  const sharedUpdated=!!(plan.sharedIssues.length || plan.commonChanges.length || syncedCount);
+  const commonChangeKeys=[...new Set([
+    ...plan.commonChanges.map(change=>change.key),
+    ...plan.sharedChanges.map(change=>change.key),
+    ...(syncedCount ? ['state:shared'] : [])
+  ])];
+  return {data:completed,sharedUpdated,commonChangeKeys,singleChangeKeysByPreset,
+    changeDetails:plan.sharedChanges.map(change=>traitPresetChangeDetail(change.key,change.before,change.after,'common'))};
+}
+// 공통/개별 복구 비교는 같은 마크업을 사용한다.
+function traitPresetRecoveryChangeItemHtml(change){
+  const before=String(change.before),after=String(change.after);
+  const variation=traitPresetChangeVariation(before,after,change.key);
+  return `<li><strong>${escapeHtml(change.label)}</strong><span>${escapeHtml(traitPresetChangeNumberText(before,change.key))} <b>→</b> ${escapeHtml(traitPresetChangeNumberText(after,change.key))} <em>${escapeHtml(variation)}</em></span></li>`;
 }
 function reviewTraitPresetImportRecovery(plan,existingCount=0){
   const dialog=$('traitPresetRecoveryDialog');
   if(!dialog || typeof dialog.showModal!=='function' || dialog.open){
-    notifyStorageAction('프리셋 복구 확인 창을 열 수 없어 가져오기를 취소했습니다.','err');
+    notifyStorageAction('프리셋 확인 창을 열 수 없어 가져오기를 취소했습니다.','err');
     return Promise.resolve(null);
   }
   const list=$('traitPresetRecoveryList'),note=$('traitPresetRecoveryNote'),button=$('traitPresetRecoveryApply');
-  note.textContent=plan.sharedError ? `파일 공통 오류: ${plan.sharedError}` :
-    `아래 오류를 수정하거나 해당 프리셋을 가져오기 목록에서 삭제해 주세요.${plan.sharedIssues.length ? ' 누락된 공통 항목은 기본값으로 보완합니다.' : ''}${existingCount ? ' 적용하면 현재 저장 목록이 가져온 목록으로 교체됩니다.' : ''}`;
-  const reviewRows=plan.rows.filter(row=>row.error || row.changes.length).sort((a,b)=>{
-    const priority=row=>row.error ? 0 : row.changes.length ? 1 : 2;
-    return priority(a)-priority(b) || a.index-b.index;
-  });
-  list.innerHTML=reviewRows.map(row=>{
-    const status=row.error ? '확인 필요' : row.changes.length ? '수정 가능' : '정상';
-    const changes=row.changes.map(change=>`<li><strong>${escapeHtml(change.label)}</strong><span>${escapeHtml(String(change.before))}<b aria-label="변경 후">→</b>${escapeHtml(String(change.after))}</span></li>`).join('');
-    return `<article class="preset-recovery-row ${row.error?'has-error':'has-repair'}"><header><h3>${escapeHtml(row.name)}</h3><span class="preset-recovery-status">${status}</span></header>
-      ${row.error ? `<p class="preset-recovery-error">${escapeHtml(row.error)}</p>` : changes ? `<div class="preset-recovery-details"><div class="preset-recovery-count">수정 항목 ${row.changes.length}개</div><ul>${changes}</ul></div>` : '<p>저장된 값을 그대로 가져옵니다.</p>'}
-      <div class="preset-recovery-choices" role="group" aria-label="${escapeHtml(row.name)} 처리 방법" data-preset-recovery-choice="${row.index}" data-value="${row.error?'':'repair'}">
-        ${row.error ? '' : '<button type="button" class="preset-recovery-choice" data-recovery-value="repair" aria-pressed="true">오류 수정 및 적용</button>'}
-        <button type="button" class="preset-recovery-choice is-exclude" data-recovery-value="exclude" aria-pressed="false">이 프리셋 삭제</button>
-      </div></article>`;
-  }).join('') || '<p class="preset-recovery-empty">개별 프리셋에는 오류가 없습니다. 공통 필수 항목을 보완한 뒤 가져옵니다.</p>';
-  const choices=()=>({
-    ...Object.fromEntries(plan.rows.filter(row=>!row.error && !row.changes.length).map(row=>[row.index,'keep'])),
-    ...Object.fromEntries([...list.querySelectorAll('[data-preset-recovery-choice]')].map(group=>[group.dataset.presetRecoveryChoice,group.dataset.value]))
-  });
-  const refresh=()=>{
-    const selected=choices();
-    const count=Object.values(selected).filter(value=>value==='keep' || value==='repair').length;
-    button.disabled=!!plan.sharedError || !count || Object.values(selected).some(value=>!value);
-    button.textContent=count ? '선택 적용 후 가져오기' : '가져올 프리셋 선택';
-  };
-  const choose=event=>{
-    const button=event.target.closest('[data-recovery-value]');
-    if(!button || !list.contains(button)) return;
-    const group=button.closest('[data-preset-recovery-choice]');
-    const onlyExclude=group.querySelectorAll('button').length===1;
-    group.dataset.value=onlyExclude && group.dataset.value===button.dataset.recoveryValue ? '' : button.dataset.recoveryValue;
-    group.querySelectorAll('button').forEach(item=>item.setAttribute('aria-pressed',String(item.dataset.recoveryValue===group.dataset.value)));
-    refresh();
-  };
-  refresh();list.addEventListener('click',choose);
+  const sharedPanel=$('traitPresetRecoveryShared');
+  const errorRows=plan.rows.filter(row=>row.error);
+  const repairRows=plan.rows.filter(row=>!row.error && row.individualChanges.length);
+  const available=plan.rows.filter(row=>row.candidate);
+  const conflicting=available.length>1 && new Set(available.map(row=>traitPresetSharedStateSignature(row.candidate.presets[0].state))).size>1;
+  note.textContent=`${plan.fileName ? `${plan.fileName} · ` : ''}${existingCount ? '가져오면 현재 프리셋 전체가 교체됩니다.' : '변경할 내용만 확인하세요.'}`;
+  const sharedContent=[...plan.commonChanges,...plan.sharedChanges].map(traitPresetRecoveryChangeItemHtml).join('');
+  sharedPanel.hidden=!plan.sharedError && !plan.sharedIssues.length && !plan.commonChanges.length && !conflicting;
+  sharedPanel.innerHTML=plan.sharedError ? `<strong>공통 설정 오류</strong><p>${escapeHtml(plan.sharedError)}</p>` :
+    `<strong>공통 설정${(plan.commonChanges.length+plan.sharedChanges.length) ? ` · 수정 ${plan.commonChanges.length+plan.sharedChanges.length}건` : ''}</strong>${sharedContent ? `<ul>${sharedContent}</ul>` : ''}`;
+  list.innerHTML=[...errorRows,...repairRows].map(row=>{
+    const changes=row.individualChanges.map(traitPresetRecoveryChangeItemHtml).join('');
+    return `<article class="preset-recovery-row ${row.error?'has-error':'has-repair'}"><header><h3>${escapeHtml(row.name)} <span>(${row.index+1}번째)</span></h3><span class="preset-recovery-status">${row.error?'오류':'수정 '+row.individualChanges.length+'건'}</span></header>
+      ${row.error ? `<p class="preset-recovery-error">${escapeHtml(row.error)}</p>` : `<div class="preset-recovery-details"><ul>${changes}</ul></div>`}</article>`;
+  }).join('');
+  const sourceLabel=document.createElement('label');
+  sourceLabel.className='preset-recovery-shared-source';
+  sourceLabel.htmlFor='traitPresetRecoverySharedSource';
+  sourceLabel.innerHTML='<span>공통 설정이 다릅니다. 기준 프리셋을 선택하세요.</span>';
+  const sourceSelect=document.createElement('select');
+  sourceSelect.id='traitPresetRecoverySharedSource';
+  sourceSelect.innerHTML='<option value="">기준 프리셋 선택</option>'+available.map(row=>`<option value="${row.index}">${escapeHtml(row.name)} (${row.index+1}번째)</option>`).join('');
+  sourceLabel.appendChild(sourceSelect);
+  sharedPanel.appendChild(sourceLabel);
+  sourceLabel.hidden=!conflicting;
+  const blocked=!!plan.sharedError || errorRows.length>0;
+  button.disabled=blocked || (conflicting && !sourceSelect.value);
+  button.textContent=blocked ? '원본 수정 후 다시 가져오기' : '변경 적용 후 가져오기';
   const focused=document.activeElement;
   dialog.returnValue='';
   return new Promise(resolve=>{
+    const refresh=()=>{button.disabled=blocked || (conflicting && !sourceSelect.value);};
+    sourceSelect.addEventListener('change',refresh);
     dialog.addEventListener('close',()=>{
-      list.removeEventListener('click',choose);
-      focused?.isConnected && focused.focus({preventScroll:true});
-      if(dialog.returnValue!=='apply'){resolve(null);return;}
-      try{resolve(resolveTraitPresetRecoveryPlan(plan,choices()));}
+      sourceSelect.removeEventListener('change',refresh);
+      if(focused?.isConnected) focused.focus({preventScroll:true});
+      if(dialog.returnValue!=='apply' || blocked){resolve(null);return;}
+      try{resolve(resolveTraitPresetRecoveryPlan(plan,sourceSelect.value));}
       catch(error){notifyStorageAction(error.message,'err');resolve(null);}
     },{once:true});
     dialog.showModal();
@@ -2562,7 +2864,7 @@ async function importTraitPresetFile(file){
     if(!isTraitPresetTextFile(file)) throw new Error('특성 프리셋 .txt 또는 .json 파일만 가져올 수 있습니다.');
     const raw=await readTraitPresetFileAsText(file);
     const parsed=safeJsonParse(raw);
-    const plan=prepareTraitPresetImportRecovery(parsed);
+    const plan=prepareTraitPresetImportRecovery(parsed,file.name);
     const existingCount=loadTraitPresetStore().presets.length;
     let recovery=null;
     if(plan.needsReview){
@@ -2591,12 +2893,13 @@ async function importTraitPresetFile(file){
       const changedIds=Object.keys(changedByPreset);
       const commonIds=recovery.sharedUpdated ? result.store.presets.map(preset=>preset.id) : [];
       markTraitPresetUpdated([...new Set([...changedIds,...commonIds])],'import',{
-        commonChangeKeys:recovery.sharedUpdated ? ['importShared'] : [],
+        commonChangeKeys:recovery.commonChangeKeys || [],
         commonPresetIds:commonIds,
         singlePresetIds:[],
-        singleChangeKeysByPreset:changedByPreset
+        singleChangeKeysByPreset:changedByPreset,
+        beforeStore:plan.source,afterStore:result.store,changeDetails:recovery.changeDetails || []
       });
-      notifyStorageAction(`프리셋 ${result.count}개 복구 및 로드 완료${recovery.excluded ? ` · ${recovery.excluded}개 제외` : ''} · 백업 버튼으로 새 파일을 저장해 주세요.`,'ok',{statusAction:'import',toast:true});
+      notifyStorageAction(`프리셋 ${result.count}개 복구 및 로드 완료 · 백업 버튼으로 새 파일을 저장해 주세요.`,'ok',{statusAction:'import',toast:true});
     }else notifyStorageAction(`프리셋 가져오기 및 로드 완료 · ${result.count}개로 전체 교체`,'ok',{statusAction:'import'});
     return true;
   }catch(e){

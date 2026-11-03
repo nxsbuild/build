@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <script>
-window.APP_VERSION = "v030";
+window.APP_VERSION = "build-v031";
 window.DPS_BUILD_VERSION = window.APP_VERSION;
 window.DPS_STANDALONE_VIEW = (function(){
   var requested=new URLSearchParams(window.location.search).get('dpsWindow');
@@ -570,7 +570,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 <div class="basic-info-row" data-basic-row="battle-mode"><label>게임 모드</label><div class="mode-choice-group" role="group" aria-label="개인전 또는 협동전"><button type="button" data-mode-choice="battle" data-value="solo" aria-pressed="true">개인전</button><button type="button" data-mode-choice="battle" data-value="coop" aria-pressed="false">협동전</button></div></div>
 <div hidden><select id="soloMode" aria-hidden="true"><option selected="" value="ON">ON</option><option value="OFF">OFF</option></select><select id="coopMode" aria-hidden="true"><option selected="" value="OFF">OFF</option><option value="ON">ON</option></select></div>
 <div class="basic-info-row" data-basic-row="speed-mode"><label>스피드 모드</label><div class="spec-dps-speed-switch-wrap goal-mode-switch-wrap" aria-label="스피드 모드 전환"><button class="artifact-dps-switch goal-mode-switch" id="specDpsSpeedModeToggle" type="button" role="switch" aria-checked="false" data-spec-dps-speed-toggle><span class="artifact-dps-switch-text">OFF</span><span class="artifact-dps-switch-text">ON</span><i aria-hidden="true"></i></button></div></div>
-<div class="basic-info-row" data-basic-row="game-mode"><label>전투 모드</label><div class="artifact-dps-switch-wrap goal-mode-switch-wrap" aria-label="일반 또는 유물 DPS 표시"><button class="artifact-dps-switch goal-mode-switch" id="artifactDpsViewToggle" type="button" role="switch" aria-checked="false"><span class="artifact-dps-switch-text">일반</span><span class="artifact-dps-switch-text">유물</span><i aria-hidden="true"></i></button></div></div>
+<div class="basic-info-row" data-basic-row="game-mode"><div class="battle-mode-label"><span>전투 모드</span><button class="battle-mode-guide-trigger" id="battleModeGuideOpen" type="button" aria-label="전투 모드와 특성 최적화 제한 안내" aria-haspopup="dialog" aria-controls="battleModeGuideDialog">?</button></div><div class="artifact-dps-switch-wrap goal-mode-switch-wrap" aria-label="일반 또는 유물 DPS 표시"><button class="artifact-dps-switch goal-mode-switch" id="artifactDpsViewToggle" type="button" role="switch" aria-checked="false"><span class="artifact-dps-switch-text">일반</span><span class="artifact-dps-switch-text">유물</span><i aria-hidden="true"></i></button></div></div>
 <div class="basic-info-row" data-basic-row="team"><label id="teamCountLabel">출발 지원 인원수</label><select id="team" hidden aria-hidden="true"><option selected="" value="1">1</option><option value="2">2</option><option value="3">3</option></select><div class="team-count-switch" role="group" aria-labelledby="teamCountLabel"><button type="button" data-team-count="1" aria-pressed="true">1</button><button type="button" data-team-count="2" aria-pressed="false">2</button><button type="button" data-team-count="3" aria-pressed="false">3</button></div></div>
 </div>
 <div class="basic-info-lane-group is-match" aria-label="난이도와 고행 단계">
@@ -626,7 +626,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 <label>룬 각성</label>
 <select id="rAsc"><option selected="" value="없음">선택 안함</option><option>a</option><option>b</option><option>c</option><option>d</option><option>e</option><option>f</option><option value="g">g</option></select>
 <label>종족업</label>
-<select class="choice-input" id="raceOpt"><option selected="" value="없음">선택 안함</option><option>저그</option><option>테란 바이오닉</option><option>테란 메카닉</option><option>플토 바이오닉</option><option>플토 메카닉</option><option>중립</option></select>
+<select class="choice-input" id="raceOpt"><option selected="" value="없음">선택 안함</option><option>테란 바이오닉</option><option>테란 메카닉</option><option value="플토 바이오닉">토스 바이오닉</option><option value="플토 메카닉">토스 메카닉</option><option>저그</option><option>중립</option></select>
 <label>룬 10강 옵션</label>
 <select class="choice-input" id="opt10"><option selected="" value="none">선택 안함</option><option value="cd50">크리티컬 피해량 +50%</option><option value="ua15">유닛 가속 +15%</option><option value="cri22">크리 확률 +22%</option><option value="dr25">적 방어력 감소 25%</option><option value="mc3">다중 크리티컬 +3</option><option value="reinf5">유닛 최대 강화수 +5</option><option value="removeBuff">적버프 50% 확률로 제거</option><option value="raceAll1">모든 종족업 +1(최대21)</option><option value="ad15">공격력 +15%</option><option value="td2">총 데미지 2배</option><option value="shieldImmune">슈퍼쉴드 면역</option></select>
 <label>룬 15강 옵션</label>
@@ -1259,7 +1259,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
       >
         <header class="dps-compare-header">
           <h2 id="dpsCompareModalTitle">
-            <span class="dps-compare-title-mark" aria-hidden="true"><svg class="ui-header-glyph" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><use href="#dpsUiSparklesGlyph"/></svg></span>DPS표
+            <span class="dps-compare-title-mark" aria-hidden="true"><svg class="ui-header-glyph" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><use href="#dpsUiSparklesGlyph"/></svg></span><span id="dpsCompareModalLabel">DPS표</span>
           </h2>
           <button type="button" class="dps-compare-close" data-dps-compare-close aria-label="DPS표 닫기">
             ×
@@ -1354,12 +1354,56 @@ loadScriptSequence(['data.js','calc.js','app.js','preset.js','responsive.js'],fu
     <footer class="unit-slot-modal-footer"><button type="button" class="unit-slot-modal-cancel" id="unitSlotModalClose" data-unit-detail-close>취소</button><button type="button" class="unit-slot-modal-done" data-unit-detail-confirm>설정 완료</button></footer>
   </section>
 </div>
+<!-- 전투 모드 안내: 계산·프리셋과 독립적인 표시 전용 대화상자 -->
+<dialog id="battleModeGuideDialog" class="battle-mode-guide-dialog" aria-labelledby="battleModeGuideTitle">
+  <header class="battle-mode-guide-head trait-preset-modal-head"><div class="trait-preset-modal-heading"><span class="trait-preset-modal-mark" aria-hidden="true"><svg class="ui-header-glyph" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><use href="#dpsUiSparklesGlyph"/></svg></span><h2 id="battleModeGuideTitle">전투 모드 · 최적화 안내</h2></div><button type="button" class="trait-preset-modal-close" data-battle-mode-guide-close aria-label="안내 닫기">×</button></header>
+  <div class="battle-mode-guide-tabs integrated-tabs" role="tablist" aria-label="전투 모드 안내 분류">
+    <button type="button" class="integrated-tab is-active" role="tab" id="battleModeGuideTabMode" aria-controls="battleModeGuidePanelMode" aria-selected="true" tabindex="0" data-battle-mode-guide-tab>모드 차이</button>
+    <button type="button" class="integrated-tab" role="tab" id="battleModeGuideTabExcluded" aria-controls="battleModeGuidePanelExcluded" aria-selected="false" tabindex="-1" data-battle-mode-guide-tab>제외 특성</button>
+    <button type="button" class="integrated-tab" role="tab" id="battleModeGuideTabLimits" aria-controls="battleModeGuidePanelLimits" aria-selected="false" tabindex="-1" data-battle-mode-guide-tab>투자 제한</button>
+  </div>
+  <section class="battle-mode-guide-panel" id="battleModeGuidePanelMode" role="tabpanel" aria-labelledby="battleModeGuideTabMode" tabindex="0">
+    <strong>일반 모드</strong><p>일반 DPS를 기준으로 특성을 자동 투자합니다.</p>
+    <strong>유물 모드</strong><p>유물 DPS를 기준으로 특성을 자동 투자합니다. 공격속도 9개와 방어력 관통 1개 특성은 제외됩니다.</p>
+    <div class="battle-mode-guide-note"><strong>유닛 보드는 자유롭게 사용</strong><p>어느 모드에서나 일반 유닛과 유물을 함께 선택할 수 있습니다. 전투 모드를 바꿔도 기존 슬롯과 투자값은 유지되며, 최적화가 자동으로 실행되지는 않습니다.</p><p>일반 DPS에 맞춰 다시 투자하려면 <b>일반 모드</b>로 변경한 뒤 <b>특성 최적화</b>를 실행하세요.</p></div>
+    <p class="battle-mode-guide-muted">※ Abyss road, Deep Abyss, 행성탐사에서는 유물 모드를 사용할 수 없습니다.</p>
+  </section>
+  <section class="battle-mode-guide-panel" id="battleModeGuidePanelExcluded" role="tabpanel" aria-labelledby="battleModeGuideTabExcluded" tabindex="0" hidden>
+    <strong>유물 모드에서 제외되는 특성</strong>
+    <p>유물 최적화는 아래 10개 특성에 새로 투자하지 않습니다.</p>
+    <ul class="battle-mode-guide-trait-list">
+      <li>공격속도 증가1 <small>루키</small></li>
+      <li>공격속도 증가2 <small>아마추어</small></li>
+      <li>공격속도 증가3 <small>프로</small></li>
+      <li>팀 공격속도 증가 <small>디바인</small></li>
+      <li>공격속도 증가4 <small>더원1</small></li>
+      <li>공격속도 증가∞ <small>무한∞</small></li>
+      <li>공격속도 증가 E <small>EP특성</small></li>
+      <li>공격속도 증가 R <small>RP특성</small></li>
+      <li>공격속도 증가 A <small>심연특성</small></li>
+      <li>방어력 관통 R <small>RP특성</small></li>
+    </ul>
+    <p class="battle-mode-guide-muted">이미 투자한 값은 그대로 유지되며, 직접 투자할 수도 있습니다. 일반 모드 최적화에서는 조건에 따라 자동 투자될 수 있습니다.</p>
+  </section>
+  <section class="battle-mode-guide-panel" id="battleModeGuidePanelLimits" role="tabpanel" aria-labelledby="battleModeGuideTabLimits" tabindex="0" hidden>
+    <strong>모드별 투자 제한 적용</strong>
+    <table class="battle-mode-guide-limit-table"><thead><tr><th scope="col">설정 항목</th><th scope="col">일반</th><th scope="col">유물</th></tr></thead><tbody>
+      <tr><th scope="row">공격속도 제한</th><td>적용</td><td>적용 안 함</td></tr>
+      <tr><th scope="row">크리 확률 제한</th><td>적용</td><td>적용</td></tr>
+      <tr><th scope="row">멀티 타겟 투자</th><td>설정 반영</td><td>설정 반영</td></tr>
+      <tr><th scope="row">무한 특성 투자</th><td>설정 반영</td><td>설정 반영</td></tr>
+      <tr><th scope="row">최적화 종료 구간</th><td>적용</td><td>적용</td></tr>
+    </tbody></table>
+    <p class="battle-mode-guide-muted">공격속도·크리 확률의 제한값이 <b>0(제한 없음)</b>이면 상한을 두지 않습니다. 멀티 타겟과 무한 특성은 <b>투자 가능</b>일 때만 자동 투자합니다.</p>
+    <p class="battle-mode-guide-muted">두 모드 모두 보유 재화(SP·EP·RP·혼), 특성별 최대 투자량, 난이도별 투자 조건을 따릅니다.</p>
+  </section>
+</dialog>
 <!-- 앱 자체 슬롯 삭제 확인: 브라우저의 window.confirm 팝업 사용하지 않음 -->
 <dialog id="traitPresetRecoveryDialog" class="preset-recovery-dialog" aria-labelledby="traitPresetRecoveryTitle" aria-describedby="traitPresetRecoveryNote">
   <form method="dialog" class="preset-recovery-form">
     <header class="preset-recovery-head"><div class="trait-preset-modal-heading"><span class="trait-preset-modal-mark" aria-hidden="true"><svg class="ui-header-glyph" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><use href="#dpsUiWarningGlyph"/></svg></span><h2 id="traitPresetRecoveryTitle">프리셋 오류 검출 안내</h2></div></header>
-    <div class="preset-recovery-body"><p id="traitPresetRecoveryNote"></p><div id="traitPresetRecoveryList" class="preset-recovery-list"></div></div>
-    <footer class="preset-recovery-actions"><button type="submit" value="cancel">취소</button><button type="submit" value="apply" id="traitPresetRecoveryApply">선택 적용 후 가져오기</button></footer>
+    <div class="preset-recovery-body"><p id="traitPresetRecoveryNote"></p><section id="traitPresetRecoveryShared" class="preset-recovery-common" aria-label="공통 설정 정리"></section><div id="traitPresetRecoveryList" class="preset-recovery-list"></div></div>
+    <footer class="preset-recovery-actions"><button type="submit" value="cancel">취소</button><button type="submit" value="apply" id="traitPresetRecoveryApply">변경 적용 후 가져오기</button></footer>
   </form>
 </dialog>
 <dialog id="appConfirmDialog" class="unit-slot-remove-dialog app-confirm-dialog" aria-labelledby="appConfirmTitle" aria-describedby="appConfirmDescription">
