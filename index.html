@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <script>
-window.APP_VERSION = "build-v031";
+window.APP_VERSION = "build-v032";
 window.DPS_BUILD_VERSION = window.APP_VERSION;
 window.DPS_STANDALONE_VIEW = (function(){
   var requested=new URLSearchParams(window.location.search).get('dpsWindow');
@@ -266,6 +266,7 @@ html:not(.dps-booting) #dpsBootScreen{display:none}
       ['#btnFontSizePopup','글씨 크기 조절',window.innerWidth<768?32:34],
       ['.font-scale-trigger','글씨 크기 조절',30],
       ['.header-nexus-link','개복디 넥서스',window.innerWidth<600?30:35],
+      ['.header-update-link','업데이트 센터',window.innerWidth<600?30:35],
       ['#independentWindowToggle','독립 창 선택',35],
       ['[data-analysis-board-copy]','클리어 기록 복사',32],
     ];
@@ -459,6 +460,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 <div class="header-reference-actions">
 
 <a class="btn subtle ui-action-btn header-nexus-link" href="https://nxsbuild.github.io/nexus/" aria-label="개복디 넥서스"><svg class="header-nexus-mark" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false"><defs><linearGradient id="headerNexusGradient" x1="7" y1="8" x2="25" y2="24" gradientUnits="userSpaceOnUse"><stop stop-color="#e7fbff"/><stop offset=".55" stop-color="#8edbff"/><stop offset="1" stop-color="#6b9dff"/></linearGradient></defs><path d="M7 24V8h4.4L21 18.9V8h4v16h-4.3L11 13.2V24H7Z" fill="url(#headerNexusGradient)"/><path d="M11 13.2 20.7 24" stroke="#edfbff" stroke-width=".8" stroke-opacity=".65"/></svg></a>
+<a class="btn subtle ui-action-btn header-update-link" href="https://nxsbuild.github.io/update/" aria-label="업데이트 센터"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h7M14 2l5 5v3M14 2v5h5M8 11h4M8 15h2"/><circle cx="17" cy="17" r="5"/><path d="M17 14v3l2 1"/></svg></a>
 </div>
 </div>
 <div aria-label="글씨 크기 조절" class="font-scale-ctrl">
