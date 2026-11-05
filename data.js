@@ -323,7 +323,7 @@ const DPS_BASE_UNITS=Object.freeze([
   Object.freeze({id:'prodHellNova',label:'노바',grade:'헬',raceGroup:'테바',upgradeRace:'테란 바이오닉',quantityEnabled:true,quantityId:'dpsQtyHellNova',weaponSpeed:1.25,asLimit:0,maxCooldown:0.0625,targetCount:1,attackCount:1,armorPierceBonus:0,critFormula:'일반',weaponAttack:358.53,weaponAttackTiers:Object.freeze([358.53,394.42,433.90])}),
   Object.freeze({id:'prodHyperion',label:'히페리온',grade:'헬',raceGroup:'테메',upgradeRace:'테란 메카닉',quantityEnabled:true,quantityId:'dpsQtyHyperion',weaponSpeed:0.8,asLimit:0,targetCount:1,attackCount:1,armorPierceBonus:10,critFormula:'일반',weaponAttack:336.97,weaponAttackTiers:Object.freeze([336.97,370.70,407.80])}),
   Object.freeze({id:'prodVoidSeeker',label:'공허의 구도자',grade:'헬',raceGroup:'프메',upgradeRace:'플토 메카닉',quantityEnabled:true,quantityId:'dpsQtyVoidSeeker',weaponSpeed:1.1,asLimit:0,targetCount:1,attackCount:1,armorPierceBonus:10,critFormula:'일반',weaponAttack:400.32,weaponAttackTiers:Object.freeze([400.32,440.39,484.47])}),
-  Object.freeze({id:'artifactUnit',label:'유물',grade:'히든',kind:'artifact',raceGroup:'특수',productionUnit:true,quantityEnabled:false,armorPierceBonus:0,critFormula:'방사'}),
+  Object.freeze({id:'artifactUnit',label:'유물',grade:'히든',kind:'artifact',raceGroup:'혼종',productionUnit:true,quantityEnabled:false,armorPierceBonus:0,critFormula:'방사'}),
 ]);
 
 /* 유물 DPS */

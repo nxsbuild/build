@@ -1941,7 +1941,7 @@ function dpsBaseUnitSelectOptionsHtml(selectedId, selectedIds){
     const options=units.map(unit=>{
       const selected=unit.id===selectedId;
       const disabled=!selected && selectedSet.has(unit.id);
-      const race=unit.kind==='artifact' ? '' : unit.raceGroup==='프바' ? '토바' : unit.raceGroup==='프메' ? '토메' : (unit.raceGroup || '');
+      const race=unit.raceGroup==='프바' ? '토바' : unit.raceGroup==='프메' ? '토메' : (unit.raceGroup || '');
       const label=race ? `[${race}] ${dpsBaseUnitDisplayLabel(unit)}` : dpsBaseUnitDisplayLabel(unit);
       return `<option value="${escapeHtml(unit.id)}"${selected ? ' selected' : ''}${disabled ? ' disabled' : ''}>${escapeHtml(label)}</option>`;
     }).join('');
@@ -2058,9 +2058,10 @@ function dpsBaseUnitSlotsHtml(slots){
       basicRows.push(`<tr><th scope="row">${String(index+1).padStart(2,'0')}</th><td>${escapeHtml(unitName)}</td><td>${escapeHtml(quantity)}</td><td>${escapeHtml(limitBreak)}</td><td>${escapeHtml(jewel)}</td></tr>`);
     }
     const grade=String(unit.grade || '유닛');
+    const race=String(unit.raceGroup || '').trim();
     const selected=index===dpsUnitSelectedSlot && dpsUnitDetailOpen;
     return `<article class="unit-slot-overview-card${selected?' is-selected':''}" aria-label="${index+1}번 유닛 슬롯">
-      <div class="unit-slot-card-head"><div class="unit-slot-heading"><span class="unit-slot-number" aria-hidden="true">${String(index+1).padStart(2,'0')}</span><span class="ub-card-title"><span class="unit-slot-grade">${escapeHtml(grade)}</span><strong>${escapeHtml(unitName)}</strong></span></div><div class="unit-slot-card-actions"><button type="button" class="unit-list-remove" data-unit-list-remove="${index}" aria-label="${index+1}번 슬롯 삭제">×</button></div></div>
+      <div class="unit-slot-card-head"><div class="unit-slot-heading"><span class="unit-slot-number" aria-hidden="true">${String(index+1).padStart(2,'0')}</span><span class="ub-card-title"><span class="unit-slot-grade">${escapeHtml(grade)}</span>${race ? `<span class="unit-slot-grade">${escapeHtml(race)}</span>` : ''}<strong>${escapeHtml(unitName)}</strong></span></div><div class="unit-slot-card-actions"><button type="button" class="unit-list-remove" data-unit-list-remove="${index}" aria-label="${index+1}번 슬롯 삭제">×</button></div></div>
       <button type="button" class="unit-slot-card-main" data-unit-list-select="${index}" aria-label="${index+1}번 슬롯 상세 설정 열기" aria-haspopup="dialog" aria-expanded="${selected}" aria-controls="dpsUnitSlotModal">
         ${dpsBaseUnitCompactFieldsHtml(unit,index,true)}
         
@@ -2075,13 +2076,14 @@ function dpsBaseUnitSlotsHtml(slots){
 
 // 붙여넣는 앱이 선택하는 text/plain(Markdown)과 text/html을 각각 구성한다.
 function formatDpsClearReport(report){
-  const {context,stage,achievement,specDpsLabel,specDps,required,expected,buildRows,effects,units}=report;
+  const {context,stageMain,stageRound,achievement,specDps,required,expected,buildRows,effects,units}=report;
   const totalQuantity=units.reduce((sum,unit)=>sum+Math.max(1,Number(unit.quantity)||1),0);
   const unitHeading=`선택 유닛 정보 (${units.length}슬롯 · ${totalQuantity}마리)`;
   const lines=[
-    '**클리어 기록 보고서**',context,stage,
-    `**달성률 ${achievement}** · ${specDpsLabel} ${specDps}`,
-    `기준 ${required} · 기대 ${expected}`,
+    '**클리어 기록 보고서**',
+    `| 모드 난이도: ${context} | 고행 라운드: ${stageMain}${stageRound!=='—'?` · ${stageRound}`:''} | 스펙 DPS: ${specDps} |`,
+    '| :---: | :---: | :---: |',
+    `| 클리어 기준: ${required} | 클리어 기대값: ${expected} | 클리어 달성률: ${achievement} |`,
     '', '**빌드 설정**',...buildRows.map(row=>`- ${row.label} ${row.value}`)
   ];
   effects.filter(group=>group.lines.length).forEach(group=>lines.push('',`**${group.title}**`,...group.lines.map(line=>`- ${line}`)));
@@ -2099,11 +2101,15 @@ function formatDpsClearReport(report){
   const tableStyle='width:100%;border-collapse:collapse;table-layout:fixed;font-size:13px;line-height:1.5;';
   const cellStyle='padding:9px 10px;border:1px solid #dce4ed;vertical-align:middle;color:#243447;overflow-wrap:anywhere;';
   const section=(title,content)=>`<tr><td style="padding:0 18px 18px;"><div style="font-size:15px;font-weight:700;color:#213b59;padding:0 0 8px;">${esc(title)}</div>${content}</td></tr>`;
-  const summary=[['클리어 기준',required],['클리어 기대값',expected],['달성률',achievement]]
-    .map(([label,value])=>`<td width="33%" style="padding:12px 6px;border:1px solid #dce4ed;background:#f3f7fc;text-align:center;"><span style="font-size:11px;color:#5f7187;">${esc(label)}</span><br><strong style="font-size:21px;color:#244d78;">${esc(value)}</strong></td>`).join('');
-  const build=`<table cellpadding="0" cellspacing="0" style="${tableStyle}"><tbody>${buildRows.map(row=>`<tr><th scope="row" width="84" style="${cellStyle}background:#f6f8fb;font-weight:400;text-align:left;">${esc(row.label)}</th><td style="${cellStyle}">${esc(row.value)}</td></tr>`).join('')}</tbody></table>`;
+  const summaryRows=[
+    [['모드 난이도',context],['고행 라운드',stageMain],['스펙 DPS',specDps]],
+    [['클리어 기준',required],['클리어 기대값',expected],['클리어 달성률',achievement]]
+  ];
+  const summary=summaryRows.map((row,rowIndex)=>`<tr>${row.map(([label,value],colIndex)=>`<td width="33%" style="padding:12px 6px;border:1px solid #dce4ed;background:#f3f7fc;text-align:center;overflow-wrap:anywhere;"><span style="font-size:11px;color:#5f7187;">${esc(label)}</span><br><strong style="font-size:${rowIndex===0?16:21}px;color:#244d78;">${esc(value)}</strong>${rowIndex===0 && colIndex===1 && stageRound!=='—'?`<br><small style="font-size:11px;color:#244d78;">${esc(stageRound)}</small>`:''}</td>`).join('')}</tr>`).join('');
+  const pairedRowsHtml=rows=>rows.map(row=>`<tr><th scope="row" width="84" style="${cellStyle}background:#f6f8fb;font-weight:400;text-align:left;">${esc(row.label)}</th><td style="${cellStyle}">${esc(row.value)}</td></tr>`).join('');
+  const build=`<table cellpadding="0" cellspacing="0" style="${tableStyle}"><tbody>${pairedRowsHtml(buildRows)}</tbody></table>`;
   const effectSections=effects.filter(group=>group.lines.length).map(group=>section(group.title,
-    `<table cellpadding="0" cellspacing="0" style="${tableStyle}"><tbody>${group.lines.map(line=>`<tr><td style="${cellStyle}">${esc(line)}</td></tr>`).join('')}</tbody></table>`)).join('');
+    `<table cellpadding="0" cellspacing="0" style="${tableStyle}"><tbody>${group.rows ? pairedRowsHtml(group.rows) : group.lines.map(line=>`<tr><td style="${cellStyle}">${esc(line)}</td></tr>`).join('')}</tbody></table>`)).join('');
   const unitRows=units.map((unit,index)=>{
     const entries=unit.extras.length
       ? [{number:1,limitBreak:unit.limitBreak,jewel:unit.jewel},...unit.extras]
@@ -2113,7 +2119,7 @@ function formatDpsClearReport(report){
     return entries.map((entry,rowIndex)=>`<tr>${rowIndex===0?`<th scope="rowgroup" rowspan="${entries.length}" style="${style}text-align:left;font-weight:700;"><span style="font-size:11px;color:#59738f;">${esc(unit.slot)}</span><br>${esc(unit.name)}</th><td rowspan="${entries.length}" style="${style}text-align:center;">${esc(unit.quantity)}마리<br><span style="font-size:11px;color:#63758a;">강화 ${esc(unit.enhance)}</span></td>`:''}<td style="${style}text-align:center;">${esc(entry.number)}${entry.number==='공통'?'':'기'}</td><td style="${style}text-align:center;">${esc(entry.limitBreak)}</td><td style="${style}">${esc(entry.jewel)}</td></tr>`).join('');
   }).join('');
   const unitTable=`<table cellpadding="0" cellspacing="0" style="${tableStyle}"><colgroup><col width="28%"><col width="17%"><col width="11%"><col width="12%"><col width="32%"></colgroup><thead><tr>${['유닛','수량 · 강화','구분','돌파','쥬얼'].map(label=>`<th scope="col" style="${cellStyle}background:#eaf0f7;color:#3d5773;font-size:11px;text-align:center;">${esc(label)}</th>`).join('')}</tr></thead><tbody>${unitRows}</tbody></table>`;
-  const html=`<div style="font-family:Arial,'Malgun Gothic',sans-serif;text-align:left;color:#243447;background:#ffffff;max-width:680px;"><table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;border-collapse:collapse;border:1px solid #d4dfea;background:#ffffff;"><tbody><tr><td style="padding:18px;background:#233b56;color:#f4f8ff;"><strong style="font-size:20px;">클리어 기록 보고서</strong><br><span style="font-size:13px;line-height:1.8;">${esc(context)}</span><br><span style="font-size:12px;color:#d7e4f3;line-height:1.8;">${esc(stage)} · ${esc(specDpsLabel)} ${esc(specDps)}</span></td></tr><tr><td style="padding:18px;"><table role="presentation" cellpadding="0" cellspacing="0" style="${tableStyle}"><tbody><tr>${summary}</tr></tbody></table></td></tr>${section('빌드 설정',build)}${effectSections}${section(unitHeading,unitTable)}</tbody></table></div>`;
+  const html=`<div style="font-family:Arial,'Malgun Gothic',sans-serif;text-align:left;color:#243447;background:#ffffff;max-width:680px;"><table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;border-collapse:collapse;border:1px solid #d4dfea;background:#ffffff;"><tbody><tr><td style="padding:18px;background:#233b56;color:#f4f8ff;text-align:center;"><strong style="font-size:20px;">클리어 기록 보고서</strong></td></tr><tr><td style="padding:18px;"><table role="presentation" cellpadding="0" cellspacing="0" style="${tableStyle}"><tbody>${summary}</tbody></table></td></tr>${section('빌드 설정',build)}${effectSections}${section(unitHeading,unitTable)}</tbody></table></div>`;
   return {plainText:lines.join('\n'),html};
 }
 
@@ -2130,14 +2136,14 @@ async function copyDpsAnalysisBoard(button){
   if(!rows.length){showToast('복사할 유닛이 없습니다.','warn');return;}
   const readText=selector=>summary.querySelector(selector)?.textContent.replace(/\s+/g,' ').trim() || '—';
   const context=[readText('.dps-base-unit-context .spec-board-mode'),readText('.dps-base-unit-context .spec-board-difficulty')].filter(value=>value!=='—').join(' · ') || '—';
-  const stage=[readText('.unit-summary-stage strong'),readText('.unit-summary-stage small')].filter(value=>value!=='—').join(' · ') || '—';
+  const stageMain=readText('.unit-summary-stage strong');
+  const stageRound=readText('.unit-summary-stage small');
   const summaryItems=summary.querySelectorAll('.dps-base-unit-results > .dps-base-unit-summary-item');
   const metricText=item=>item?.querySelector('.dps-num')?.textContent.replace(/\s+/g,' ').trim() || '—';
   const required=metricText(summaryItems[0]);
   const expected=metricText(summaryItems[1]);
   const achievement=readText('.unit-achievement-value');
   const specDps=($('dpsVal')?.textContent || '—').trim();
-  const specDpsLabel=($('dpsMainLabel')?.textContent || '스펙 DPS').trim();
   const runeNames={ap:'파이널룬',td:'카오스룬',ua:'코스모스룬',harmony:'하모니아룬'};
   const runeName=runeNames[$('runeChoiceType')?.value] || '미분류';
   const readOption=id=>{
@@ -2162,32 +2168,33 @@ async function copyDpsAnalysisBoard(button){
     return Number.isFinite(value) && value>0 ? `${label} ${value}` : null;
   };
   const januaryScope=$('janRuneScope')?.value==='J2' ? '@J2' : '@J1';
-  const janNormal=activeNumber('janRuneNormal','1월 일반');
-  const janPlus=activeNumber('janRunePlus','1월 강화');
-  // 각 월의 일반·강화만 한 줄에 나란히 표시한다.
-  const monthRuneLines=[
-    [janNormal,janPlus],
-    [activeNumber('aprRuneNormal','4월 일반'),activeNumber('aprRunePlus','4월 강화')],
-    [activeNumber('sepRuneNormal','9월 일반'),activeNumber('sepRunePlus','9월 강화')]
-  ].map(entries=>entries.filter(Boolean).join('  ·  ')).filter(Boolean);
+  // 이달의 룬 효과는 월별 항목명 / 적용 수치를 2열로 표시한다.
+  const monthRuneRows=[
+    {label:'1월',value:[activeNumber('janRuneNormal','일반'),activeNumber('janRunePlus','강화')].filter(Boolean).join(' · ')},
+    {label:'4월',value:[activeNumber('aprRuneNormal','일반'),activeNumber('aprRunePlus','강화')].filter(Boolean).join(' · ')},
+    {label:'9월',value:[activeNumber('sepRuneNormal','일반'),activeNumber('sepRunePlus','강화')].filter(Boolean).join(' · ')}
+  ].filter(row=>row.value);
+  const monthRuneLines=monthRuneRows.map(row=>`${row.label} ${row.value}`);
   const repairValue=$('repairEnhance')?.value;
   const masterValue=$('enhanceMaster')?.value;
   const overEnhance=activeNumber('overEnhance','오버핸스');
   const repairEnhance=['ON','ON+'].includes(repairValue) ? (repairValue==='ON+'?'리페핸스+':'리페핸스') : null;
-  const masterEnhance=['ON','ON+'].includes(masterValue) ? `강화의 달인 ${masterValue==='ON+'?'선택 강화':'전체활성화'}` : null;
+  const masterEnhance=['ON','ON+'].includes(masterValue) ? (masterValue==='ON+'?'선택 강화':'전체활성화') : null;
   // 방어력 관통은 스펙 보드 정보이므로 클리어 기록 보고서에는 중복 출력하지 않는다.
-  const enhanceLines=[
-    [overEnhance,repairEnhance].filter(Boolean).join('  ·  '),
-    masterEnhance
-  ].filter(Boolean);
+  const enhanceRows=[
+    {label:'오버핸스',value:overEnhance?.slice('오버핸스 '.length)},
+    {label:'리페핸스',value:repairEnhance},
+    {label:'강화의 달인',value:masterEnhance}
+  ].filter(row=>row.value);
+  const enhanceLines=enhanceRows.map(row=>row.label==='리페핸스' ? row.value : `${row.label} ${row.value}`);
   const buffIds=['prodArtifact','prodNova','prodTeratron','prodAmon','prodAdun','prodKerrigan','prodOvermind','prodNarud','flowerSkill1','flowerSkill2','flowerSkill3'];
   const buffEntries=buffIds.map(id=>$(id)).filter(input=>input?.checked && !input.disabled)
     .map(input=>input.closest('label')?.querySelector('span')?.textContent.trim() || input.id);
   // 사용 중인 효과만 출력하며 선택 버프는 한 줄에 최대 네 개를 배치한다.
-  const januaryActive=Boolean(janNormal || janPlus);
+  const januaryActive=monthRuneRows.some(row=>row.label==='1월');
   const effects=[
-    {title:`이달의 룬 효과${januaryActive?` · 1월 적용 ${januaryScope}`:''}`,lines:monthRuneLines},
-    {title:'강화 효과',lines:enhanceLines},
+    {title:`이달의 룬 효과${januaryActive?` · 1월 적용 ${januaryScope}`:''}`,lines:monthRuneLines,rows:monthRuneRows},
+    {title:'강화 효과',lines:enhanceLines,rows:enhanceRows},
     {title:'선택 버프',lines:groupLines(buffEntries,4)}
   ];
   const selectedSlots=currentDpsBaseUnitSlots();
@@ -2203,7 +2210,7 @@ async function copyDpsAnalysisBoard(button){
     return {slot,name,quantity,enhance:unit ? String(dpsBaseUnitEnhanceValue(unit)) : '—',limitBreak,jewel,extras};
   });
   const {plainText,html}=formatDpsClearReport({
-    context,stage,achievement,specDpsLabel,specDps,required,expected,buildRows,effects,units:unitEntries
+    context,stageMain,stageRound,achievement,specDps,required,expected,buildRows,effects,units:unitEntries
   });
   let copied=false;
   button.disabled=true;
@@ -3948,6 +3955,7 @@ function bindReactiveInputs(){
     if(target.id==='spBankApply') syncSpBankApplyControl();
     if(target.id==='xp') normalizeXpInput();
     if(target.id==='round' || target.id==='skillRound' || target.id==='challengeTowerFloor' || target.id==='planetExplorationFloor') normalizeRoundInput(target.id);
+    if(target.id==='skillMode') normalizeRoundInput('skillRound');
     if(target.id==='diff'){
       resetDifficultyDependentFields();
       syncArtifactDpsViewSwitch();

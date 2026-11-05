@@ -40,6 +40,11 @@ const TOWER_FLOOR_INPUT_MIN=1;
 const TOWER_FLOOR_INPUT_MAX=90;
 const PLANET_EXPLORATION_FLOOR_INPUT_MIN=1;
 const PLANET_EXPLORATION_FLOOR_INPUT_MAX=100;
+function skillRoundMaximum(mode){
+  if(mode==='tower') return TOWER_FLOOR_INPUT_MAX;
+  if(mode==='planet') return PLANET_EXPLORATION_FLOOR_INPUT_MAX;
+  return ROUND_INPUT_MAX;
+}
 function normalizedIntegerRange(value, min, max, fallback=min){
   const raw=String(value ?? '').replace(/,/g,'').trim();
   const num=raw==='' ? NaN : Number(raw);
@@ -183,11 +188,15 @@ function erosionStoredValue(id){
 function calculateSkillDamageRows({ap=535,doubleSpace=1,round=1,mode='normal'}={}){
   const skillAp=Number.isFinite(Number(ap)) ? Number(ap) : 535;
   const doubleValue=Number.isFinite(Number(doubleSpace)) ? Number(doubleSpace) : 1;
-  const roundValue=normalizedRoundNumber(round);
-  const isTower=String(mode)==='tower';
-  const baseRound=isTower ? 30 : 100;
-  const perRound=isTower ? 0.016601 : 0.005;
-  const penalty=Math.max(0, Math.min(0.99, (roundValue-baseRound)*perRound));
+  const modeValue=String(mode);
+  const roundValue=normalizedIntegerRange(round,ROUND_INPUT_MIN,skillRoundMaximum(modeValue));
+  const isTower=modeValue==='tower';
+  const isPlanet=modeValue==='planet';
+  // 행성탐사: 33R부터 감소(32R 기준). 감소 계수는 도전의 탑 값으로 임시 추정하며 실측 검증 전이다.
+  // 83R 이후 고행 상승 중단은 별도 규칙이므로 스킬 피해 감소 계산에는 상한을 추가하지 않는다.
+  const baseRound=isPlanet ? 32 : (isTower ? 30 : 100);
+  const perRound=isPlanet ? 0.016601 : (isTower ? 0.016601 : 0.005);
+  const penalty=Math.max(0,Math.min(0.99,(roundValue-baseRound)*perRound));
   const data=[
     ['어스퀘이크',0.0223,0.000066,10],
     ['포이즌미스트',0.0432,0.0001755,15],
@@ -2193,7 +2202,7 @@ function shouldHideDpsForRound(){
   return raw==='0' || Number(raw)===0;
 }
 function normalizedSkillRoundNumber(value,mode=vs('skillMode')){
-  return Math.min(mode==='tower'?90:ROUND_INPUT_MAX,normalizedRoundNumber(value));
+  return normalizedIntegerRange(value,ROUND_INPUT_MIN,skillRoundMaximum(mode));
 }
 function normalizedSkillRoundString(value,mode=vs('skillMode')){
   return String(normalizedSkillRoundNumber(value,mode));
@@ -2219,7 +2228,7 @@ function normalizeRoundInput(id='round'){
     if(String(el.value)!==next){ el.value=next; return true; }
     return false;
   }
-  if(id==='skillRound') el.max=vs('skillMode')==='tower'?'90':String(ROUND_INPUT_MAX);
+  if(id==='skillRound') el.max=String(skillRoundMaximum(vs('skillMode')));
   const next=id==='skillRound'?normalizedSkillRoundString(el.value):normalizedRoundString(el.value);
   if(String(el.value)!==next){
     el.value=next;

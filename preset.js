@@ -2575,7 +2575,7 @@ function inspectTraitPresetImportCompatibility(parsed,options={}){
          (el.inputMode==='numeric' || el.inputMode==='decimal' || el.type==='number')){
         const number=Number(value.replace(/,/g,''));
         // 성소 라운드의 상한은 현재 화면 대신 해당 프리셋의 모드로 판단한다.
-        const maximum=id==='skillRound' ? (values.skillMode==='tower' ? TOWER_FLOOR_INPUT_MAX : ROUND_INPUT_MAX) : el.max;
+        const maximum=id==='skillRound' ? skillRoundMaximum(values.skillMode) : el.max;
         if(!value.trim() || !Number.isFinite(number) ||
            (el.min!=='' && number<Number(el.min)) || (maximum!=='' && number>Number(maximum))) invalid(`${path}.${id}`);
       }
