@@ -758,7 +758,7 @@ function storedTraitPresetCompatibility(){
     return {requiresUpdate:false,error:error?.message || '프리셋 데이터 형식을 확인할 수 없습니다.'};
   }
 }
-function renderTraitPresetRequiredNotice(status,store){
+function renderTraitPresetRequiredNotice(){
   const compatibility=storedTraitPresetCompatibility();
   const required=compatibility.requiresUpdate;
   const incompatible=!!compatibility.error;
@@ -787,7 +787,7 @@ function setTraitPresetActionDisplay(action,state){
 }
 function renderTraitPresetStatus(status,store){
   const backup=store.presets.length>0 && (status.backupNeeded || status.updatedPresetIds.length>0 || status.pendingUnitBoardPresetIds.length>0);
-  renderTraitPresetRequiredNotice(status,store);
+  renderTraitPresetRequiredNotice();
   qsa('[data-action="backupTraitPresets"]').forEach(btn=>{
     btn.classList.toggle('is-backup-needed',backup);
     btn.setAttribute('aria-label','프리셋 백업');
@@ -1801,7 +1801,7 @@ function traitPresetUpdateStatus(store=loadTraitPresetStore()){
   };
 }
 function renderTraitPresetUpdateStatus(store=loadTraitPresetStore()){
-  const compatibility=renderTraitPresetRequiredNotice(loadTraitPresetStatusData(),store);
+  const compatibility=renderTraitPresetRequiredNotice();
   const current=(!compatibility.error && !compatibility.requiresUpdate) ? traitPresetUpdateStatus(store) : {preset:null,hasChanges:false};
   const currentId=current.preset?.id || '';
   const hasChanges=!!current.preset && current.hasChanges;

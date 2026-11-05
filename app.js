@@ -1451,13 +1451,13 @@ function dpsBaseUnitStoreInput(field,unit){
   return inputId ? $(inputId(unit)) : null;
 }
 function dpsBaseUnitQuantityText(unit){
-  return dpsBaseUnitHasQuantity(unit) ? normalizeDpsBaseUnitQuantityValue(dpsBaseUnitStoreInput('quantity',unit)?.value || 0,unit) : '1';
+  return dpsBaseUnitHasQuantity(unit) ? normalizeDpsBaseUnitQuantityValue(dpsBaseUnitStoreInput('quantity',unit)?.value || 0) : '1';
 }
 function dpsBaseUnitQuantityControlHtml(unit, slotIndex, idPrefix='dpsBaseUnitSlotQty'){
   if(!unit) return '<span class="dps-base-unit-fixed-qty is-auto-value">—</span>';
   if(!dpsBaseUnitHasQuantity(unit)) return '<span class="dps-base-unit-fixed-qty is-auto-value">1</span>';
-  const limit=dpsBaseUnitQuantityLimit(unit);
-  const value=normalizeDpsBaseUnitQuantityValue(dpsBaseUnitStoreInput('quantity',unit)?.value || 0,unit);
+  const limit=dpsBaseUnitQuantityLimit();
+  const value=normalizeDpsBaseUnitQuantityValue(dpsBaseUnitStoreInput('quantity',unit)?.value || 0);
   const increaseDisabled=Number(value)>=limit ? ' disabled aria-disabled="true"' : '';
   const label=escapeHtml(dpsBaseUnitLabel(unit.id));
   return `<div class="dps-base-unit-qty-control" data-dps-base-unit-qty-control="${escapeHtml(unit.id)}"><button class="ui-choice-btn dps-base-unit-qty-btn" data-dps-base-unit-qty-delta="-1" data-dps-base-unit-id="${escapeHtml(unit.id)}" type="button" aria-label="${label} 마리수 감소">−</button><input class="dps-base-unit-qty-input" id="${idPrefix}${slotIndex+1}" data-dps-base-unit-slot-quantity="${escapeHtml(unit.id)}" inputmode="numeric" type="text" min="0" max="${limit}" value="${escapeHtml(value)}" aria-label="${label} 마리수"/><button class="ui-choice-btn dps-base-unit-qty-btn" data-dps-base-unit-qty-delta="1" data-dps-base-unit-id="${escapeHtml(unit.id)}" type="button" aria-label="${label} 마리수 증가"${increaseDisabled}>+</button></div>`;
@@ -1727,7 +1727,7 @@ function sanitizeDpsBaseUnitBelowHellSettings(){
     }
     if(dpsBaseUnitHasQuantity(unit)){
       const quantity=dpsBaseUnitStoreInput('quantity',unit);
-      const next=normalizeDpsBaseUnitQuantityValue(quantity?.value || 0,unit);
+      const next=normalizeDpsBaseUnitQuantityValue(quantity?.value || 0);
       if(quantity && quantity.value!==next){
         quantity.value=next;
         changed=true;
@@ -2297,7 +2297,7 @@ function syncDpsBaseUnitQuantitiesForSelection(selectedIds){
     if(!dpsBaseUnitHasQuantity(unit)) return;
     const input=dpsBaseUnitStoreInput('quantity',unit);
     if(!input) return;
-    const current=normalizeDpsBaseUnitQuantityValue(input.value || 0,unit);
+    const current=normalizeDpsBaseUnitQuantityValue(input.value || 0);
     const next=selected.has(unit.id) ? (Number(current)>0 ? current : '1') : '0';
     if(input.value!==next) input.value=next;
   });
@@ -2305,8 +2305,7 @@ function syncDpsBaseUnitQuantitiesForSelection(selectedIds){
 function normalizeDpsBaseUnitQuantityInput(input){
   if(!input) return '0';
   const unitId=input.getAttribute?.('data-dps-base-unit-slot-quantity') || '';
-  const unit=dpsBaseUnitById(unitId);
-  const next=normalizeDpsBaseUnitQuantityValue(input.value || 0,unit);
+  const next=normalizeDpsBaseUnitQuantityValue(input.value || 0);
   if(input.value!==next) input.value=next;
   if(unitId){
     const storeInput=dpsBaseUnitStoreInput('quantity',unitId);
@@ -2326,7 +2325,7 @@ function setDpsBaseUnitQuantity(unitId, value){
   if(!unit || !dpsBaseUnitHasQuantity(unit)) return '0';
   const input=dpsBaseUnitStoreInput('quantity',unit);
   if(!input) return '0';
-  input.value=normalizeDpsBaseUnitQuantityValue(value,unit);
+  input.value=normalizeDpsBaseUnitQuantityValue(value);
   enforceDpsBaseUnitVoidPowerQuantity(unit);
   return input.value;
 }

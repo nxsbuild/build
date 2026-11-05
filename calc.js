@@ -1123,7 +1123,7 @@ function dpsBaseUnitInstanceGroups(unitOrId,quantityOverride,jewelSettings=dpsJe
   const topazIndex=groups.findIndex(group=>group.name==='토파즈');
   if(quantity>=2 && topazIndex>=0){
     const holder=groups[topazIndex];
-    const target=groups.find((group,index)=>index!==topazIndex);
+    const target=groups.find((_,index)=>index!==topazIndex);
     if(target){
       const effect=window.DPS_DATA?.DPS_JEWEL_EFFECTS?.['토파즈']?.[holder.stats.mythic==='Y' ? 'mythic' : 'legendary'] || {};
       target.stats={...target.stats,as:target.stats.as+(Number(effect.as)||0),td:target.stats.td+(Number(effect.td)||0)};
@@ -1134,7 +1134,7 @@ function dpsBaseUnitInstanceGroups(unitOrId,quantityOverride,jewelSettings=dpsJe
 function dpsBaseUnitJewelStats(unitOrId,settings=null){
   return dpsJewelFinalStats(dpsBaseUnitJewelName(unitOrId),settings);
 }
-function dpsBaseUnitQuantityLimit(unitOrId=null){
+function dpsBaseUnitQuantityLimit(){
   const baseLimit=vs('coopMode')==='ON' ? 16 : 8;
   const septemberNormal=monthRuneCount('sep','normal');
   return baseLimit + septemberNormalBoardQuantityBonus(septemberNormal);
@@ -1145,8 +1145,8 @@ function normalizeDpsBaseUnitQuantityStorageValue(value){
   const maximum=16+septemberNormalBoardQuantityBonus(6);
   return String(normalizedIntegerRange(value,0,maximum,0));
 }
-function normalizeDpsBaseUnitQuantityValue(value,unitOrId=null){
-  const limit=dpsBaseUnitQuantityLimit(unitOrId);
+function normalizeDpsBaseUnitQuantityValue(value){
+  const limit=dpsBaseUnitQuantityLimit();
   return String(Math.max(0, Math.min(limit, Math.round(Number(value) || 0))));
 }
 function normalizeDpsBaseUnitEnhanceValue(value, fallback=0){
@@ -1162,7 +1162,7 @@ function dpsBaseUnitQuantity(unitOrId){
   const unit=resolveDpsBaseUnit(unitOrId);
   if(!dpsBaseUnitHasQuantity(unit)) return 1;
   const el=typeof $==='function' ? $(dpsBaseUnitQuantityInputId(unit)) : null;
-  return Number(normalizeDpsBaseUnitQuantityValue(el?.value ?? 0,unit));
+  return Number(normalizeDpsBaseUnitQuantityValue(el?.value ?? 0));
 }
 function dpsBaseUnitEnhanceValue(unitOrId,jewelName=null){
   if(!dpsBaseUnitCanUseEnhance(unitOrId,jewelName)) return 0;
@@ -1778,7 +1778,7 @@ function computeStatsFromCoreRaw(core,options={}){
     diff,targetRound:core.targetRound,upperStats:core.upperStats,M4,M7,M8,M10,M9,M16,M17,M18,M11,M12_dr:core.M12_dr,M13,
     displayHR:core.displayHR,displaySR:core.displaySR,effectivePierce:core.effectivePierce,enemyData:core.enemyData,specEnemyDamageRate,dt:core.dt
   });
-  const {hpRatio,shieldRatio,M12,actualM12,AB3,AB4,AB5,AB6,roundTime,rawM19,displayMultiplier,M19}=specBoard;
+  const {hpRatio,shieldRatio,M12,actualM12,roundTime,rawM19,displayMultiplier,M19}=specBoard;
 
   const enhanceStats=extendedResults ? unitEnhanceStats() : null;
   const dpsBaseUnit=extendedResults ? computeDpsBaseUnitBoardResult({

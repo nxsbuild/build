@@ -630,7 +630,6 @@ body .unit-slot-modal-icon{display:grid;place-items:center;box-sizing:border-box
 body .unit-slot-modal-heading{display:grid;gap:5px;min-width:0;flex:1;}
 body .unit-slot-modal-heading strong{color:var(--ui-integrated-head-text);font-size:var(--ui-main-title-font);font-weight:var(--ui-main-title-weight);text-shadow:none;}
 body .unit-slot-modal-heading small{color:#a9cde7;font-size:calc(10.75px * var(--app-font-scale));}
-body .unit-slot-modal-header .unit-detail-close{flex:none;display:grid;place-items:center;width:34px;height:34px;min-height:34px;padding:0;border:1px solid #6c7a84;border-radius:9px;background:var(--ui-button-bg);color:var(--ui-button-text);font-size:calc(22px * var(--app-font-scale));line-height:1;cursor:pointer;border-color:var(--ui-button-border);}
 body .unit-slot-modal-scroll{min-height:0;max-height:100%;overflow-y:auto;overscroll-behavior:contain;scrollbar-color:#507a9c #000;padding:18px;background:var(--ui-panel-body-bg);}
 body .unit-slot-modal-shell .unit-detail-panel{width:100%;min-width:0;padding:0;border:0;border-radius:0;background:transparent;box-sizing:border-box;}
 body .unit-slot-modal-shell .right-unit-slot-card.dps-base-unit-card{margin:0;padding:0;border:0;box-shadow:none;background:transparent;}
@@ -1698,7 +1697,7 @@ body .trait-optimizer-panel .optimizer-head,body .trait-limit-section>.optimizer
 body .trait-optimizer-panel .optimizer-head-title::before{content:"";display:grid;place-items:center;box-sizing:border-box;flex:0 0 32px;width:32px;height:28px;min-width:32px;padding:0;border:0;border-radius:0;background:var(--ui-header-sparkles-image) center/18px no-repeat;color:var(--ui-header-mark-color);font-size:17.25px;line-height:1;box-shadow:none;}
 
 
-/* ── 11 · 헤더 ── */
+/* ── 11 · 헤더·독립 창·유닛 보드 ── */
 /* 글로벌 헤더 넥서스 이동: 링크 동작은 유지하고 N 아이콘 하나로 공간을 절약한다. */
 .btn.subtle.header-nexus-link{display:inline-grid;place-items:center;flex:0 0 30px;box-sizing:border-box;width:30px;min-width:30px;height:30px;min-height:30px;padding:0;border:1px solid #385371;border-radius:10px;background:linear-gradient(145deg,#17283f,#0b1829);color:#d5f4ff;box-shadow:inset 0 1px rgba(255,255,255,.06);text-decoration:none;transition:transform .17s,filter .17s,box-shadow .17s,border-color .17s;}
 .btn.subtle.header-nexus-link:hover{border-color:#77b3ef;text-decoration:none;}
@@ -1760,7 +1759,7 @@ body .trait-preset-form-heading>small,body .trait-scope-heading>small,body .unit
 body :is(.basic-goal-brand-copy,.right-workspace-copy) > strong,body .trait-build-merged-panel .optimizer-head-title,body .trait-optimizer-panel .optimizer-head-title,body .trait-utility-section-label strong{font-size:var(--v0030-head-font);font-weight:var(--ui-main-title-weight);line-height:1.25;letter-spacing:-.2px;color:var(--ui-integrated-head-text);text-shadow:none;}
 body :is(.basic-goal-brand-mark,.right-workspace-mark,.trait-utility-section-mark){box-sizing:border-box;flex:0 0 var(--v0030-head-mark-width,32px);width:var(--v0030-head-mark-width,32px);height:var(--v0030-head-mark-height,28px);min-width:var(--v0030-head-mark-width,32px);min-height:var(--v0030-head-mark-height,28px);border:0;border-radius:0;background:transparent;color:var(--ui-header-mark-color);font-size:var(--v0030-head-mark-font,17.25px);line-height:1;}
 @media(max-width:520px){:root{--v0030-head-height:47px;--v0030-sub-height:36px;}}
-/* 1~10번 순차 추가 유닛 슬롯: 2열 카드, 저장된 세부 설정 모두 요약 */
+/* 유닛 보드 · 1~10번 슬롯·요약 카드·상세 설정 */
 body .unit-basic-summary{min-width:0;margin:0;border:0;border-radius:0;background:transparent;overflow-x:auto;overflow-y:hidden;}
 body .unit-basic-summary table{width:100%;min-width:590px;table-layout:fixed;border-collapse:collapse;font-size:calc(11.25px * var(--app-font-scale));line-height:1.23;text-align:center;color:#dceefa;}
 body .unit-basic-number{width:12%;}body .unit-basic-name{width:34%;}body .unit-basic-quantity{width:10%;}body .unit-basic-limit-break{width:15%;}body .unit-basic-jewel{width:29%;}
@@ -1807,7 +1806,7 @@ body.is-mobile .hdr-title-wrap h1{font-size:calc(13px * var(--app-font-scale));}
  body .basic-goal-brand-copy{min-width:0;}
  body .basic-goal-brand-copy strong{white-space:nowrap;overflow-wrap:anywhere;word-break:keep-all;line-height:1.25;font-size:var(--v0030-head-font); }
 }
-/* 0031 · one touch target per unit slot; visible speed uses actual battle calculations. */
+/* 유닛 슬롯 · 카드 헤더 및 삭제 버튼 */
 body .unit-slot-card-head .unit-list-remove{min-width:30px;height:30px;min-height:30px;padding:0 6px;}
 /* 유닛 카드: 등급과 유닛명, 상세 모달과 같은 3열 지표 가운데 정렬 */
 body .unit-slot-expansion{display:grid;gap:8px;padding:0 9px 9px;min-width:0;}
@@ -1815,16 +1814,8 @@ body .unit-slot-expansion-toggle{display:flex;align-items:center;justify-content
 body .unit-slot-expansion-toggle>span{font-size:16px;line-height:1;}
 body .unit-slot-expansion-toggle:focus-visible{outline:2px solid #8dbaf3;outline-offset:-2px;}
 body .unit-slot-expansion-rows{display:grid;gap:6px;min-width:0;}
-body .unit-slot-expansion-row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px 8px;min-width:0;}
-body .unit-slot-expansion-row>span{display:flex;justify-content:space-between;gap:3px;align-items:baseline;min-width:0;}
-body .unit-slot-expansion-row small{color:#99bed3;font-size:calc(9.75px * var(--app-font-scale));white-space:nowrap;}
-body .unit-slot-expansion-row b{color:#e1f0fb;font-size:calc(9.75px * var(--app-font-scale));overflow-wrap:anywhere;text-align:right;}
-@media(max-width:520px){
- body .unit-slot-expansion-row>span{flex-wrap:wrap;}
-}
 
-/* 0033: 모든 슬롯 헤더의 동일한 크기와 한 줄 구분선 */
-/* 0033: 브라우저 기본 확인창 대신 웹앱 안의 삭제 확인창 */
+/* 확인 모달 · 프리셋 복구 및 슬롯 삭제 */
 body .preset-recovery-dialog{box-sizing:border-box;width:min(560px,calc(100vw - 24px));max-height:calc(100dvh - 24px);margin:auto;padding:0;border:1px solid var(--ui-modal-border);border-radius:var(--ui-modal-radius);background:var(--ui-panel-body-bg);color:var(--ui-unified-text);box-shadow:var(--ui-modal-shadow);overflow:hidden;font-family:inherit;}
 body .preset-recovery-dialog::backdrop{background:var(--ui-modal-backdrop-bg);backdrop-filter:var(--ui-modal-backdrop-blur);}
 .preset-recovery-form{display:flex;flex-direction:column;min-height:0;max-height:calc(100dvh - 26px);margin:0;}
@@ -1879,7 +1870,7 @@ body .unit-slot-remove-dialog-actions button{font-family:inherit;font-size:calc(
 body .unit-slot-remove-cancel{background:var(--ui-button-bg);border:1px solid var(--ui-button-border);color:var(--ui-button-text);}
 body .unit-slot-remove-confirm{background:linear-gradient(135deg,#663445,#422330);border:1px solid #ad6e80;color:#fff1f4;}
 body .unit-slot-remove-dialog-actions button:focus-visible{outline:2px solid var(--role-manual-active-bd);outline-offset:2px;}
-/* 0033: 번호 배지는 루키 특성 등에서 사용하는 01~10 스타일과 일관되게 표시. */
+/* 유닛 슬롯 · 일련번호 배지 */
 body .unit-slot-heading{display:flex;align-items:center;min-width:0;gap:8px;}
 body .unit-slot-number{display:grid;place-items:center;flex:0 0 29px;width:29px;height:29px;box-sizing:border-box;border:1px solid #545e65;border-radius:7px;background:#111215;color:#cae9ff;font:calc(12px * var(--app-font-scale))/1 Consolas,monospace;font-variant-numeric:tabular-nums;letter-spacing:.2px;}
 @media(max-width:520px){body .unit-slot-heading{gap:5px;}body .unit-slot-number{flex-basis:26px;width:26px;height:26px;font-size:calc(11.25px * var(--app-font-scale));}}
@@ -1940,7 +1931,7 @@ body .ub-collection-head h3{display:flex;align-items:center;gap:9px;margin:0;col
 body #dpsBaseUnitSlotStack .unit-slot-cards-grid{padding:0;grid-template-columns:minmax(0,1fr);gap:12px;}
 body #dpsBaseUnitSlotStack .unit-slot-overview-card{border-color:var(--ui-panel-border);border-radius:12px;box-shadow:none;transition:border-color .15s;}
 body #dpsBaseUnitSlotStack .unit-slot-overview-card:hover{border-color:var(--ui-button-hover-border);}
-body #dpsBaseUnitSlotStack .unit-slot-card-head{padding:12px;gap:8px;min-height:48px;padding:9px 12px;}
+body #dpsBaseUnitSlotStack .unit-slot-card-head{gap:8px;min-height:48px;padding:9px 12px;}
 body #dpsBaseUnitSlotStack .unit-slot-heading{gap:10px;}
 body #dpsBaseUnitSlotStack .unit-slot-number{flex:0 0 28px;width:28px;font-size:11px;height:26px;}
 .ub-card-title{display:grid;gap:2px;min-width:0;}
@@ -1948,7 +1939,7 @@ body .ub-card-title .unit-slot-grade{color:#9ec4da;font-size:calc(10px * var(--a
 .ub-card-title strong{color:#f1faff;font-size:calc(14px * var(--app-font-scale));line-height:1.4;overflow-wrap:anywhere;}
 body #dpsBaseUnitSlotStack .unit-slot-card-actions .unit-list-remove{width:28px;min-width:28px;height:28px;min-height:28px;background:transparent;border-color:transparent;color:#9daec5;}
 body #dpsBaseUnitSlotStack .unit-list-remove:hover{border-color:#9b6571;color:#ffccd4;}
-body #dpsBaseUnitSlotStack .unit-slot-card-main{gap:10px;padding:14px 12px;padding:12px;}
+body #dpsBaseUnitSlotStack .unit-slot-card-main{gap:10px;padding:12px;}
 body #dpsBaseUnitSlotStack .unit-slot-card-main:focus-visible{outline:2px solid var(--ui-field-focus-border);outline-offset:-3px;}
 .ub-card-data{width:100%;min-width:0;}
 .ub-auto-label{display:flex;align-items:center;gap:6px;color:#9daec5;font-size:calc(10px * var(--app-font-scale));line-height:1.5;}
@@ -1968,7 +1959,7 @@ body #dpsBaseUnitSlotStack .unit-slot-card-main:focus-visible{outline:2px solid 
 .ub-setting>span{color:#9daec5;font-size:calc(10px * var(--app-font-scale));}
 .ub-setting>b{color:#e2e7f0;font-size:calc(12px * var(--app-font-scale));line-height:1.4;overflow-wrap:anywhere;}
 .ub-wide{grid-column:1/-1;}
-body #dpsBaseUnitSlotStack .unit-slot-add-card{gap:7px;border:1px dashed #53636b;border-radius:12px;background:transparent;flex-direction:row;min-height:64px;gap:10px;padding:12px;}
+body #dpsBaseUnitSlotStack .unit-slot-add-card{border:1px dashed #53636b;border-radius:12px;background:transparent;flex-direction:row;min-height:64px;gap:10px;padding:12px;}
 body #dpsBaseUnitSlotStack .unit-slot-add-symbol{font-size:25px;}
 body #dpsBaseUnitSlotStack .unit-slot-add-card small{color:#9daec5;font-size:calc(10px * var(--app-font-scale));}
 body #dpsUnitSlotModal .unit-slot-modal-dialog{width:min(780px,calc(100vw - 32px));border-radius:18px;}
@@ -2003,7 +1994,7 @@ body #dpsUnitSlotModal .ub-editor-field :is(input,select,button):disabled{opacit
 .ub-live-result .ub-metric{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 0;border-top:1px solid var(--ui-panel-border);}
 .ub-live-result p{margin:14px 0 0;color:#9daec5;font-size:calc(10px * var(--app-font-scale));line-height:1.6;}
 body #dpsUnitSlotModal .unit-slot-empty-guidance{margin-top:14px;color:#9daec5;font-size:11px;}
-body #dpsUnitSlotModal .unit-slot-modal-footer{padding:16px 22px;gap:14px;grid-template-columns:minmax(0,1fr) minmax(160px,.65fr);grid-template-columns:repeat(2,minmax(0,1fr));}
+body #dpsUnitSlotModal .unit-slot-modal-footer{padding:16px 22px;gap:14px;grid-template-columns:repeat(2,minmax(0,1fr));}
 body #dpsUnitSlotModal .unit-slot-modal-footer .unit-slot-modal-done{grid-column:2;}
 body #dpsUnitSlotModal .dps-base-unit-extra-settings{margin-top:20px;padding-top:18px;border-top:1px solid var(--ui-panel-border);}
 body #dpsUnitSlotModal .dps-base-unit-extra-settings h4{margin-bottom:12px;color:#e2e7f0;font-size:12px;text-align:left;margin:0 0 14px;padding:0;}
@@ -2080,10 +2071,10 @@ body #dpsBaseUnitSlotStack .unit-slot-expansion-toggle{display:flex;align-items:
 body #dpsBaseUnitSlotStack .ub-extra-heading{display:flex;align-items:center;gap:7px;font-size:calc(11px * var(--app-font-scale));line-height:1.4;}
 body #dpsBaseUnitSlotStack .ub-extra-heading>b{display:grid;place-items:center;min-width:20px;min-height:20px;padding:1px 5px;border:1px solid var(--ui-panel-border);border-radius:5px;color:#a9c8ff;font:calc(10px * var(--app-font-scale))/1.4 Consolas,monospace;}
 body #dpsBaseUnitSlotStack .ub-extra-chevron{color:#9daec5;font-size:16px;line-height:1;}
-body #dpsBaseUnitSlotStack .unit-slot-expansion-rows{display:grid;gap:7px;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;}
+body #dpsBaseUnitSlotStack .unit-slot-expansion-rows{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;}
 body #dpsBaseUnitSlotStack .unit-slot-expansion-rows[hidden]{display:none;}
-body #dpsBaseUnitSlotStack .ub-extra-card{display:grid;gap:10px;align-items:center;min-width:0;border:1px solid var(--ui-panel-border);border-radius:8px;background:var(--ui-panel-body-bg);grid-template-columns:minmax(0,1fr) auto;gap:8px 4px;padding:9px;align-items:start;}
-body #dpsBaseUnitSlotStack .ub-extra-number{display:grid;place-items:center;min-height:30px;border:1px solid var(--ui-panel-border);border-radius:6px;background:var(--role-readonly-bg);color:#a9c8ff;line-height:1.3;grid-column:1;grid-row:1;justify-self:start;width:auto;min-height:22px;padding:2px 5px;font-size:calc(10px * var(--app-font-scale));}
+body #dpsBaseUnitSlotStack .ub-extra-card{display:grid;min-width:0;border:1px solid var(--ui-panel-border);border-radius:8px;background:var(--ui-panel-body-bg);grid-template-columns:minmax(0,1fr) auto;gap:8px 4px;padding:9px;align-items:start;}
+body #dpsBaseUnitSlotStack .ub-extra-number{display:grid;place-items:center;border:1px solid var(--ui-panel-border);border-radius:6px;background:var(--role-readonly-bg);color:#a9c8ff;line-height:1.3;grid-column:1;grid-row:1;justify-self:start;width:auto;min-height:22px;padding:2px 5px;font-size:calc(10px * var(--app-font-scale));}
 body #dpsBaseUnitSlotStack :is(.ub-extra-jewel,.ub-extra-break){display:grid;align-content:center;min-width:0;gap:4px;}
 body #dpsBaseUnitSlotStack .ub-extra-card small{color:#9daec5;font-size:calc(9px * var(--app-font-scale));line-height:1.4;white-space:nowrap;}
 body #dpsBaseUnitSlotStack .ub-extra-card b{color:#e1f0fb;font-size:calc(11px * var(--app-font-scale));line-height:1.4;overflow-wrap:anywhere;}
@@ -2151,7 +2142,7 @@ body .analytics-polish #statCompareGrid .stat-row>.sc-name{padding-left:12px;lin
 body .analytics-polish #statCompareGrid .stat-row>.sc-val{justify-content:center;text-align:center;text-align-last:center;padding-inline:8px;font-variant-numeric:tabular-nums;}
 body .analytics-polish #statCompareGrid .stat-row:not(.stat-head-row)>.sc-val:nth-child(2){color:#b5c1d2;}
 body .analytics-polish #statCompareGrid .stat-head-row>.sc-val{font-weight:500;}
-body .analytics-polish #dpsBaseUnitSlotStack :is(.unit-slot-card,.ub-extra-card){box-shadow:none;}
+body .analytics-polish #dpsBaseUnitSlotStack .ub-extra-card{box-shadow:none;}
 body .analytics-polish #dpsBaseUnitSlotStack .unit-slot-card-head{background:rgba(23,35,47,.2);}
 body .analytics-polish #dpsBaseUnitSlotStack .unit-slot-heading{min-width:0;flex:1;}
 body .analytics-polish #dpsBaseUnitSlotStack .ub-card-title{flex:1;}
