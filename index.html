@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <script>
-window.APP_VERSION = "build-V32";
+window.APP_VERSION = "builder-V32";
 window.DPS_BUILD_VERSION = window.APP_VERSION;
 window.DPS_STANDALONE_VIEW = (function(){
   var requested=new URLSearchParams(window.location.search).get('dpsWindow');
@@ -224,14 +224,14 @@ html:not(.dps-booting) #dpsBootScreen{display:none}
 <meta content="개복디 빌더 - 통합 빌드 계산 HUB" property="og:title"/>
 <meta content="특성 투자·재화 사용량 계산부터 스펙·DPS 분석까지 한 번에, 통합 빌드 계산 HUB" property="og:description"/>
 <!-- OG/Twitter 이미지 캐시: 앱 버전 변경 시 아래 세 URL을 같은 버전으로 맞춥니다. -->
-<meta content="https://nxsbuild.github.io/build/logo.png?v=build-V32" property="og:image"/>
-<meta content="https://nxsbuild.github.io/build/logo.png?v=build-V32" property="og:image:secure_url"/>
+<meta content="https://nxsbuild.github.io/build/logo.png?v=builder-V32" property="og:image"/>
+<meta content="https://nxsbuild.github.io/build/logo.png?v=builder-V32" property="og:image:secure_url"/>
 <meta content="image/png" property="og:image:type"/>
 <meta content="개복디 빌더 로고" property="og:image:alt"/>
 <meta content="summary_large_image" name="twitter:card"/>
 <meta content="개복디 빌더 - 통합 빌드 계산 HUB" name="twitter:title"/>
 <meta content="특성 투자·재화 사용량 계산부터 스펙·DPS 분석까지 한 번에, 통합 빌드 계산 HUB" name="twitter:description"/>
-<meta content="https://nxsbuild.github.io/build/logo.png?v=build-V32" name="twitter:image"/>
+<meta content="https://nxsbuild.github.io/build/logo.png?v=builder-V32" name="twitter:image"/>
 <meta content="개복디 빌더 로고" name="twitter:image:alt"/>
 <link href="https://cdn.jsdelivr.net" rel="preconnect"/>
 <link crossorigin="" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" rel="stylesheet"/>
@@ -617,7 +617,19 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 
 </div>
 </div>
-<div id="basicSettingsPanel1" class="integrated-content basic-rune-panel" role="tabpanel" aria-labelledby="basicSettingsTab1" data-integrated-panel="basicSettings" data-integrated-index="1" hidden><div class="sg rune-spec clean-rune-card rune-unified-card"><div id="runeInfoPanel0" class="integrated-content is-active">
+<div id="basicSettingsPanel1" class="integrated-content basic-rune-panel" role="tabpanel" aria-labelledby="basicSettingsTab1" data-integrated-panel="basicSettings" data-integrated-index="1" hidden>
+<div class="sg unit-enhance-card rune-effect-panel rune-enhance-summary-top">
+<div class="unit-enhance-right">
+<div class="unit-enhance-summary-stack" aria-label="강화 효과 계산 요약">
+<div class="enhance-summary-card" data-metric="probability"><span>강화 확률</span><b id="enhanceChanceView">—</b></div>
+<div class="enhance-summary-card" data-metric="attempts"><span>강화 횟수</span><b id="enhanceCountView">—</b></div>
+<div class="enhance-summary-card" data-metric="expectation"><span>강화 기대값</span><b id="enhanceValueView">—</b></div>
+<div class="enhance-summary-card rune-impact-card rune-impact-combined-card" data-metric="impact"><span>수량 / 공격력</span><b id="sepRuneImpactView" class="rune-impact-measures"><span class="rune-impact-item"><strong id="sepRuneQuantityView">—</strong><small>마리</small></span><i class="rune-impact-divider" aria-hidden="true"></i><span class="rune-impact-item"><strong id="sepRuneAttackView">—</strong><small>공격력</small></span></b></div>
+</div>
+<input id="unitGrade" type="hidden" value=""/>
+<input id="unitLevel" type="hidden" value="0"/>
+</div>
+</div><div class="sg rune-spec clean-rune-card rune-unified-card"><div id="runeInfoPanel0" class="integrated-content is-active">
 
 <div class="rune-panel tidy-rune-panel">
 <div class="rune-option-card">
@@ -824,35 +836,26 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 </div>
 </div>
 </div>
-<div class="unit-enhance-right">
-<div class="unit-enhance-summary-stack" aria-label="강화 효과 계산 요약">
-<div class="enhance-summary-card" data-metric="probability"><span>강화 확률</span><b id="enhanceChanceView">—</b></div>
-<div class="enhance-summary-card" data-metric="attempts"><span>강화 횟수</span><b id="enhanceCountView">—</b></div>
-<div class="enhance-summary-card" data-metric="expectation"><span>강화 기대값</span><b id="enhanceValueView">—</b></div>
-<div class="enhance-summary-card rune-impact-card rune-impact-combined-card" data-metric="impact"><span>수량 / 공격력</span><b id="sepRuneImpactView" class="rune-impact-measures"><span class="rune-impact-item"><strong id="sepRuneQuantityView">—</strong><small>마리</small></span><i class="rune-impact-divider" aria-hidden="true"></i><span class="rune-impact-item"><strong id="sepRuneAttackView">—</strong><small>공격력</small></span></b></div>
-</div>
-<input id="unitGrade" type="hidden" value=""/>
-<input id="unitLevel" type="hidden" value="0"/>
-</div>
+
 </div>
 </div></div></div></div>
 <div id="basicSettingsPanel2" class="integrated-content basic-settings-bus-panel" role="tabpanel" aria-labelledby="basicSettingsTab2" data-integrated-panel="basicSettings" data-integrated-index="2" hidden>
 <section class="basic-settings-inline-section" aria-label="버스 기사"><h4 class="basic-settings-inline-title">버스 기사</h4><div class="basic-tab-bus">
-<div class="data-card bus-cut-card board-modal-card"><div class="board-modal-panel-label"><div><strong>승객별 기준값</strong><small>현재 시작 SP 기준 자동 계산</small></div></div>
+<div class="data-card bus-cut-card board-modal-card">
 <div class="bus-cut-list" id="xpCutRows"></div>
 </div>
 </div></section>
 <section class="basic-settings-inline-section" aria-label="성소 스킬"><h4 class="basic-settings-inline-title">성소 스킬</h4><div class="basic-tab-sanctuary">
 <div class="data-card final-damage-card board-modal-card">
 <div class="skill-damage-layout" id="skillDamageLayout">
-<div class="skill-setting-panel"><div class="board-modal-panel-label"><div><strong>스킬 설정</strong><small>파란색 입력·선택 / 어두운색 자동 계산</small></div></div>
+<div class="skill-setting-panel">
 <div class="ir skill-ir"><label>더블스페</label><select id="skillDouble"><option selected="" value="1">더블스페</option><option value="1.5">더블스페+</option><option value="1.67">더블스페++</option></select></div>
 <div class="ir skill-ir"><label>모드</label><select id="skillMode"><option selected="" value="normal">일반모드</option><option value="tower">도전의 탑</option></select></div>
 <div class="ir skill-ir"><label>라운드</label><input id="skillRound" inputmode="numeric" max="300" type="text" value="1"/></div>
 <div class="ir skill-ir"><label>마법공격력</label><b class="skill-display-value" id="skillAPView">자동</b></div>
 <div class="ir skill-ir"><label>데미지 감소율</label><b class="skill-display-value" id="skillPenaltyView">—</b></div>
 </div>
-<div class="skill-result-panel"><div class="board-modal-panel-label"><div><strong>스킬 피해량</strong><small>현재 설정 기준 자동 계산 결과</small></div></div>
+<div class="skill-result-panel">
 <div class="skill-list-head"><span>스킬</span><span>피해량</span></div>
 <table class="mini-table skill-damage-list"><thead><tr><th>스킬</th><th>총 피해량(%)</th><th>설정</th></tr></thead><tbody id="skillRows"></tbody></table>
 </div>
