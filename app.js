@@ -5,6 +5,7 @@
  * - 유닛 보드: 선택/슬롯/보석/공허 처리
  * - 프리셋·최적화·이벤트: 사용자 액션 연결
  */
+/* ── 01 · 설정·공통 상태 ── */
 /* 설정·공통 상태 */
 const DPS_CONFIG={
   storage:{
@@ -122,6 +123,7 @@ const AUTO_INVEST_EXCLUDED_ROWS=new Set([45,87]);
 const ENCHANT_INPUT_IDS=['enchAD','enchCRI','enchUA','enchTD','enchSR','enchHR'];
 const ENCHANT_INPUT_ID_SET=new Set(ENCHANT_INPUT_IDS);
 
+/* ── 02 · 공통 UI·입력 유틸리티 ── */
 /* 공통 UI·입력 유틸 */
 function rememberAppIssue(kind,label,error){
   window.DPS_LAST_ISSUE={kind,label,error,time:Date.now()};
@@ -281,6 +283,7 @@ function specBoardPierceValue(){
   return Number(normalizeSpecBoardPierceValue(vs('specBoardPierce'))) || 0;
 }
 
+/* ── 03 · 입력·화면 동기화 ── */
 /* 입력·화면 동기화 */
 function syncRuneChoice(){
   const type=vs('runeChoiceType') || 'harmony';
@@ -677,6 +680,7 @@ function bindTraitLimitChoiceEvents(){
     },true);
   });
 }
+/* ── 04 · 계산 실행·예약 ── */
 /* 계산 실행·예약 */
 let appCalculationRevision=0;
 let appUpdateTimer=0;
@@ -892,6 +896,7 @@ function renderSkillDamage(s){
   if(!el) return;
   el.innerHTML=rows.items.map(row=>`<tr><td>${row.name}</td><td>${fmt(row.total,1)}%</td><td>AP ${fmt(ap,0)} / 더블 ${fmt(rows.doubleSpace,2)}</td></tr>`).join('');
 }
+/* ── 05 · DPS표 및 미리보기 ── */
 /* DPS표: 모드·난이도·고행별 계산 및 화면 구성 */
 const DPS_TABLE_DIFFICULTIES=DPS_CONFIG.dpsTable.difficulties;
 const COOP_DPS_TABLE_DIFFICULTIES=DPS_TABLE_DIFFICULTIES.slice(0, DPS_TABLE_DIFFICULTIES.indexOf('Hall Of Fame') + 1);
@@ -1053,6 +1058,7 @@ function bindDpsCompareEvents(){
     else if(!event.shiftKey && document.activeElement===last){event.preventDefault();first.focus();}
   });
 }
+/* ── 06 · 저장 필드 레지스트리 ── */
 /* 기본 정보·유닛 저장 필드 레지스트리 */
 const FIELD_REGISTRY={
   sp:{kind:'기본 정보',name:'시작 SP',save:true},
@@ -1154,6 +1160,7 @@ const FIELD_REGISTRY={
   unitLevel:{kind:'룬효과 버프',name:'유닛 레벨'},
 };
 
+/* ── 07 · 유닛 보드 상태·표시 ── */
 /* 유닛 보드 상태·표시 */
 function dpsBaseUnitFieldEntries(){
   const units=dpsBaseUnitList();
@@ -1455,6 +1462,7 @@ function dpsBaseUnitQuantityControlHtml(unit, slotIndex, idPrefix='dpsBaseUnitSl
   const label=escapeHtml(dpsBaseUnitLabel(unit.id));
   return `<div class="dps-base-unit-qty-control" data-dps-base-unit-qty-control="${escapeHtml(unit.id)}"><button class="ui-choice-btn dps-base-unit-qty-btn" data-dps-base-unit-qty-delta="-1" data-dps-base-unit-id="${escapeHtml(unit.id)}" type="button" aria-label="${label} 마리수 감소">−</button><input class="dps-base-unit-qty-input" id="${idPrefix}${slotIndex+1}" data-dps-base-unit-slot-quantity="${escapeHtml(unit.id)}" inputmode="numeric" type="text" min="0" max="${limit}" value="${escapeHtml(value)}" aria-label="${label} 마리수"/><button class="ui-choice-btn dps-base-unit-qty-btn" data-dps-base-unit-qty-delta="1" data-dps-base-unit-id="${escapeHtml(unit.id)}" type="button" aria-label="${label} 마리수 증가"${increaseDisabled}>+</button></div>`;
 }
+/* ── 08 · 쥬얼·슬롯·유닛 상세 설정 ── */
 /* 쥬얼 이미지·표시 및 설정 */
 function getJewelImageSources(name){
   const jewelName=String(name||'').trim();
@@ -2739,6 +2747,7 @@ function bindDpsBaseUnitControlEvents(){
   }, true);
 }
 
+/* ── 09 · 통합 헤더·화면 전환 ── */
 /* 통합 헤더 하위 탭: 원래 DOM을 유지하여 계산·저장 필드 재생성을 방지 */
 function activateIntegratedTab(group,index){
   const tabs=[...qsa(`[data-integrated-tab="${group}"]`)];
@@ -2966,6 +2975,7 @@ function bindDamageBoardSwitchEvents(){
     requestAppUpdate();
   }, true);
 }
+/* ── 10 · 특성 보드·투자·최적화 ── */
 /* 특성 보드: 목록·수동 투자·추천·최적화 */
 const INFINITE_TRAIT_TIER='무한∞';
 const TIERS=['루키','비기너','아마추어','프로','엑스퍼트','마스터','디바인','더원1','더원2',INFINITE_TRAIT_TIER,'EP특성','RP특성','심연특성'];
@@ -3307,6 +3317,7 @@ function clearAll(){
     return false;
   }
 }
+/* ── 11 · 화면 설정·승단 ── */
 /* 화면 설정 */
 function isFontScaleLockedViewport(){
   const w=window.innerWidth || document.documentElement.clientWidth || 0;
@@ -3834,6 +3845,7 @@ function bindZeroScoreCalculator(){
   }, true);
 }
 
+/* ── 12 · 화면 이벤트 및 연결 ── */
 /* 이벤트·초기화 */
 let appEventsBound=false;
 const ACTION_HANDLERS={
@@ -4008,6 +4020,7 @@ function bindAppEvents(){
     bindButtonPressFeedback, bindIndependentWindowButton, bindDamageBoardTabEvents, bindDpsCompareEvents, bindDamageBoardSwitchEvents, bindAppTitleVersion, bindPlanetExplorationCalendar
   ].forEach(fn=>fn());
 }
+/* ── 13 · 선택 목록 UI 및 동기화 ── */
 // 일반 select는 계산·저장 이벤트의 원본으로 유지하고, 표시와 조작만 앱 내부 목록으로 대체합니다.
 function initAppSelectDropdowns(){
   if(window.__dpsAppSelectDropdownsReady) return;
@@ -4258,6 +4271,7 @@ function initAppSelectDropdowns(){
   refresh();
 }
 
+/* ── 14 · 앱 초기화 및 준비 상태 ── */
 function initApp(){
   loadFontScale();
   renderZeroScoreCalculatorRows();

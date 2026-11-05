@@ -21,6 +21,7 @@
     return;
   }
 
+  /* ── 01 · 반응형 상태·측정·복원 ── */
   /* 반응형 상태·측정 헬퍼 */
   const TABBED_PAGES = [
     { key: 'basic', label: '기본 정보', selectors: ['.col-left'] },
@@ -68,6 +69,7 @@
     state.traitScrollObserver = new ResizeObserver(scheduleTraitScrollClamp);
     state.traitScrollObserver.observe(panel);
   }
+  /* ── 02 · 뷰포트 판정·오프셋 ── */
   /* 뷰포트 판정 */
   function getViewportSize() {
     const root = document.documentElement;
@@ -128,6 +130,7 @@
     if (basicTopTab) basicTopTab.textContent = mode === 'is-mobile' || mode === 'is-tablet' ? '기본 설정' : '기본 정보';
     updateMobileOffsets();
   }
+  /* ── 03 · 탭 레이아웃·복원 ── */
   /* 탭 레이아웃 */
   function rememberPosition(el) {
     if (!el || state.restore.has(el)) return;
@@ -292,6 +295,7 @@
       });
     });
   }
+  /* ── 04 · 이벤트·초기화 ── */
   /* 갱신·초기화 */
   function scheduleApply() {
     if (state.touchScrolling) {

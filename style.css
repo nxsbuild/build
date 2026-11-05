@@ -4,11 +4,13 @@
  * - DPS표/유닛 보드
  * - 프리셋/모바일 반응형
  */
+/* ── 01 · 공통 테마·토큰 ── */
 /* 기본 토큰 */
 :root{--ui-header-sparkles-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23a9c8ff%22%20stroke-width%3D%221.8%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22m12%203%201.912%205.813a2%202%200%200%200%201.275%201.275L21%2012l-5.813%201.912a2%202%200%200%200-1.275%201.275L12%2021l-1.912-5.813a2%202%200%200%200-1.275-1.275L3%2012l5.813-1.912a2%202%200%200%200%201.275-1.275L12%203Z%22%2F%3E%3Cpath%20d%3D%22M5%203v4M3%205h4M19%2017v4M17%2019h4%22%2F%3E%3C%2Fsvg%3E");--ui-integrated-head-text:#e6edf7;--ui-integrated-head-height:50px;--ui-layout-bg:#000000;--ui-panel-radius:14px;--app-font-scale:1;--font-main:"Pretendard","Malgun Gothic","Apple SD Gothic Neo",sans-serif;--bd:#272c32;--ui-sub:#9ca9bf;--ui-line2:#333941;--ui-line-soft:#262b31;--ui-shadow-soft:0 10px 28px rgba(0,0,0,.22);--ui-unified-line:#2c3139;--ui-unified-line-strong:#3e444d;--ui-unified-text:#e6edf7;--ui-unified-muted:#8795ac;--subhead-text:#cfe2ff;--btn-action-bg:#2d64af;--btn-action-border:#6e9bd8;--btn-action-border-hover:#a3c5ff;--btn-action-text:#f6f9ff;--ui-button-bg:linear-gradient(180deg,#272b34,#1b1e26);--ui-button-border:#4d5b70;--ui-button-hover-border:#7799ca;--ui-button-text:#dbe5f4;--ui-button-shadow:0 2px 0 rgba(0,0,0,.28),0 4px 8px rgba(0,0,0,.20),inset 0 1px 0 rgba(255,255,255,.08);--ui-button-active-bg:linear-gradient(135deg,#326fc3,#234d8b);--ui-button-active-border:#7ca8e3;--ui-button-active-text:#f3f8ff;--ui-button-active-shadow:inset 0 1px rgba(255,255,255,.16),0 3px 10px rgba(33,78,145,.16);--ui-button-common-pad-x:10px;--ui-button-common-font:var(--ui-item-label-font);--ui-button-gap:4px;--ui-action-button-h:32px;--ui-choice-button-h:31px;--ui-tab-button-h:32px;--ui-toggle-button-h:28px;--ui-step-button-h:30px;--ui-toolbar-button-h:30px;--ui-icon-button-size:30px;--ui-field-border:#4d6384;--ui-field-hover-border:#7a9ed5;--ui-field-focus-border:#93bafa;--ui-input:#141922;--field-label-text:#e5f3ff;--result-table-label-bg:#0f1013;--result-table-value-bg:#0c0d10;--result-table-text:#d7e6ff;--section-head-text:#e6edf7;--role-manual-input-bg:#1c212b;--role-manual-input-hover-bg:#273144;--role-manual-select-bg:var(--role-manual-input-bg);--role-manual-select-hover-bg:#273144;--role-manual-active-bg:#26384f;--role-manual-active-bd:#85b4f5;--role-manual-active-text:#f2f7ff;--role-manual-active-shadow:none;--role-manual-row-bg:rgba(32,33,36,.13);--role-manual-row-bd:rgba(135,149,164,.42);--role-interactive-bg:var(--role-manual-input-bg);--role-interactive-bd:var(--ui-field-current-border,var(--ui-field-border));--role-readonly-bg:#0b0d12;--role-readonly-bd:#2b303b;--ui-focus:0 0 0 3px rgba(112,162,245,.15);--section-head-h:38px;--section-head-pad-x:8px;--section-gap:8px;--layout-card-gap:16px;--dps-card-head-h:var(--section-head-h);--ui-panel:var(--ui-panel-body-bg);--ui-line:#293442;--ui-line-strong:#373c44;--ui-text:#e2e7f0;--ui-radius:15px;--ui-control-radius:9px;--section-head-bg:var(--ui-integrated-head-bg);--section-head-bd:var(--ui-integrated-head-line);--color-white:#0c0d10;--color-slate-50:#0b0c0f;--color-slate-200:#26364d;--color-slate-300:#3a4d67;--color-slate-400:#8394aa;--color-slate-500:#95a6bd;--color-slate-600:#aebdd1;--color-slate-700:#cad7e6;--color-slate-900:#eef4fb;--color-gray-900:#0a0b0e;--color-text-main:#e6edf7;--color-amber-line:#a9742b;--on-dark:#f8fbff;--ui-panel-body-bg:#08090b;--ui-modal-border:#293442;--ui-modal-radius:18px;--ui-modal-backdrop-bg:rgba(0,0,0,.78);--ui-modal-backdrop-blur:blur(7px);--ui-modal-shadow:0 28px 95px rgba(0,0,0,.72),0 0 0 1px rgba(155,185,235,.06),inset 0 1px rgba(255,255,255,.06);--ui-panel-border:#293442;--ui-panel-shadow:0 10px 28px rgba(0,0,0,.34),inset 0 1px rgba(255,255,255,.04);--ui-integrated-head-bg:linear-gradient(105deg,#13181e,#0c1014 78%);--ui-integrated-subhead-bg:#08090b;--ui-integrated-head-line:#252d35;--ui-integrated-subhead-text:#cfe2ff;color-scheme:dark;--ui-header-mark-bg:transparent;--ui-header-mark-border:transparent;--ui-header-mark-color:#a9c8ff;--ui-main-title-font:calc(16px * var(--app-font-scale));--ui-primary-tab-font:calc(14px * var(--app-font-scale));--ui-nested-tab-font:calc(13px * var(--app-font-scale));--ui-sub-title-font:calc(13px * var(--app-font-scale));--ui-item-label-font:calc(12px * var(--app-font-scale));--ui-main-title-weight:400;--ui-sub-title-weight:400;--v0030-head-height:50px;--v0030-head-font:var(--ui-main-title-font);--v0030-sub-height:36px;--v0030-feature-font:var(--ui-sub-title-font);}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;font-weight:400;scrollbar-width:none;-ms-overflow-style:none;}
 *::-webkit-scrollbar{width:0;height:0;display:none;}
 body{font-size:calc(12.5px * var(--app-font-scale));line-height:1.55;min-height:100vh;overflow:hidden;letter-spacing:-.01em;}
+/* ── 02 · 앱 프레임·카드 ── */
 /* 앱 프레임·카드 */
 .wrap{grid-template-columns:minmax(0,35fr) minmax(0,30fr) minmax(0,35fr);max-width:none;margin:0;display:grid;height:100vh;width:100vw;overflow:hidden;gap:0;grid-template-rows:0 0 minmax(0,1fr);background:var(--ui-layout-bg);}
 .hdr{display:flex;align-items:center;gap:12px;grid-column:1/-1;grid-row:1;height:52px;z-index:5;}
@@ -59,6 +61,7 @@ body{font-size:calc(12.5px * var(--app-font-scale));line-height:1.55;min-height:
 .trait-tools .mini-btn{min-width:max-content;height:30px;min-height:30px;padding:0 10px;}
 .trait-title{flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .trait-tools{display:flex;flex:0 0 auto;align-items:center;justify-content:flex-end;gap:4px;min-width:0;margin-left:auto;}
+/* ── 03 · 입력·룬·강화 ── */
 /* 입력·룬·강화 */
 .month-rune-selects{grid-template-columns:repeat(3,minmax(0,1fr));display:grid;gap:8px;}
 .mini-ir{display:grid;grid-template-columns:1fr;}
@@ -276,6 +279,7 @@ body.is-mobile .clean-rune-card .enchant-result-value{display:flex;align-items:c
 body.is-tablet .clean-rune-card .enchant-result-value,body.is-pc-portrait .clean-rune-card .enchant-result-value{display:flex;align-items:center;justify-content:center;height:31px;border:1px solid var(--role-readonly-bd, var(--color-slate-300));border-radius:8px;background:var(--ui-input,#0b0c0f);color:var(--color-text-main);font-family:Consolas,monospace;}
 .title-td-row label{height:28px;min-height:28px;line-height:1.05;white-space:nowrap;font-size:var(--ui-item-label-font);}
 .title-td-row select{height:28px;min-height:28px;align-self:center;}
+/* ── 04 · 분석 보드·모달 ── */
 /* 분석 보드 4번째 탭: DPS표 모달 */
 .dps-compare-overlay{position:fixed;inset:0;z-index:20020;display:flex;align-items:flex-start;justify-content:center;box-sizing:border-box;padding:max(12px,calc((100dvh - 706px)/2)) 12px 12px;background:var(--ui-modal-backdrop-bg);backdrop-filter:var(--ui-modal-backdrop-blur);-webkit-backdrop-filter:var(--ui-modal-backdrop-blur);}
 .dps-compare-overlay[hidden]{display:none;}
@@ -661,6 +665,7 @@ body .unit-detail-panel .right-unit-slot-card .dps-base-unit-entry{grid-template
 .stat-compare-grid{border:0;background:transparent;display:block;overflow:visible;border-radius:0;}
 .trait-group .tr-ctrl button[data-action="traitMax"]{min-width:46px;padding:0 8px;}
 body:not(.is-mobile) .trait-board-panel .trait-dashboard-tools{margin:0;}
+/* ── 05 · 공통 컴포넌트 ── */
 /* 공통 컴포넌트 */
 /* 직접 조작하는 버튼·입력·선택의 공통 테두리. 자동 계산·고정·비활성 항목은 제외한다. */
 .toast-root{position:fixed;right:max(18px,env(safe-area-inset-right));bottom:max(18px,env(safe-area-inset-bottom));z-index:99999;display:flex;flex-direction:column;align-items:flex-end;gap:10px;pointer-events:none;max-width:min(420px,calc(100vw - 32px));}
@@ -702,6 +707,7 @@ body.is-pc-landscape .wrap,body:not(.is-mobile):not(.is-tablet):not(.is-pc-portr
 body.is-tabbed .col-work.is-mobile-arranged > .col-left,body.is-tabbed .col-work.is-mobile-arranged > .col-mid,body.is-tabbed .col-work.is-mobile-arranged > .col-right{display:none;}
 body.is-mobile input:not([type="hidden"]),body.is-mobile select,body.is-mobile .btn,body.is-mobile .seg-btns button{min-height:29px;}
 }
+/* ── 06 · 반응형 화면 ── */
 /* 반응형 프레임 */
 .col-left > .sg{margin-bottom:var(--layout-card-gap);}
 .col-left > .sg:last-child{margin-bottom:0;}
@@ -871,6 +877,7 @@ body.is-tabbed .mobile-page > .sg,body.is-tabbed .mobile-page > .data-card:not(.
 body.is-tablet label,body.is-tablet .rune-stat-row label,body.is-tablet .rune-option-grid label,body.is-tablet .additional-row label,body.is-tablet .enchant-combined-row label,body.is-tablet .mini-ir label,body.is-tablet .stat-row .sc-name{border:0;}
 body.is-tablet input:not([type="hidden"]),body.is-tablet select,body.is-tablet textarea,body.is-tablet .enchant-combined-row b,body.is-tablet .additional-row b{min-height:31px;border-width:1px;border-style:solid;border-radius:8px;box-shadow:none;}
 body.is-tablet .ui-action-btn,body.is-tablet .ui-choice-btn,body.is-tablet .ui-toggle-btn,body.is-tablet .ui-step-btn,body.is-tablet .ui-toolbar-btn,body.is-tablet .ui-icon-btn,body.is-tablet .btn,body.is-tablet .seg-btns button,body.is-tablet .mini-btn,body.is-tablet .trait-group .tr-ctrl button,body.is-tablet .unit-enhance-card .buff-choice-item{border-width:1px;}
+/* ── 07 · 테마·상태 ── */
 /* 테마·상태 */
 html,body{background:var(--ui-layout-bg);color:var(--ui-text);}
 .font-scale-btn,.font-scale-value{background:#142033;border-color:#344b68;color:#c4d7f0;box-shadow:0 2px 5px rgba(0,0,0,.05);}
@@ -1077,6 +1084,7 @@ body .trait-preset-custom-option{position:relative;display:flex;align-items:cent
 body .trait-preset-custom-option:hover,body .trait-preset-custom-option:focus-visible{outline:none;background:#141518;color:#fff;}
 body .trait-preset-custom-option.is-selected{color:#fff;}
 body .trait-preset-custom-option-text{display:block;width:100%;min-width:0;overflow:hidden;text-align:center;text-overflow:ellipsis;white-space:nowrap;}
+/* ── 08 · 프리셋 UI ── */
 /* 프리셋 목록: 항목 선택과 개별 삭제를 별도 조작으로 제공합니다. */
 body .trait-preset-custom-row{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:4px;min-width:0;padding:2px 3px;border-radius:8px;}
 body .trait-preset-custom-row:hover{background:rgba(21,22,25,.22);}
@@ -1501,6 +1509,7 @@ body.is-mobile .trait-optimizer-panel .trait-board-control-grid,body.is-narrow-m
 body.is-mobile .trait-optimizer-panel .trait-optimizer-row + .trait-optimizer-row,body.is-narrow-mobile .trait-optimizer-panel .trait-optimizer-row + .trait-optimizer-row{border-left:0;border-top:1px solid var(--ui-integrated-head-line);}
 body.is-mobile .trait-limit-group + .trait-limit-group,body.is-narrow-mobile .trait-limit-group + .trait-limit-group{border-left:0;border-top:1px solid var(--ui-integrated-head-line);}
 
+/* ── 09 · 더제로·유닛 모달 ── */
 /* 더제로 승단·확장 패널·모달 */
 .basic-settings-zero-panel.zero-rank-card{display:block;min-width:0;margin:0;padding:0;background:var(--ui-panel-body-bg);border:0;border-radius:0;box-shadow:none;overflow:hidden;}
 .basic-settings-zero-panel.zero-rank-card[hidden]{display:none!important;}
@@ -1623,6 +1632,7 @@ body.is-mobile .zero-rank-result-card b i{margin:0;line-height:1;transform:none;
 .zero-rank-result-card.zero-rank-same{background:linear-gradient(145deg,#0f1013,#0e0f12);border-color:#7561ab;box-shadow:0 0 14px rgba(94,74,142,.1);}
 .zero-rank-result-card.zero-rank-final b i,.zero-rank-result-card.zero-rank-final .zero-target-rank{display:none;}
 .zero-rank-result-card.zero-rank-upgrade .zero-current-rank,.zero-rank-result-card.zero-rank-upgrade .zero-target-rank,.zero-rank-result-card.zero-rank-same .zero-current-rank,.zero-rank-result-card.zero-rank-same .zero-target-rank{color:#e6edf7;}
+/* ── 10 · 공통 레이아웃·모바일 ── */
 /* 공통 정렬·모바일 */
 /* 입력·설정 항목 라벨 공통: v22 4월 일반과 동일하게 배경·테두리 없는 텍스트 */
 body .xp-sp-card .basic-info-row > label,body .col-left .ir > label,body .col-left .mini-ir > label:not(.buff-choice-item),body .unit-enhance-card .unit-enhance-option-row > label,body .clean-rune-card .rune-stat-row > label,body .clean-rune-card .rune-option-grid > label,body .clean-rune-card .additional-row > label,body .clean-rune-card .enchant-result-label > span,body .skill-setting-panel .skill-ir > label,body .final-damage-card .skill-ir > label{border:0;border-radius:0;background:transparent;background-image:none;color:var(--field-label-text,#e5f3ff);box-shadow:none;text-shadow:none;}
@@ -1695,17 +1705,18 @@ body .trait-optimizer-panel .optimizer-head,body .trait-limit-section>.optimizer
 body .trait-optimizer-panel .optimizer-head-title::before{content:"";display:grid;place-items:center;box-sizing:border-box;flex:0 0 32px;width:32px;height:28px;min-width:32px;padding:0;border:0;border-radius:0;background:var(--ui-header-sparkles-image) center/18px no-repeat;color:var(--ui-header-mark-color);font-size:17.25px;line-height:1;box-shadow:none;}
 
 
+/* ── 11 · 헤더 ── */
 /* 글로벌 헤더 넥서스 이동: 링크 동작은 유지하고 N 아이콘 하나로 공간을 절약한다. */
 .btn.subtle.header-nexus-link{display:inline-grid;place-items:center;flex:0 0 30px;box-sizing:border-box;width:30px;min-width:30px;height:30px;min-height:30px;padding:0;border:1px solid #385371;border-radius:10px;background:linear-gradient(145deg,#17283f,#0b1829);color:#d5f4ff;box-shadow:inset 0 1px rgba(255,255,255,.06);text-decoration:none;transition:transform .17s,filter .17s,box-shadow .17s,border-color .17s;}
 .btn.subtle.header-nexus-link:hover{border-color:#77b3ef;text-decoration:none;}
 .btn.subtle.header-nexus-link:focus-visible{outline:2px solid #8bc9ff;outline-offset:2px;}
 .btn.subtle.header-nexus-link:active{transform:translateY(1px);box-shadow:inset 0 2px 5px rgba(0,0,0,.32);}
 .header-nexus-mark{display:block;width:21px;height:21px;filter:drop-shadow(0 0 3px rgba(109,195,255,.24));}
-body .hdr.app-header .right-workspace-window-toggle{display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box;flex:0 0 30px;width:30px;min-width:30px;height:30px;min-height:30px;padding:0;border:1px solid #416080;border-radius:8px;background:#13263e;color:#dcecff;box-shadow:none;cursor:pointer;}
+body .hdr.app-header :is(.right-workspace-window-toggle,.header-patch-notes){display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box;flex:0 0 30px;width:30px;min-width:30px;height:30px;min-height:30px;padding:0;border:1px solid #416080;border-radius:8px;background:#13263e;color:#dcecff;box-shadow:none;cursor:pointer;}
 .header-convenience{display:flex;align-items:center;position:relative;min-width:0;}
 .header-reference-actions{display:flex;align-items:center;justify-content:flex-end;gap:6px;min-width:0;}
 /* 단일 PIP 버튼을 기준으로 분석 보드·투자 보조·버스 성소·승단 점수 아이콘의 테두리, 배경, 크기, 상태를 통일합니다. */
-body .right-workspace-window-toggle:is(:hover,:focus-visible),body .right-workspace-window-toggle[aria-expanded="true"]{background:#1c3858;border-color:#81b8f5;outline:2px solid rgba(129,184,245,.4);outline-offset:1px;}
+body :is(.right-workspace-window-toggle,.header-patch-notes):is(:hover,:focus-visible),body :is(.right-workspace-window-toggle,.header-patch-notes)[aria-expanded="true"]{background:#1c3858;border-color:#81b8f5;outline:2px solid rgba(129,184,245,.4);outline-offset:1px;}
 body .right-workspace-window-toggle .nexus-control-icon svg{display:block;flex:none;width:17px;height:17px;}
 body .right-workspace-window-menu{position:fixed;z-index:9500;display:grid;gap:3px;box-sizing:border-box;width:256px;max-width:calc(100vw - 16px);padding:6px;border:1px solid #49698c;border-radius:10px;background:#102038;box-shadow:0 12px 32px rgba(0,0,0,.48);}
 body .right-workspace-window-menu[hidden]{display:none;}
@@ -1933,7 +1944,7 @@ body .ub-collection-head{display:flex;justify-content:space-between;align-items:
 body .ub-collection-head h3{display:flex;align-items:center;gap:9px;margin:0;color:var(--ui-text);font-size:calc(13px * var(--app-font-scale));}
 .ub-collection-head h3>span{padding:2px 7px;border:1px solid var(--ui-panel-border);border-radius:5px;color:#a9c8ff;font:calc(10px * var(--app-font-scale))/1.5 Consolas,monospace;}
 .ub-collection-head small{color:#9daec5;font-size:calc(10px * var(--app-font-scale));}
-body #dpsBaseUnitSlotStack .unit-slot-cards-grid{gap:12px;padding:0;grid-template-columns:minmax(0,1fr);gap:12px;}
+body #dpsBaseUnitSlotStack .unit-slot-cards-grid{padding:0;grid-template-columns:minmax(0,1fr);gap:12px;}
 body #dpsBaseUnitSlotStack .unit-slot-overview-card{border-color:var(--ui-panel-border);border-radius:12px;box-shadow:none;transition:border-color .15s;}
 body #dpsBaseUnitSlotStack .unit-slot-overview-card:hover{border-color:var(--ui-button-hover-border);}
 body #dpsBaseUnitSlotStack .unit-slot-card-head{padding:12px;gap:8px;min-height:48px;padding:9px 12px;}
@@ -2174,6 +2185,7 @@ body .analytics-polish #dpsJewelConfigGrid .jewel-ability{box-shadow:none;}
  body .analytics-polish #dpsBaseUnitSlotStack .ub-card-title strong{font-size:calc(13px * var(--app-font-scale));}
 }
 
+/* ── 12 · 레이아웃 디테일 ── */
 /* v025 · 좌측 설정과 중앙 특성의 디테일 정돈. 구성과 팔레트 유지 */
 body :is(.settings-polish,.build-polish){--settings-hairline:rgba(135,149,172,.16);}
 body :is(.settings-polish,.build-polish) :is(button,input,select){font-variant-numeric:tabular-nums;}

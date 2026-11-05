@@ -5,6 +5,7 @@
  * - 현재 상태 적용: 특성/유닛 보드/기본 정보 동기화
  * - 변경 상태: 업데이트됨/백업 필요 표시
  */
+/* ── 01 · 버전·저장값 정규화 ── */
 /* 버전·상태 정규화 */
 const STORAGE_VERSION=DPS_CONFIG.storage.version;
 const STORAGE_SCOPE=DPS_CONFIG.storage.scope;
@@ -368,6 +369,7 @@ function makeTraitPresetStateObject(sourceState=makeStateObject()){
   return normalizeTraitPresetState(sourceState);
 }
 
+/* ── 02 · 유닛 상태 ── */
 /* 유닛 보드 프리셋 상태 */
 function normalizeTraitPresetUnitBoardState(value){
   const source=value && typeof value==='object' && !Array.isArray(value) ? value : {};
@@ -493,6 +495,7 @@ function applyTraitPresetUnitBoardState(value,options={}){
   if(options.recalculate!==false) recalc({save:options.save});
   return state;
 }
+/* ── 03 · 쥬얼·보드 설정 ── */
 /* 프리셋 쥬얼 상태 및 유닛 보드 설정 */
 function normalizeTraitPresetJewelSettings(value){
   if(!value || typeof value!=='object' || Array.isArray(value)) return null;
@@ -559,6 +562,7 @@ function resetTraitPresetUnitBoardValues(values){
   out.dpsBaseUnitExtraSettings='{}';
   return out;
 }
+/* ── 04 · 상태 병합·적용 ── */
 /* 프리셋 상태 병합·화면 적용 */
 function mergeTraitPresetWithLocalState(presetState, localState, options={}){
   const preset=normalizeTraitPresetState(presetState);
@@ -691,6 +695,7 @@ function normalizeTraitPresetStatusData(data){
   ).slice(0,800).map(row=>({presetId:row.presetId,key:row.key,scope:row.scope,before:row.before,after:row.after})) : [];
   return {updatedPresetIds,backupNeeded,lastAction,selectedTraitPresetId,pendingJewelSettings,pendingUnitBoardPresetIds,pendingCommonPresetIds,pendingCommonChangeKeys,pendingSingleChangeKeysByPreset,pendingChangeDetails};
 }
+/* ── 05 · 저장 상태 ── */
 /* 프리셋 상태 */
 function loadTraitPresetStatusData(){
   try{
@@ -920,6 +925,7 @@ function loadState(){
     resetToFactoryState();
   }
 }
+/* ── 06 · 저장소·선택·편집 ── */
 /* 프리셋 저장소·선택·편집 */
 
 function normalizeTraitPresetName(value){
@@ -1755,6 +1761,7 @@ function traitPresetStateChangeSummary(previousState,currentState){
     changedValueIds
   };
 }
+/* ── 07 · 변경 감지·업데이트 ── */
 /* 프리셋 업데이트 상태 · 화면값과 저장된 프리셋을 실제 비교 */
 let traitPresetActionAcknowledgedId='';
 let traitPresetChangePromptTimer=0;
@@ -1930,6 +1937,7 @@ function updateTraitPreset(options={}){
     storageState.presetMutationInProgress=false;
   }
 }
+/* ── 08 · 임시 변경 ── */
 /* 프리셋 임시 변경 */
 function rememberTraitPresetDraft(id){
   const compatibility=storedTraitPresetCompatibility();
@@ -2072,6 +2080,7 @@ function requestTraitPresetFullReset(trigger){
   notifyStorageAction('한 번 더 누르면 프리셋 초기화','warn');
   return false;
 }
+/* ── 09 · 가져오기·백업 ── */
 /* 가져오기·백업 */
 
 function makeTraitPresetFileName(customName=''){
@@ -2093,7 +2102,7 @@ const TRAIT_PRESET_CHANGE_LABEL_OVERRIDES=Object.freeze({
   skillRound:'성소 사용 라운드',
   skillMode:'성소 모드'
 });
-function traitPresetChangeKeyLabel(key,values=null){
+function traitPresetChangeKeyLabel(key){
   const normalized=String(key || '');
   if(normalized.startsWith('value:')){
     const id=normalized.slice(6);
@@ -2912,6 +2921,7 @@ async function importTraitPresetFile(file){
     storageState.presetMutationInProgress=false;
   }
 }
+/* ── 10 · UI 이벤트 ── */
 /* 프리셋 UI 이벤트 바인딩 */
 function handleTraitPresetChange(e){
   if(e.target?.id==='traitPresetSelect'){
@@ -3034,6 +3044,7 @@ function bindTraitPresetEvents(){
   document.addEventListener('click',scheduleTraitPresetChangePrompt);
 }
 
+/* ── 11 · 공개 API ── */
 /* 공개 API */
 window.DpsPreset=Object.freeze({
   init:function(){

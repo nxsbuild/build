@@ -6,6 +6,7 @@
  * - 스펙 보드/유닛 보드: 표시 DPS, 클리어 기준, 클리어 기대값 산출
  * - 자원/특성/프리셋: 투자 비용, 잔여 재화, 최적화 보조 계산
  */
+/* ── 01 · 공통 계산 유틸 ── */
 /* 공통 계산 유틸 */
 function hasOwn(obj,key){
   return !!obj && Object.prototype.hasOwnProperty.call(obj,key);
@@ -137,6 +138,7 @@ function normalizeDecimalDisplayValue(value, digits=6){
   return String(parseFloat(fixed));
 }
 
+/* ── 02 · 입력·상태 ── */
 /* 입력 상태 */
 function normalizedStoredControlValue(id,dataKey,fallback,normalize){
   const element=$(id);
@@ -176,6 +178,7 @@ function erosionStoredValue(id){
   return normalizeErosionControlValue(id, el.value || el.dataset.erosionValue || EROSION_CONTROL_DEFAULTS[id]);
 }
 
+/* ── 03 · DPS 표시값 ── */
 /* DPS표·스킬 표시값 */
 function calculateSkillDamageRows({ap=535,doubleSpace=1,round=1,mode='normal'}={}){
   const skillAp=Number.isFinite(Number(ap)) ? Number(ap) : 535;
@@ -201,6 +204,7 @@ function calculateSkillDamageRows({ap=535,doubleSpace=1,round=1,mode='normal'}={
   };
 }
 
+/* ── 04 · 인첸트 ── */
 /* 인첸트 */
 function currentEnchantStats(syncInputs=true){
   if(syncInputs) syncEnchantCodeFromInputs(false);
@@ -211,6 +215,7 @@ function currentEnchantStats(syncInputs=true){
   });
 }
 
+/* ── 05 · 특성 비용·재화 ── */
 /* 특성 비용·재화 검증 */
 const FIXED_STEP_AFTER_150={93:76000,94:76000,95:114000};
 const STEP_COST_PREFIX=Object.freeze(Object.fromEntries(Object.entries(STEP_COST).map(([row,steps])=>{
@@ -254,6 +259,7 @@ function cumCost(row, investment=INV[row]||0){
   return s;
 }
 
+/* ── 06 · 난이도·적 데이터 ── */
 /* 난이도·적 데이터 */
 const TOWER_DIFFICULTY_NAME='도전의 탑';
 const PLANET_EXPLORATION_STORAGE_NAME='행성탐사';
@@ -624,6 +630,7 @@ function contentDpsDisplayMultiplier(diffName, round, displayHR, displaySR){
   return battleDpsDisplayMultiplier(diffName, round, displayHR, displaySR);
 }
 
+/* ── 07 · 룬·강화 ── */
 /* 룬·강화 */
 function on(id){const el=$(id); return !!(el && el.checked);}
 function clampInt(n,min,max){return Math.max(min,Math.min(max,Math.round(+n||0)));}
@@ -863,6 +870,7 @@ function growthGraduationAttackBonus(){
   return effectiveXpValue()>=2000000 ? 20 : 0;
 }
 
+/* ── 08 · 유닛 보드 ── */
 /* 유닛 보드 데이터·입력 정규화 */
 const DPS_BASE_UNIT_STORAGE_SEPARATOR=',';
 const DPS_BASE_UNIT_SETTING_PREFIXES=Object.freeze({
@@ -1506,6 +1514,7 @@ function dpsBaseUnitArtifactDpsParts(unit,context){
 }
 
 
+/* ── 09 · 스펙·유닛 계산 조립 ── */
 /* 스펙 보드 / 유닛 보드 계산 결과 분리 */
 function computeSpecBoardResult(context){
   const {
@@ -1800,6 +1809,7 @@ function computeLightweightStatsRaw(options={}){
   return computeStatsRaw({...options,extended:false,syncDerived:false});
 }
 
+/* ── 10 · 유물 DPS 및 미리보기 ── */
 /* 유물 DPS */
 function floorPenaltyLevelForDifficulty(diffName, targetRound){
   const name=difficultyName(diffName);
@@ -2294,6 +2304,7 @@ function computeDpsPreview(diffName, penanceLevel, round, options={}){
   }
 }
 
+/* ── 11 · 특성 투자 최적화 ── */
 /* 특성 계산 및 투자 효율 평가 */
 const STAT_KO={
   AD:'공격력', AS:'공격속도', AP:'마법공격력', CRI:'크리 확률', CD:'크리 데미지',
@@ -2734,6 +2745,7 @@ function restoreTraitRecommendationSaveState(state){
   }
   synchronizeTraitRecommendationCredits();
 }
+/* ── 12 · 승단 계산 ── */
 /* 더제로 승단 */
 function zeroScoreNumber(value, min, max){
   const n=Number(value);

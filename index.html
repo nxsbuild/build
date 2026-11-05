@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <script>
-window.APP_VERSION = "build-v031";
+window.APP_VERSION = "build-V32";
 window.DPS_BUILD_VERSION = window.APP_VERSION;
 window.DPS_STANDALONE_VIEW = (function(){
   var requested=new URLSearchParams(window.location.search).get('dpsWindow');
@@ -46,7 +46,7 @@ window.DPS_STANDALONE_VIEW = (function(){
         }
       });
       if(changed) window.history.replaceState(null, document.title || '', url.pathname + url.search + url.hash);
-    }catch(e){}
+    }catch{}
   };
   window.dpsCheckIndexUpdate=function(){
     if(!window.fetch || !window.location || window.location.protocol==='file:') return;
@@ -64,7 +64,7 @@ window.DPS_STANDALONE_VIEW = (function(){
       try{
         if(sessionStorage.getItem(key)==='1') return;
         sessionStorage.setItem(key,'1');
-      }catch(e){}
+      }catch{}
       var next=new URL(window.location.href);
       next.searchParams.set('fresh',latest);
       next.searchParams.delete('__dps_check');
@@ -224,14 +224,14 @@ html:not(.dps-booting) #dpsBootScreen{display:none}
 <meta content="개복디 빌더 - 통합 빌드 계산 HUB" property="og:title"/>
 <meta content="특성 투자·재화 사용량 계산부터 스펙·DPS 분석까지 한 번에, 통합 빌드 계산 HUB" property="og:description"/>
 <!-- OG/Twitter 이미지 캐시: 앱 버전 변경 시 아래 세 URL을 같은 버전으로 맞춥니다. -->
-<meta content="https://nxsbuild.github.io/build/logo.png?v=v030" property="og:image"/>
-<meta content="https://nxsbuild.github.io/build/logo.png?v=v030" property="og:image:secure_url"/>
+<meta content="https://nxsbuild.github.io/build/logo.png?v=build-V32" property="og:image"/>
+<meta content="https://nxsbuild.github.io/build/logo.png?v=build-V32" property="og:image:secure_url"/>
 <meta content="image/png" property="og:image:type"/>
 <meta content="개복디 빌더 로고" property="og:image:alt"/>
 <meta content="summary_large_image" name="twitter:card"/>
 <meta content="개복디 빌더 - 통합 빌드 계산 HUB" name="twitter:title"/>
 <meta content="특성 투자·재화 사용량 계산부터 스펙·DPS 분석까지 한 번에, 통합 빌드 계산 HUB" name="twitter:description"/>
-<meta content="https://nxsbuild.github.io/build/logo.png?v=v030" name="twitter:image"/>
+<meta content="https://nxsbuild.github.io/build/logo.png?v=build-V32" name="twitter:image"/>
 <meta content="개복디 빌더 로고" name="twitter:image:alt"/>
 <link href="https://cdn.jsdelivr.net" rel="preconnect"/>
 <link crossorigin="" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" rel="stylesheet"/>
@@ -266,6 +266,7 @@ html:not(.dps-booting) #dpsBootScreen{display:none}
       ['#btnFontSizePopup','글씨 크기 조절',window.innerWidth<768?32:34],
       ['.font-scale-trigger','글씨 크기 조절',30],
       ['.header-nexus-link','개복디 넥서스',window.innerWidth<600?30:35],
+      ['#btnPatchNotes','패치노트',30],
       ['#independentWindowToggle','독립 창 선택',35],
       ['[data-analysis-board-copy]','클리어 기록 복사',32],
     ];
@@ -454,6 +455,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 </div>
 </div>
 <div class="hdr-meta">
+<button id="btnPatchNotes" class="btn subtle ui-action-btn header-patch-notes" type="button" aria-haspopup="dialog" aria-controls="builderPatchDialog" aria-expanded="false" title="패치노트" aria-label="패치노트 열기"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3.5h8l4 4V20a1 1 0 0 1-1 1H7a2 2 0 0 1-2-2V5.5a2 2 0 0 1 2-2Z"/><path d="M15 3.5v4h4M9 12h6M9 16h6"/></svg></button>
 <button type="button" id="independentWindowToggle" class="ui-action-btn right-workspace-window-toggle" aria-label="독립 창 보기 선택" aria-haspopup="menu" aria-controls="independentWindowMenu" aria-expanded="false"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="3.5" width="19" height="17" rx="2.5"/><rect x="11" y="12" width="8" height="5.5" rx="1"/></svg></button>
 <div class="header-convenience" aria-label="빠른 이동">
 <div class="header-reference-actions">
@@ -1337,6 +1339,16 @@ loadScriptSequence(['data.js','calc.js','app.js','preset.js','responsive.js'],fu
   function startApp(){
     if(typeof window.dpsStartApp==='function') window.dpsStartApp();
     else if(typeof window.dpsShowBootError==='function') window.dpsShowBootError('D1003',new Error('app start function missing'));
+    // 패치노트는 정보 모달이므로 핵심 계산기 부팅을 차단하지 않습니다.
+    if(window.__dpsBootError) return;
+    var patchScript=document.createElement('script');
+    patchScript.src=window.dpsAssetUrl('./modal.js','modal.js');
+    patchScript.charset='UTF-8';
+    patchScript.addEventListener('error',function(){
+      var trigger=document.getElementById('btnPatchNotes');
+      if(trigger){trigger.disabled=true;trigger.title='패치노트를 불러오지 못했습니다';}
+    },{once:true});
+    document.body.appendChild(patchScript);
   }
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',startApp,{once:true});
   else startApp();
