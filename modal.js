@@ -263,8 +263,10 @@
 
   // ── 04 · 검색·필터·버전별 표시 ──
   function filteredNotes() {
-    return notes.filter((note) => (chosenKind === 'all' || note.kinds.includes(chosenKind)) &&
+    const matches = notes.filter((note) => (chosenKind === 'all' || note.kinds.includes(chosenKind)) &&
       [note.name, ...note.tags, note.body, ...note.kinds.map((kind) => statusLabel[kind])].join(' ').toLocaleLowerCase().includes(search));
+    // 화면의 버전 정렬과 상세보기 이전·다음 이동 순서를 동일하게 유지한다.
+    return groupByRelease(matches).flatMap((group) => group.items);
   }
   function focusCard(number) {
     list.querySelector(`details[data-number="${number}"] > summary`)?.focus({ preventScroll: true });
@@ -293,15 +295,29 @@
     const groups = [];
     const byVersion = new Map();
     for (const note of items) {
-      const key = note.version ? note.version.toLocaleLowerCase() : '__unversioned__';
+      const numericRelease = /^v(\d+)(?:[a-z]+)?$/iu.exec(note.version || '');
+      const releaseVersion = numericRelease ? `V${numericRelease[1]}` : note.version;
+      const key = releaseVersion ? releaseVersion.toLocaleLowerCase() : '__unversioned__';
       let group = byVersion.get(key);
       if (!group) {
-        group = { version: note.version, publishedAt: note.publishedAt, items: [] };
+        group = { version: releaseVersion, publishedAt: note.publishedAt, items: [] };
         byVersion.set(key, group);
         groups.push(group);
       }
       group.items.push(note);
       if (new Date(note.publishedAt) > new Date(group.publishedAt)) group.publishedAt = note.publishedAt;
+    }
+    // GitHub 이슈 작성 순서와 관계없이 기본 버전 번호가 큰 그룹을 먼저 표시한다.
+    groups.sort((a, b) => {
+      const aVersion = /^V(\d+)$/iu.exec(a.version || '');
+      const bVersion = /^V(\d+)$/iu.exec(b.version || '');
+      if (aVersion && bVersion) return Number(bVersion[1]) - Number(aVersion[1]);
+      if (aVersion) return -1;
+      if (bVersion) return 1;
+      return Date.parse(b.publishedAt) - Date.parse(a.publishedAt);
+    });
+    for (const group of groups) {
+      group.items.sort((a, b) => (Date.parse(b.publishedAt) - Date.parse(a.publishedAt)) || (b.number - a.number));
     }
     return groups;
   }
