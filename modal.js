@@ -120,7 +120,7 @@
     </header>
     <div class="bp-controls">
       <div class="bp-toolbar"><label class="bp-search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.3"/><path d="m15 15 5 5"/></svg><input id="bp-query" type="search" placeholder="버전 · 태그 · 내용 검색" aria-label="패치노트 검색" autocomplete="off"/></label><button id="bp-refresh" type="button">새로고침</button></div>
-      <nav class="bp-filters" aria-label="패치노트 카테고리"><button type="button" data-kind="all" aria-pressed="true">전체</button><button type="button" data-kind="update" aria-pressed="false">업데이트</button><button type="button" data-kind="new" aria-pressed="false">신규기능</button><button type="button" data-kind="preset" aria-pressed="false">프리셋</button></nav>
+      <nav class="bp-filters" aria-label="패치노트 카테고리"><button type="button" data-kind="all" aria-pressed="true">전체</button><button type="button" data-kind="update" aria-pressed="false">업데이트</button><button type="button" data-kind="new" aria-pressed="false">신규기능</button><button type="button" data-kind="preset" aria-pressed="false">프리셋</button><button type="button" data-kind="fix" aria-pressed="false">오류수정</button><button type="button" data-kind="improve" aria-pressed="false">개선사항</button></nav>
     </div>
     <main class="bp-scroll"><div id="bp-summary" class="bp-summary">전체 기간 · 불러오는 중</div><div id="bp-empty" class="bp-empty" role="status">패치노트를 불러오는 중입니다.</div><section id="bp-list" class="bp-list" aria-label="패치노트 목록"></section></main>
     <footer id="bp-reader" class="bp-reader" hidden><button id="bp-prev" type="button">‹ 이전</button><span id="bp-position" class="bp-position"></span><button id="bp-next" type="button">다음 ›</button></footer>
@@ -140,7 +140,7 @@
     timeZone: 'Asia/Seoul', year: 'numeric', month: '2-digit', day: '2-digit',
     hour: '2-digit', minute: '2-digit', hour12: false,
   });
-  const statusLabel = { update: 'VERSION UPDATE', new: 'NEW MODE', preset: 'PRESET' };
+  const statusLabel = { update: 'VERSION UPDATE', new: 'NEW MODE', preset: 'PRESET', fix: 'BUG FIX', improve: 'IMPROVEMENT' };
   const escapeElement = (tag, text, className = '') => {
     const node = document.createElement(tag);
     node.textContent = text;
@@ -174,10 +174,17 @@
     if (!rawTitle) return null;
     const tags = [...new Set([...rawTitle.matchAll(/#([^\s#,，|\[\]]+)/gu)].map((match) => match[1]))];
     const prefix = /^(?:\s*\[[^\]]+\]\s*)+/u.exec(rawTitle)?.[0] || '';
-    const classifications = [...prefix.matchAll(/\[([^\]]+)\]/gu)].map((match) => match[1]).join(' ') + ' ' + tags.join(' ');
+    // 대괄호는 카테고리, #태그는 검색용으로만 사용한다.
+    const classifications = [...prefix.matchAll(/\[([^\]]+)\]/gu)].map((match) => match[1]).join(' ');
     const version = (prefix || rawTitle).match(/\b(?:bdV\d+[\w.-]*|build-v\d+[\w.-]*|v\d+[\w.-]*)\b/iu)?.[0] || '';
-    const kind = /(?:프리셋|preset)/iu.test(classifications) ? 'preset'
-      : /(?:신규\s*기능|new[\s_-]*mode|newmode)/iu.test(classifications) ? 'new' : 'update';
+    const kinds = [];
+    if (version) kinds.push('update');
+    if (/(?:신규\s*기능|new[\s_-]*mode|newmode)/iu.test(classifications)) kinds.push('new');
+    if (/(?:프리셋|preset)/iu.test(classifications)) kinds.push('preset');
+    if (/(?:오류\s*수정|버그\s*수정|bug[\s_-]*fix)/iu.test(classifications)) kinds.push('fix');
+    if (/(?:개선\s*사항|개선|improvement)/iu.test(classifications)) kinds.push('improve');
+    if (!kinds.length) kinds.push('update');
+    const kind = kinds.find((entry) => entry !== 'update') || 'update';
     const heading = body.split(/\r?\n/gu).map((line) => /^\s{0,3}#{1,6}\s+(.+?)\s*#*\s*$/u.exec(line)?.[1] || '')
       .find((line) => line && !/^(?:변경\s*사항|업데이트\s*내용|상세\s*내용|공지\s*사항)$/u.test(line.trim()));
     const titleRemainder = rawTitle.slice(prefix.length).replace(/#[^\s#,，|\[\]]+/gu, ' ').replace(/\s+/gu, ' ').trim();
@@ -185,7 +192,7 @@
       .find((line) => line && !/^(?:[-*+]\s+|\| |---|```|!\[)/u.test(line)) || '';
     const title = (heading || titleRemainder || bodyFirstLine || rawTitle).replace(/^#{1,6}\s+/u, '').trim();
     return {
-      number: issue.number, kind, version, tags, title, body, html: issue.body_html || '',
+      number: issue.number, kind, kinds, version, tags, title, body, html: issue.body_html || '',
       publishedAt: issue.created_at, name: [version, title].filter(Boolean).join(' '),
     };
   }
@@ -233,8 +240,8 @@
   }
 
   function filteredNotes() {
-    return notes.filter((note) => (chosenKind === 'all' || chosenKind === note.kind) &&
-      [note.name, ...note.tags, note.body, statusLabel[note.kind]].join(' ').toLocaleLowerCase().includes(search));
+    return notes.filter((note) => (chosenKind === 'all' || note.kinds.includes(chosenKind)) &&
+      [note.name, ...note.tags, note.body, ...note.kinds.map((kind) => statusLabel[kind])].join(' ').toLocaleLowerCase().includes(search));
   }
   function focusCard(number) {
     list.querySelector(`details[data-number="${number}"] > summary`)?.focus({ preventScroll: true });
@@ -277,7 +284,7 @@
       top.append(date);
       const second = escapeElement('div', '', 'bp-second');
       if (note.version) second.append(escapeElement('span', note.version, 'bp-version'));
-      second.append(escapeElement('span', statusLabel[note.kind], 'bp-kind'));
+      for (const kind of note.kinds) second.append(escapeElement('span', statusLabel[kind], 'bp-kind'));
       for (const tag of note.tags) second.append(escapeElement('span', '#' + tag, 'bp-tag'));
       head.append(top, second);
       head.addEventListener('click', (event) => { event.preventDefault(); toggleReader(note.number); });

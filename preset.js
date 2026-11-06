@@ -2137,36 +2137,6 @@ function traitPresetChangeKeyLabel(key){
     'state:single':'현재 프리셋 대상'
   })[normalized] || normalized;
 }
-// 백업·가져오기 비교 화면에서만 실제 선택 메뉴/버튼의 표시 명칭을 사용한다.
-// 변경 기록과 프리셋에 저장된 원본 값은 수정하지 않는다.
-function traitPresetChangeDisplayValue(key,value){
-  const raw=String(value);
-  if(!key.startsWith('value:')) return traitPresetChangeNumberText(raw,key);
-  const id=key.slice(6);
-  // SP 은행의 저장값(미반영/반영)은 이미 화면용 한국어이며, 숨김 셀렉트만 OFF/ON이다.
-  if(id==='spBankApply') return raw;
-  if(id==='specDpsSpeedMode' || id==='dpsBaseUnitSpeedMode' || DPS_BASE_UNIT_VOID_POWER_IDS.has(id)){
-    if(raw==='ON') return '켜짐';
-    if(raw==='OFF') return '꺼짐';
-  }
-  const field=document.getElementById(id);
-  if(field?.tagName==='SELECT'){
-    const group=[...(field.parentElement?.querySelectorAll('.seg-btns[data-target]') || [])]
-      .find(element=>element.dataset.target===id);
-    const button=[...(group?.querySelectorAll('button[data-value]') || [])]
-      .find(element=>element.dataset.value===raw);
-    if(button?.textContent?.trim()) return button.textContent.trim();
-    const option=[...field.options].find(element=>element.value===raw);
-    if(option?.textContent?.trim()) return option.textContent.trim();
-  }
-  return traitPresetChangeNumberText(raw,key);
-}
-function traitPresetChangeDisplayPair(key,before,after){
-  const beforeText=traitPresetChangeDisplayValue(key,before),afterText=traitPresetChangeDisplayValue(key,after);
-  const labelChanged=beforeText!==traitPresetChangeNumberText(before,key) || afterText!==traitPresetChangeNumberText(after,key);
-  const variation=labelChanged ? '변경' : traitPresetChangeVariation(before,after,key);
-  return {beforeText,afterText,variation};
-}
 function traitPresetBackupPresetRows(store,commonScopeIds,singleScopeIds){
   const presets=Array.isArray(store?.presets) ? store.presets : [];
   const idToPreset=new Map(presets.map(preset=>[String(preset.id || ''),preset]).filter(([id])=>id));
@@ -2312,8 +2282,8 @@ function traitPresetBackupChangeListHtml(keys,details=[],presetId=''){
     const label=traitPresetChangeKeyLabel(key);
     if(!item) return `<li><strong>${escapeHtml(label)}</strong><span class="trait-preset-backup-values">과거 변경 기록에 세부 값이 저장되지 않았습니다.</span></li>`;
     const before=item.before,after=item.after;
-    const {beforeText,afterText,variation}=traitPresetChangeDisplayPair(key,before,after);
-    return `<li><strong>${escapeHtml(label)}</strong><span class="trait-preset-backup-values"><span>${escapeHtml(beforeText)}</span><b aria-label="변경 후">→</b><span>${escapeHtml(afterText)}</span><em>${escapeHtml(variation)}</em></span></li>`;
+    const variation=traitPresetChangeVariation(before,after,key);
+    return `<li><strong>${escapeHtml(label)}</strong><span class="trait-preset-backup-values"><span>${escapeHtml(traitPresetChangeNumberText(before,key))}</span><b aria-label="변경 후">→</b><span>${escapeHtml(traitPresetChangeNumberText(after,key))}</span><em>${escapeHtml(variation)}</em></span></li>`;
   });
   return `<ul class="trait-preset-backup-change-list">${rows.join('')}</ul>`;
 }
@@ -2784,8 +2754,8 @@ function resolveTraitPresetRecoveryPlan(plan,sharedSourceIndex=''){
 // 공통/개별 복구 비교는 같은 마크업을 사용한다.
 function traitPresetRecoveryChangeItemHtml(change){
   const before=String(change.before),after=String(change.after);
-  const {beforeText,afterText,variation}=traitPresetChangeDisplayPair(change.key,before,after);
-  return `<li><strong>${escapeHtml(change.label)}</strong><span>${escapeHtml(beforeText)} <b>→</b> ${escapeHtml(afterText)} <em>${escapeHtml(variation)}</em></span></li>`;
+  const variation=traitPresetChangeVariation(before,after,change.key);
+  return `<li><strong>${escapeHtml(change.label)}</strong><span>${escapeHtml(traitPresetChangeNumberText(before,change.key))} <b>→</b> ${escapeHtml(traitPresetChangeNumberText(after,change.key))} <em>${escapeHtml(variation)}</em></span></li>`;
 }
 function reviewTraitPresetImportRecovery(plan,existingCount=0){
   const dialog=$('traitPresetRecoveryDialog');
