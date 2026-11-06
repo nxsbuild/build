@@ -4032,7 +4032,7 @@ function bindAppEvents(){
 function initAppSelectDropdowns(){
   if(window.__dpsAppSelectDropdownsReady) return;
   window.__dpsAppSelectDropdownsReady=true;
-  const nativeSelector='select:not([data-preview-board]):not(#traitPresetSelect):not(#traitPresetRecoverySharedSource):not(.hidden-field):not(.trait-limit-source):not(.trait-preset-native-select):not([hidden]):not([aria-hidden="true"])';
+  const nativeSelector='select:not([data-preview-board]):not(#bp-version):not(#traitPresetSelect):not(#traitPresetRecoverySharedSource):not(.hidden-field):not(.trait-limit-source):not(.trait-preset-native-select):not([hidden]):not([aria-hidden="true"])';
   const triggerClass='app-select-trigger';
   const menu=document.createElement('div');
   menu.className='app-select-menu';

@@ -9,25 +9,24 @@
   style.id = 'builder-patch-style';
   style.textContent = String.raw`
 /* 패치노트: 빌더 기본 모달 색상 토큰 사용; 헤더 버튼은 style.css 공통 규칙 적용 */
-#builderPatchDialog{--patch-text:var(--ui-text,#e2e7f0);position:fixed;inset:0;box-sizing:border-box;width:min(820px,calc(100vw - 42px));height:min(750px,calc(100dvh - 50px));max-width:none;max-height:none;margin:auto;padding:0;overflow:hidden;border:1px solid #425875;border-radius:var(--ui-modal-radius,15px);background:var(--ui-panel-body-bg,#08090b);color:var(--patch-text);box-shadow:var(--ui-modal-shadow,0 28px 95px #000b);font:calc(12.5px * var(--app-font-scale,1))/1.5 var(--font-main,system-ui,sans-serif);color-scheme:dark}
+#builderPatchDialog{--patch-text:var(--ui-text,#e2e7f0);position:fixed;inset:0;box-sizing:border-box;width:min(820px,calc(100vw - 42px));height:min(690px,calc(100dvh - 50px));max-width:none;max-height:none;margin:auto;padding:0;overflow:hidden;border:1px solid #425875;border-radius:var(--ui-modal-radius,15px);background:var(--ui-panel-body-bg,#08090b);color:var(--patch-text);box-shadow:var(--ui-modal-shadow,0 28px 95px #000b);font:calc(12.5px * var(--app-font-scale,1))/1.5 var(--font-main,system-ui,sans-serif);color-scheme:dark}
 #builderPatchDialog[open]{display:flex;flex-direction:column}
 #builderPatchDialog::backdrop{background:rgba(0,0,0,.78);backdrop-filter:blur(7px)}
 #builderPatchDialog *{box-sizing:border-box}
 #builderPatchDialog [hidden]{display:none!important}
-#builderPatchDialog button,#builderPatchDialog input{font:inherit}
+#builderPatchDialog button,#builderPatchDialog input,#builderPatchDialog select{font:inherit}
 #builderPatchDialog button{cursor:pointer;transition:border-color .15s,background .15s,color .15s}
-#builderPatchDialog :is(button,input,summary):focus-visible{outline:2px solid #92bdf8;outline-offset:2px}
-#builderPatchDialog .bp-head{display:flex;align-items:flex-start;gap:12px;flex:0 0 auto;padding:19px 22px 17px;border-bottom:1px solid var(--ui-integrated-head-line,#252d35);background:linear-gradient(115deg,rgba(111,147,191,.09),transparent 64%),var(--ui-integrated-head-bg,linear-gradient(105deg,#13181e,#0c1014 78%))}
-#builderPatchDialog .bp-mark{display:grid;place-items:center;flex:0 0 39px;width:39px;height:39px;border:1px solid #45658b;border-radius:11px;background:linear-gradient(140deg,#193955,#111924);color:#a9c8ff;box-shadow:inset 0 1px #ffffff18}
+#builderPatchDialog :is(button,input,select,summary):focus-visible{outline:2px solid #92bdf8;outline-offset:2px}
+#builderPatchDialog .bp-head{display:flex;align-items:flex-start;gap:12px;flex:0 0 auto;padding:11px 22px 10px;border-bottom:1px solid var(--ui-integrated-head-line,#252d35);background:linear-gradient(115deg,rgba(111,147,191,.09),transparent 64%),var(--ui-integrated-head-bg,linear-gradient(105deg,#13181e,#0c1014 78%))}
+#builderPatchDialog .bp-mark{display:grid;place-items:center;flex:0 0 34px;width:34px;height:34px;border:1px solid #45658b;border-radius:11px;background:linear-gradient(140deg,#193955,#111924);color:#a9c8ff;box-shadow:inset 0 1px #ffffff18}
 #builderPatchDialog .bp-mark svg{width:21px;height:21px}
 #builderPatchDialog .bp-head-copy{flex:1;min-width:0}
 #builderPatchDialog .bp-kicker{display:block;margin:0 0 3px;color:#8dbaf2;font:700 9px/1.3 ui-monospace,SFMono-Regular,Consolas,monospace;letter-spacing:.14em}
-#builderPatchDialog h2{margin:0;color:var(--ui-integrated-head-text,#e6edf7);font-size:20px;font-weight:700;line-height:1.2;letter-spacing:-.025em}
-#builderPatchDialog .bp-subtitle{margin:5px 0 0;color:#9bafc8;font-size:11px;line-height:1.35}
+#builderPatchDialog h2{margin:0;color:var(--ui-integrated-head-text,#e6edf7);font-size:18px;font-weight:700;line-height:1.2;letter-spacing:-.025em}
 #builderPatchDialog #bp-close{display:grid;place-items:center;flex:0 0 32px;width:32px;height:32px;padding:0;border:1px solid #47566b;border-radius:8px;background:#18212d;color:#c5d5e9;font-size:22px;line-height:1}
 #builderPatchDialog #bp-close:hover{border-color:#94bfff;color:#fff;background:#24354a}
-#builderPatchDialog .bp-controls{flex:0 0 auto;padding:12px 22px;border-bottom:1px solid #273343;background:#090b0d}
-#builderPatchDialog .bp-toolbar{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+#builderPatchDialog .bp-controls{flex:0 0 auto;padding:10px 22px;border-bottom:1px solid #273343;background:#090b0d}
+#builderPatchDialog .bp-toolbar{display:flex;align-items:center;gap:8px;margin-bottom:8px}
 #builderPatchDialog .bp-search{display:flex;align-items:center;flex:1;min-width:0;min-height:36px;gap:8px;padding:0 11px;border:1px solid #405674;border-radius:8px;background:#080d13;transition:border-color .15s}
 #builderPatchDialog .bp-search:focus-within{border-color:#80b6fb;box-shadow:0 0 0 2px #75aaff20}
 #builderPatchDialog .bp-search svg{width:15px;height:15px;flex:0 0 15px;color:#829cb9}
@@ -36,6 +35,16 @@
 #builderPatchDialog #bp-refresh{flex:0 0 auto;min-height:36px;padding:5px 12px;border:1px solid #405674;border-radius:8px;background:#1a2634;color:#c7d9ed;font-size:11px}
 #builderPatchDialog #bp-refresh:hover:not(:disabled){border-color:#88aff2;background:#243b57}
 #builderPatchDialog #bp-refresh:disabled{cursor:wait;opacity:.65}
+#builderPatchDialog .bp-periodbar{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;gap:8px;min-width:0;margin-bottom:9px}
+#builderPatchDialog .bp-range{min-width:0;overflow:hidden;color:#9fb4cb;font-size:10px;white-space:nowrap;font-variant-numeric:tabular-nums}
+#builderPatchDialog .bp-periodtabs{display:flex;align-items:center;justify-content:center;gap:16px;white-space:nowrap}
+#builderPatchDialog .bp-periodtabs button{padding:4px 1px 5px;border:0;border-bottom:2px solid transparent;border-radius:0;background:transparent;color:#96a9bf;font-size:11px;line-height:1.25;transition:none}
+#builderPatchDialog .bp-periodtabs button[aria-pressed="true"]{border-bottom-color:#80b8ff;color:#eff6ff;font-weight:700}
+#builderPatchDialog .bp-periodtabs button:hover{color:#eff6ff}
+#builderPatchDialog .bp-version{justify-self:end;width:116px;min-width:0;max-width:100%;min-height:30px;padding:4px 8px;border:1px solid #405674;border-radius:7px;background:#151e29;color:#c7d9ed;font-size:11px;cursor:pointer}
+#builderPatchDialog .bp-month{display:grid;gap:12px;min-width:0}
+#builderPatchDialog .bp-month-head{margin:0 0 2px;padding:0 1px 7px;border-bottom:1px solid #2d3e52;color:#adc4df;font-size:12px;font-weight:650}
+#builderPatchDialog .bp-month-releases{display:grid;gap:20px;min-width:0}
 #builderPatchDialog .bp-filters{display:flex;justify-content:center;gap:6px;flex-wrap:wrap}
 #builderPatchDialog .bp-filters button{min-height:30px;padding:5px 12px;border:1px solid #344457;border-radius:7px;background:#161e28;color:#afc2da;font-size:11px;line-height:1.2}
 #builderPatchDialog .bp-filters button:hover{background:#223248;color:#e7f2ff}
@@ -102,14 +111,18 @@
 #builderPatchDialog .bp-reader button:disabled{opacity:.38;cursor:not-allowed}
 #builderPatchDialog .bp-position{text-align:center;color:#b5d5ff;font:700 11px ui-monospace,SFMono-Regular,Consolas,monospace}
 @media(max-width:540px){
- #builderPatchDialog{width:calc(100vw - 18px);height:calc(100dvh - 20px);border-radius:13px}
+ #builderPatchDialog{width:calc(100vw - 18px);height:min(690px,calc(100dvh - 20px));border-radius:13px}
  #builderPatchDialog .bp-head{gap:9px;padding:13px 12px}
  #builderPatchDialog .bp-mark{flex-basis:34px;width:34px;height:34px}
  #builderPatchDialog .bp-mark svg{width:19px;height:19px}
  #builderPatchDialog h2{font-size:18px}
  #builderPatchDialog .bp-kicker{font-size:8px}
- #builderPatchDialog .bp-subtitle{font-size:10px}
- #builderPatchDialog .bp-controls{padding:10px 11px}
+ #builderPatchDialog .bp-controls{padding:9px 11px}
+ #builderPatchDialog .bp-periodbar{gap:4px;margin-bottom:8px}
+ #builderPatchDialog .bp-range{font-size:9px;letter-spacing:-.035em}
+ #builderPatchDialog .bp-periodtabs{gap:7px}
+ #builderPatchDialog .bp-periodtabs button{font-size:10px;padding:4px 0 5px}
+ #builderPatchDialog .bp-version{width:90px;min-height:28px;padding:3px 4px;font-size:10px}
  #builderPatchDialog .bp-scroll{padding:12px 10px 15px}
  #builderPatchDialog .bp-filters{gap:4px}
  #builderPatchDialog .bp-filters button{padding:4px 9px;min-height:30px;font-size:10.5px}
@@ -133,15 +146,15 @@
   const dialog = document.createElement('dialog');
   dialog.id = 'builderPatchDialog';
   dialog.setAttribute('aria-labelledby', 'bp-title');
-  dialog.setAttribute('aria-describedby', 'bp-description');
   dialog.innerHTML = `
     <header class="bp-head">
       <span class="bp-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4h9l4 4v12H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Z"/><path d="M15 4v4h4M8 12h8M8 16h6"/></svg></span>
-      <div class="bp-head-copy"><span class="bp-kicker">BUILDER · PATCH NOTES</span><h2 id="bp-title">패치노트</h2><p id="bp-description" class="bp-subtitle">새로운 콘텐츠와 주요 변경 사항을 확인하세요.</p></div>
+      <div class="bp-head-copy"><span class="bp-kicker">BUILDER · PATCH NOTES</span><h2 id="bp-title">패치노트</h2></div>
       <button id="bp-close" type="button" aria-label="패치노트 닫기">×</button>
     </header>
     <div class="bp-controls">
       <div class="bp-toolbar"><label class="bp-search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.3"/><path d="m15 15 5 5"/></svg><input id="bp-query" type="search" placeholder="버전 · 태그 · 내용 검색" aria-label="패치노트 검색" autocomplete="off"/></label><button id="bp-refresh" type="button">새로고침</button></div>
+      <div class="bp-periodbar" aria-label="기간 및 버전 선택"><span id="bp-range" class="bp-range"></span><div class="bp-periodtabs" role="group" aria-label="패치노트 기간"><button type="button" data-period="latest" aria-pressed="true">최신 내역</button><button type="button" data-period="past" aria-pressed="false">이전 내역</button></div><select id="bp-version" class="bp-version" aria-label="버전 선택"></select></div>
       <nav class="bp-filters" aria-label="패치노트 카테고리"><button type="button" data-kind="all" aria-pressed="true">전체</button><button type="button" data-kind="update" aria-pressed="false">업데이트</button><button type="button" data-kind="new" aria-pressed="false">신규기능</button><button type="button" data-kind="preset" aria-pressed="false">프리셋</button><button type="button" data-kind="fix" aria-pressed="false">오류수정</button><button type="button" data-kind="improve" aria-pressed="false">개선사항</button></nav>
     </div>
     <main class="bp-scroll"><div id="bp-summary" class="bp-summary">전체 기간 · 불러오는 중</div><div id="bp-empty" class="bp-empty" role="status">패치노트를 불러오는 중입니다.</div><section id="bp-list" class="bp-list" aria-label="패치노트 목록"></section></main>
@@ -181,6 +194,10 @@
 
   let notes = [];
   let chosenKind = 'all';
+  let chosenPeriod = 'latest';
+  let chosenVersion = '';
+  let versionManuallySelected = false;
+  let renderedMonth = '';
   let search = '';
   let openedNumber = null;
   let listScrollPosition = 0;
@@ -262,11 +279,71 @@
   }
 
   // ── 04 · 검색·필터·버전별 표시 ──
+  // 한국시간 기준 현재 월을 최신 내역으로 분류하며, 이전 달은 월별로 보관한다.
+  const monthKey = (value) => dateString(value).slice(0, 7);
+  const baseVersion = (note) => {
+    const match = /^v(\d+)(?:[a-z]+)?$/iu.exec(note.version || '');
+    return match ? `V${match[1]}` : (note.version || '').replace(/^v/iu, 'V');
+  };
+  function byMonth(items) {
+    const months = new Map();
+    for (const note of items) {
+      const key = monthKey(note.publishedAt);
+      if (key && !months.has(key)) months.set(key, []);
+      if (key) months.get(key).push(note);
+    }
+    return [...months].sort(([a], [b]) => b.localeCompare(a)).map(([month, items]) => ({ month, items }));
+  }
+  function periodNotes() {
+    const current = monthKey(new Date());
+    return notes.filter((note) => {
+      const key = monthKey(note.publishedAt);
+      return key && (chosenPeriod === 'latest' ? key === current : key < current);
+    });
+  }
+  function updatePeriodControls() {
+    const current = monthKey(new Date());
+    const [year, month] = current.split('.').map(Number);
+    $('#bp-range').textContent = chosenPeriod === 'latest'
+      ? `${year}년 ${month}월`
+      : `${year}년 ${month}월 이전`;
+    $('.bp-periodtabs [aria-pressed="true"]')?.setAttribute('aria-pressed', 'false');
+    $(`.bp-periodtabs [data-period="${chosenPeriod}"]`).setAttribute('aria-pressed', 'true');
+    const versions = [...new Set(periodNotes().map(baseVersion).filter(Boolean))].sort((a, b) => {
+      const av = /^V(\d+)$/iu.exec(a), bv = /^V(\d+)$/iu.exec(b);
+      if (av && bv) return Number(bv[1]) - Number(av[1]);
+      if (av) return -1;
+      if (bv) return 1;
+      return b.localeCompare(a);
+    });
+    if (!versionManuallySelected || !versions.includes(chosenVersion)) {
+      chosenVersion = versions[0] || '';
+      versionManuallySelected = false;
+    }
+    const select = $('#bp-version');
+    const options = versions.map((version) => {
+      const option = escapeElement('option', version);
+      option.value = version;
+      return option;
+    });
+    if (!options.length) {
+      const option = escapeElement('option', '등록된 버전 없음');
+      option.value = '';
+      option.disabled = true;
+      options.push(option);
+    }
+    select.replaceChildren(...options);
+    select.value = chosenVersion;
+    select.disabled = !versions.length;
+    renderedMonth = current;
+  }
   function filteredNotes() {
-    const matches = notes.filter((note) => (chosenKind === 'all' || note.kinds.includes(chosenKind)) &&
+    const matches = periodNotes().filter((note) =>
+      chosenVersion && baseVersion(note) === chosenVersion &&
+      (chosenKind === 'all' || note.kinds.includes(chosenKind)) &&
       [note.name, ...note.tags, note.body, ...note.kinds.map((kind) => statusLabel[kind])].join(' ').toLocaleLowerCase().includes(search));
-    // 화면의 버전 정렬과 상세보기 이전·다음 이동 순서를 동일하게 유지한다.
-    return groupByRelease(matches).flatMap((group) => group.items);
+    // 이전 내역은 월 역순, 각 월에서는 버전 역순으로 표시하고 상세보기 이동 순서도 맞춘다.
+    return byMonth(matches).flatMap(({ items }) => groupByRelease(items).flatMap((group) => group.items));
   }
   function focusCard(number) {
     list.querySelector(`details[data-number="${number}"] > summary`)?.focus({ preventScroll: true });
@@ -336,11 +413,12 @@
     return '';
   }
   function render() {
+    updatePeriodControls();
     const selected = filteredNotes();
     const active = selected.find((note) => note.number === openedNumber);
     if (!active) openedNumber = null;
     const displayed = active ? [active] : selected;
-    const releases = groupByRelease(displayed).map((group) => {
+    const makeRelease = (group) => {
       const section = escapeElement('section', '', 'bp-release');
       const heading = escapeElement('header', '', 'bp-release-head');
       const label = escapeElement('div', '', 'bp-release-heading');
@@ -390,9 +468,19 @@
       items.append(...cards);
       section.append(heading, items);
       return section;
-    });
+    };
+    const releases = chosenPeriod === 'latest' ? groupByRelease(displayed).map(makeRelease) :
+      byMonth(displayed).map(({ month, items }) => {
+        const archive = escapeElement('section', '', 'bp-month');
+        const [year, monthNumber] = month.split('.');
+        archive.append(escapeElement('h3', `${year}년 ${Number(monthNumber)}월`, 'bp-month-head'));
+        const children = escapeElement('div', '', 'bp-month-releases');
+        children.append(...groupByRelease(items).map(makeRelease));
+        archive.append(children);
+        return archive;
+      });
     list.replaceChildren(...releases);
-    summary.textContent = '전체 기간 · ' + selected.length + '건';
+    summary.textContent = (chosenPeriod === 'latest' ? '최신 내역' : '이전 내역') + ' · ' + selected.length + '건';
     empty.hidden = selected.length > 0;
     if (!selected.length) empty.textContent = search ? '검색 결과가 없습니다.' : '해당 분류에 등록된 패치노트가 없습니다.';
     const index = selected.findIndex((note) => note.number === openedNumber);
@@ -465,6 +553,19 @@
     button.setAttribute('aria-pressed', 'true');
     resetReader(); render();
   });
+  $('.bp-periodtabs').addEventListener('click', (event) => {
+    const button = event.target.closest('button[data-period]');
+    if (!button || button.dataset.period === chosenPeriod) return;
+    chosenPeriod = button.dataset.period;
+    chosenVersion = '';
+    versionManuallySelected = false;
+    resetReader(); render();
+  });
+  $('#bp-version').addEventListener('change', (event) => {
+    chosenVersion = event.target.value;
+    versionManuallySelected = true;
+    resetReader(); render();
+  });
   $('#bp-query').addEventListener('input', (event) => { search = event.target.value.trim().toLocaleLowerCase(); resetReader(); render(); });
   $('#bp-prev').addEventListener('click', () => move(-1));
   $('#bp-next').addEventListener('click', () => move(1));
@@ -474,6 +575,8 @@
     if (dialog.open) return;
     dialog.showModal();
     trigger.setAttribute('aria-expanded', 'true');
+    chosenVersion = '';
+    versionManuallySelected = false;
     render();
     if (!lastAttempt) { empty.hidden = false; empty.textContent = '패치노트를 불러오는 중입니다.'; }
     void refresh();
@@ -490,7 +593,11 @@
     backdropPress = false;
   });
   dialog.addEventListener('keydown', (event) => event.stopPropagation());
-  const refreshIfDue = () => { if (dialog.open && !document.hidden) void refresh(); };
+  const refreshIfDue = () => {
+    if (!dialog.open || document.hidden) return;
+    if (monthKey(new Date()) !== renderedMonth) { chosenVersion = ''; versionManuallySelected = false; resetReader(); render(); }
+    void refresh();
+  };
   window.addEventListener('focus', refreshIfDue);
   document.addEventListener('visibilitychange', refreshIfDue);
   window.addEventListener('online', refreshIfDue);
