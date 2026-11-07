@@ -3085,6 +3085,7 @@ function bindDamageBoardTabEvents(){
     const copyButton=event.target?.closest?.('[data-analysis-board-copy]');
     if(copyButton){
       event.preventDefault();
+      if(document.body.matches('.is-mobile,.is-tablet')) return;
       void copyDpsAnalysisBoard(copyButton);
       return;
     }

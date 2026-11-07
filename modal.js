@@ -110,31 +110,7 @@
 #builderPatchDialog .bp-reader button:not(:disabled):hover{border-color:#91bdf5;background:#2d486a}
 #builderPatchDialog .bp-reader button:disabled{opacity:.38;cursor:not-allowed}
 #builderPatchDialog .bp-position{text-align:center;color:#b5d5ff;font:700 11px ui-monospace,SFMono-Regular,Consolas,monospace}
-@media(max-width:540px){
- #builderPatchDialog{width:calc(100vw - 18px);height:min(690px,calc(100dvh - 20px));border-radius:13px}
- #builderPatchDialog .bp-head{gap:9px;padding:13px 12px}
- #builderPatchDialog .bp-mark svg{width:19px;height:19px}
- #builderPatchDialog .bp-kicker{font-size:8px}
- #builderPatchDialog .bp-controls{padding:9px 11px}
- #builderPatchDialog .bp-periodbar{gap:4px;margin-bottom:8px}
- #builderPatchDialog .bp-range{font-size:9px;letter-spacing:-.035em}
- #builderPatchDialog .bp-periodtabs{gap:7px}
- #builderPatchDialog .bp-periodtabs button{font-size:10px;padding:4px 0 5px}
- #builderPatchDialog .bp-version{width:90px;min-height:28px;padding:3px 4px;font-size:10px}
- #builderPatchDialog .bp-scroll{padding:12px 10px 15px}
- #builderPatchDialog .bp-filters{gap:4px}
- #builderPatchDialog .bp-filters button{padding:4px 9px;font-size:10.5px}
- #builderPatchDialog .bp-release-head{gap:6px 10px;padding-bottom:10px}
- #builderPatchDialog .bp-release-title{font-size:17px}
- #builderPatchDialog .bp-release-meta{font-size:9.5px}
- #builderPatchDialog .bp-card>summary{padding:10px 10px 10px 11px}
- #builderPatchDialog .bp-preview{font-size:12.5px}
- #builderPatchDialog .bp-excerpt{font-size:11px}
- #builderPatchDialog .bp-body{padding:12px}
- #builderPatchDialog .bp-reader{grid-template-columns:76px minmax(0,1fr) 76px;gap:7px;padding:8px 10px}
- #builderPatchDialog .bp-reader button{font-size:11px}
-}
-@media(max-width:360px){#builderPatchDialog .bp-filters button{padding:4px 8px}#builderPatchDialog .bp-second{gap:4px 6px}#builderPatchDialog time{font-size:9px}}
+
 @media(prefers-reduced-motion:reduce){#builderPatchDialog .bp-card,#builderPatchDialog button{transition:none}}
 
 /* ── 기록 보관소 · 기존 패치노트와 GitHub 연동을 공유하는 별도 다이얼로그 ── */
@@ -146,12 +122,15 @@
 #builderRecordDialog button,#builderRecordDialog select{font:inherit}
 #builderRecordDialog :is(button,select,a):focus-visible{outline:2px solid #b5d3fb;outline-offset:2px}
 #builderRecordDialog button{cursor:pointer}
-#builderRecordDialog .ra-head{display:flex;align-items:center;gap:12px;padding:14px 20px;border-bottom:1px solid #2c4056;background:linear-gradient(110deg,#18283b,#0b1017)}
-#builderRecordDialog .ra-mark{display:grid;place-items:center;flex:0 0 36px;width:36px;height:36px;border:1px solid #88764f;border-radius:11px;background:#242015;color:#efd49e;font-size:19px}
-#builderRecordDialog .ra-title{min-width:0;flex:1}
-#builderRecordDialog .ra-title small{display:block;color:#93bce9;font-size:9px;letter-spacing:.14em;font-weight:700}
-#builderRecordDialog .ra-title h2{margin:0;color:#eff6ff;font-size:18px;line-height:1.3}
-#builderRecordDialog .ra-close{flex:0 0 32px;width:32px;height:32px;border:1px solid #526681;border-radius:8px;background:#182538;color:#d7e7f9;font-size:22px;line-height:1}
+#builderRecordDialog .ra-head{display:grid;grid-template-columns:minmax(0,1fr) max-content minmax(0,1fr);align-items:center;gap:9px;flex:0 0 auto;padding:6px 18px;border-bottom:1px solid #2c4056;background:linear-gradient(110deg,#18283b,#0b1017)}
+#builderRecordDialog .ra-head-brand{display:flex;align-items:center;gap:9px;min-width:0}
+#builderRecordDialog .ra-head-actions{display:flex;align-items:center;justify-content:flex-end;gap:6px;min-width:0}
+#builderRecordDialog .ra-mark{display:grid;place-items:center;flex:0 0 30px;width:30px;height:30px;border:1px solid #88764f;border-radius:9px;background:#242015;color:#efd49e;font-size:18px}
+#builderRecordDialog .ra-mark svg{width:18px;height:18px}
+#builderRecordDialog .ra-title{min-width:0;flex:0 1 auto}
+#builderRecordDialog .ra-title small{display:block;color:#93bce9;font-size:8px;letter-spacing:.14em;font-weight:700}
+#builderRecordDialog .ra-title h2{margin:0;color:#eff6ff;font-size:16px;line-height:1.2;white-space:nowrap}
+#builderRecordDialog .ra-close{flex:0 0 30px;width:30px;height:30px;border:1px solid #526681;border-radius:8px;background:#182538;color:#d7e7f9;font-size:21px;line-height:1}
 #builderRecordDialog .ra-close:hover{background:#27415e}
 #builderRecordDialog .ra-controls{flex:0 0 auto;padding:10px 18px 11px;border-bottom:1px solid #303640;background:#0d1015}
 #builderRecordDialog .ra-filter-matrix{display:grid;gap:8px;min-width:0}
@@ -163,16 +142,17 @@
 #builderRecordDialog .ra-tabs button:hover:not(:disabled):not([aria-pressed="true"]),#builderRecordDialog .ra-battle button:hover:not(:disabled):not([aria-pressed="true"]){border-color:#687c91;background:#26313f;color:#f0f6fc}
 #builderRecordDialog .ra-tabs button[aria-pressed="true"],#builderRecordDialog .ra-battle button[aria-pressed="true"]{border-color:#859ab1;background:#303d4b;color:#f6f8fb;font-weight:700;box-shadow:inset 0 1px #ffffff12}
 #builderRecordDialog .ra-battle button:disabled{cursor:not-allowed;opacity:.35}
-#builderRecordDialog .ra-filter-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));align-items:center;gap:7px;min-width:0}
+#builderRecordDialog .ra-filter-row{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));align-items:center;gap:7px;min-width:0}
 #builderRecordDialog .ra-filter-row label{display:block;min-width:0}
 #builderRecordDialog .ra-select-caption{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
 #builderRecordDialog .ra-filter-row select{width:100%;min-width:0;height:36px;padding:6px 26px 6px 10px;border:1px solid #465465;border-radius:8px;background:#151c25;color:#e3e8f0;font-size:12px}
 #builderRecordDialog .ra-filter-row select:focus-visible{border-color:#99b3cf}
-#builderRecordDialog .ra-viewtabs{display:flex;gap:8px;flex:0 0 auto;padding:10px 18px 0;background:#0d1015}
-#builderRecordDialog .ra-viewtabs button{flex:1;min-height:35px;padding:6px 12px;border:1px solid #435166;border-radius:8px 8px 0 0;background:#141b24;color:#aebfd1;font-weight:700}
-#builderRecordDialog .ra-viewtabs button[aria-pressed="true"]{border-color:#91abca;border-bottom-color:#283c55;background:#233650;color:#f3f8ff}
+#builderRecordDialog .ra-viewtabs{display:flex;align-items:center;justify-content:center;gap:3px;min-width:0;padding:3px;border:1px solid #40516a;border-radius:8px;background:#0b121b;white-space:nowrap}
+#builderRecordDialog .ra-viewtabs button{flex:0 0 auto;min-height:28px;padding:5px 10px;border:0;border-radius:5px;background:transparent;color:#adbdce;font-size:11.5px;font-weight:650;line-height:1.2;white-space:nowrap}
+#builderRecordDialog .ra-viewtabs button:hover{color:#f3f8ff;background:#1a2a3c}
+#builderRecordDialog .ra-viewtabs button[aria-pressed="true"]{color:#fff;background:#304866;font-weight:750}
 #builderRecordDialog .ra-analysis-filters{display:grid;gap:7px;min-width:0}
-#builderRecordDialog .ra-analysis-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;min-width:0}
+#builderRecordDialog .ra-analysis-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;min-width:0}
 #builderRecordDialog .ra-analysis-grid label{display:grid;gap:5px;min-width:0;color:#b8c5d3;font-size:10px;font-weight:650}
 #builderRecordDialog .ra-analysis-grid select{width:100%;min-width:0;height:36px;padding:6px 23px 6px 9px;border:1px solid #465465;border-radius:8px;background:#151c25;color:#e3e8f0;font-size:12px}
 #builderRecordDialog .ra-analysis-grid select:disabled{opacity:.5}
@@ -180,6 +160,10 @@
 #builderRecordDialog .ra-analysis-metric{display:grid;gap:5px;min-width:0;padding:12px;border:1px solid #40536a;border-radius:10px;background:#111b27}
 #builderRecordDialog .ra-analysis-metric small{color:#aec4df;font-size:10px}
 #builderRecordDialog .ra-analysis-metric strong{color:#ecf5ff;font-size:20px;overflow-wrap:anywhere;font-variant-numeric:tabular-nums}
+#builderRecordDialog .ra-analysis-results{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+#builderRecordDialog .ra-analysis-result{display:grid;gap:4px;min-width:0;padding:10px;border:1px solid #394e67;border-radius:8px;background:#111d2b}
+#builderRecordDialog .ra-analysis-result small{color:#aec4df;font-size:10px}
+#builderRecordDialog .ra-analysis-result strong{color:#ecf5ff;font-size:15px;overflow-wrap:anywhere;font-variant-numeric:tabular-nums}
 #builderRecordDialog .ra-analysis-section{display:grid;gap:10px;min-width:0;margin:0 0 19px}
 #builderRecordDialog .ra-analysis-heading{margin:0;color:#e9f2ff;font-size:14px;font-weight:800}
 #builderRecordDialog .ra-analysis-note{margin:0;color:#9bb1c7;font-size:10.5px}
@@ -192,10 +176,9 @@
 #builderRecordDialog .ra-analysis-fill{display:block;height:100%;border-radius:5px;background:#779fc9}
 #builderRecordDialog .ra-analysis-bar[data-min="true"] .ra-analysis-fill{background:#dfbf7a}
 #builderRecordDialog .ra-analysis-value{text-align:right;font-size:11px;font-weight:750;font-variant-numeric:tabular-nums}
-#builderRecordDialog .ra-analysis-open{justify-self:start;min-height:34px;padding:6px 12px;border:1px solid #7b9dbb;border-radius:7px;background:#233c55;color:#f2f7ff;font-weight:700}
-#builderRecordDialog .ra-analysis-open:hover{background:#305473}
 #builderRecordDialog .ra-analysis-recommend .ra-cards{grid-template-columns:minmax(0,1fr)}
-#builderRecordDialog .ra-refresh{flex:0 0 auto;display:flex;align-items:center;justify-content:center;gap:5px;min-height:34px;padding:5px 10px;border:1px solid #526681;border-radius:8px;background:#202a35;color:#d4e0ed;font-size:11.5px;white-space:nowrap}
+
+#builderRecordDialog .ra-refresh{flex:0 0 auto;display:flex;align-items:center;justify-content:center;gap:5px;min-height:30px;padding:4px 9px;border:1px solid #526681;border-radius:8px;background:#202a35;color:#d4e0ed;font-size:11px;white-space:nowrap}
 #builderRecordDialog .ra-refresh:hover:not(:disabled){border-color:#8195ab;background:#2c3949}
 #builderRecordDialog .ra-refresh:disabled{opacity:.55;cursor:wait}
 #builderRecordDialog .ra-scroll{flex:1;min-height:0;overflow:auto;overscroll-behavior:contain;padding:16px 20px 24px;scrollbar-width:none;-ms-overflow-style:none}
@@ -207,6 +190,7 @@
 #builderRecordDialog .ra-group{--ra-accent:#7fa6c7;--ra-aura:rgba(75,130,180,.09);display:grid;gap:10px;min-width:0}
 #builderRecordDialog .ra-group-head{display:flex;align-items:center;gap:10px;padding:8px 10px 12px;border-bottom:1px solid var(--ra-accent);background:linear-gradient(90deg,var(--ra-aura),transparent 88%);border-radius:7px 7px 0 0}
 #builderRecordDialog .ra-group-name{margin:0;font-size:16px;font-weight:800;color:var(--ra-accent)}
+#builderRecordDialog .ra-group-battle{flex:0 0 auto;padding:2px 7px;border:1px solid #52667d;border-radius:100px;background:#1c2937;color:#d1deeb;font-size:10px;font-weight:700;line-height:1.5;white-space:nowrap}
 #builderRecordDialog .ra-group-count{margin-left:auto;color:#aabbd1;font-size:10px;white-space:nowrap}
 #builderRecordDialog .ra-legend{padding:3px 7px;border:1px solid var(--ra-accent);border-radius:100px;color:var(--ra-accent);font:700 9px/1.5 ui-monospace,monospace;letter-spacing:.09em}
 #builderRecordDialog .ra-cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:start;gap:10px}
@@ -277,42 +261,7 @@
 #builderRecordDialog .ra-report .ra-units tr[data-slot-start] td:nth-child(2){text-align:left;color:#e5eaf1;font-weight:650}
 #builderRecordDialog .ra-report .ra-units tbody tr[data-slot-start]:not(:first-child) td{border-top:1px solid #475161}
 #builderRecordDialog .ra-report .ra-report-note{padding:12px;border:1px dashed #4a6078;border-radius:8px;color:#b1c6dd}
-@media(max-width:640px){#builderRecordDialog .ra-cards{grid-template-columns:minmax(0,1fr)}#builderRecordDialog .ra-analysis-recommend .ra-cards{grid-template-columns:minmax(0,1fr)}}
-@media(max-width:560px){
- #builderRecordDialog{width:calc(100vw - 16px);height:calc(100dvh - 18px);border-radius:12px}
- #builderRecordDialog .ra-head{padding:10px 12px}
- #builderRecordDialog .ra-controls{padding:7px 10px 9px}
- #builderRecordDialog .ra-viewtabs{padding:7px 10px 0;gap:5px}
- #builderRecordDialog .ra-viewtabs button{min-height:35px;padding:6px}
- #builderRecordDialog .ra-analysis-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
- #builderRecordDialog .ra-analysis-grid select{height:38px}
- #builderRecordDialog .ra-analysis-bar{grid-template-columns:minmax(61px,95px) minmax(0,1fr) minmax(54px,77px);gap:6px;padding:4px}
- #builderRecordDialog .ra-analysis-overview{gap:7px}
- #builderRecordDialog .ra-analysis-metric{padding:10px}
- #builderRecordDialog .ra-analysis-metric strong{font-size:16px}
- #builderRecordDialog .ra-filter-matrix{gap:7px}
- #builderRecordDialog .ra-filter-group{grid-template-columns:64px minmax(0,1fr);gap:7px}
- #builderRecordDialog .ra-filter-label{font-size:10.5px}
- #builderRecordDialog .ra-tabs,#builderRecordDialog .ra-battle{gap:5px}
- #builderRecordDialog .ra-tabs button,#builderRecordDialog .ra-battle button{flex:0 0 auto;min-width:87px;min-height:38px;padding:6px;font-size:11.5px}
- #builderRecordDialog .ra-filter-row{display:flex;gap:5px;overflow-x:auto;scrollbar-width:none}
- #builderRecordDialog .ra-filter-row::-webkit-scrollbar{display:none}
- #builderRecordDialog .ra-filter-row label{flex:0 0 130px}
- #builderRecordDialog .ra-filter-row select{height:38px}
- #builderRecordDialog .ra-refresh{width:34px;padding:4px}
- #builderRecordDialog .ra-refresh-label{display:none}
- #builderRecordDialog .ra-scroll{padding:13px 11px 18px}
- #builderRecordDialog .ra-detail-summary{gap:4px}
- #builderRecordDialog .ra-metric strong{font-size:12px}
- #builderRecordDialog .ra-card{min-height:110px;padding:11px 10px}
- #builderRecordDialog .ra-card-layout{grid-template-columns:minmax(0,1fr) minmax(90px,112px);gap:8px}
- #builderRecordDialog .ra-card-mode{font-size:10.5px}
- #builderRecordDialog .ra-difficulty-name{font-size:24px}
- #builderRecordDialog .ra-card-field strong{font-size:16px}
- #builderRecordDialog .ra-card-right{gap:11px}
- #builderRecordDialog .ra-report :is(td,th){padding:7px 6px}
- #builderRecordDialog .ra-metric{min-height:66px;padding:7px 3px}
-}
+
 @media(prefers-reduced-motion:reduce){#builderRecordDialog .ra-card{transition:none}}
 `;
   document.head.appendChild(style);
@@ -342,8 +291,11 @@
   archiveDialog.id = 'builderRecordDialog';
   archiveDialog.setAttribute('aria-labelledby', 'ra-title');
   archiveDialog.innerHTML = `
-    <header class="ra-head"><span class="ra-mark" aria-hidden="true"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4M7 4h10v7a5 5 0 0 1-10 0V4Z"/><path d="M7 6H4v2a4 4 0 0 0 4 4M17 6h3v2a4 4 0 0 1-4 4"/></svg></span><div class="ra-title"><small>BUILDER · RECORD HALL</small><h2 id="ra-title">기록의 전당</h2></div><button class="ra-refresh" id="ra-refresh" type="button" title="기록 새로고침" aria-label="기록 새로고침"><span aria-hidden="true">↻</span><span class="ra-refresh-label">새로고침</span></button><button class="ra-close" type="button" aria-label="기록의 전당 닫기">×</button></header>
-    <nav class="ra-viewtabs" aria-label="기록 보기 방식"><button type="button" data-ra-view="records" aria-pressed="true">기록 목록</button><button type="button" data-ra-view="analysis" aria-pressed="false">클리어 분석</button></nav>
+    <header class="ra-head">
+      <div class="ra-head-brand"><span class="ra-mark" aria-hidden="true"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4M7 4h10v7a5 5 0 0 1-10 0V4Z"/><path d="M7 6H4v2a4 4 0 0 0 4 4M17 6h3v2a4 4 0 0 1-4 4"/></svg></span><div class="ra-title"><small>BUILDER · RECORD HALL</small><h2 id="ra-title">기록의 전당</h2></div></div>
+      <nav class="ra-viewtabs" aria-label="기록 보기 방식"><button type="button" data-ra-view="records" aria-pressed="true">기록 목록</button><button type="button" data-ra-view="analysis" aria-pressed="false">클리어 분석</button></nav>
+      <div class="ra-head-actions"><button class="ra-refresh" id="ra-refresh" type="button" title="기록 새로고침" aria-label="기록 새로고침"><span aria-hidden="true">↻</span><span class="ra-refresh-label">새로고침</span></button><button class="ra-close" type="button" aria-label="기록의 전당 닫기">×</button></div>
+    </header>
     <div class="ra-controls" id="ra-controls">
       <div class="ra-filter-matrix" aria-label="기록의 전당 기록 필터">
         <div class="ra-filter-group">
@@ -356,13 +308,14 @@
         </div>
         <div class="ra-filter-group">
           <span class="ra-filter-label">기록 조건</span>
-          <div class="ra-filter-row"><label><span class="ra-select-caption">게임 모드</span><select id="ra-game" class="ra-native-select"><option value="전체">게임 모드 전체</option><option value="일반">일반 모드</option><option value="스피드">스피드 모드</option></select></label><label><span class="ra-select-caption">난이도</span><select id="ra-difficulty" class="ra-native-select"><option value="전체">전체 난이도</option></select></label><label><span class="ra-select-caption">플레이어</span><select id="ra-player" class="ra-native-select"><option value="전체">전체 플레이어</option></select></label></div>
+          <div class="ra-filter-row"><label><span class="ra-select-caption">게임 모드</span><select id="ra-game" class="ra-native-select"><option value="전체">게임 모드 전체</option><option value="일반">일반 모드</option><option value="스피드">스피드 모드</option></select></label><label><span class="ra-select-caption">난이도</span><select id="ra-difficulty" class="ra-native-select"><option value="전체">전체 난이도</option></select></label><label><span class="ra-select-caption">고행 / 층</span><select id="ra-stage" class="ra-native-select"><option value="전체">전체 고행 / 층</option></select></label><label><span class="ra-select-caption">플레이어</span><select id="ra-player" class="ra-native-select"><option value="전체">전체 플레이어</option></select></label></div>
         </div>
         <div class="ra-analysis-filters" id="ra-analysis-filters" hidden>
           <div class="ra-analysis-grid">
             <label>모드<select id="ra-analysis-game" class="ra-native-select"></select></label>
             <label>난이도<select id="ra-analysis-difficulty" class="ra-native-select"></select></label>
             <label>고행 / 층<select id="ra-analysis-stage" class="ra-native-select"></select></label>
+            <label>라운드<select id="ra-analysis-round" class="ra-native-select"></select></label>
             <label>DPS 종류<select id="ra-analysis-kind" class="ra-native-select"></select></label>
           </div>
         </div>
@@ -421,13 +374,13 @@
   let retryAfter = 0;
   let loading = false;
   let records = [];
-  const recordFilters = { mode: '개인전', battle: '전체', game: '전체', difficulty: '전체', player: '전체' };
+  const recordFilters = { mode: '개인전', battle: '전체', game: '전체', difficulty: '전체', stage: '전체', player: '전체' };
   let openedRecord = null;
   let recordScrollPosition = 0;
   let recordFetchFailed = false;
   let recordView = 'records';
   let recordListBattle = '전체';
-  const analysisFilters = {game:'',difficulty:'',stage:'',kind:''};
+  const analysisFilters = {game:'',difficulty:'',stage:'',round:'',kind:''};
 
   // ── 03 · GitHub 이슈 분류·본문 처리 ──
   // Version labels identify a release; content categories are independent of the version.
@@ -801,8 +754,8 @@
       return (ia < 0 ? Number.MAX_SAFE_INTEGER : ia) - (ib < 0 ? Number.MAX_SAFE_INTEGER : ib) || a.localeCompare(b,'ko');
     });
   }
-  function syncRecordOptions(select, label, values) {
-    const wanted = [{value:'전체', label}, ...values.map(value=>({value,label:value}))];
+  function syncRecordOptions(select, label, values, caption = value => value) {
+    const wanted = [{value:'전체', label}, ...values.map(value=>({value,label:caption(value)}))];
     if (select.options.length !== wanted.length || wanted.some((item,index)=>
       select.options[index].value !== item.value || select.options[index].textContent !== item.label)) {
       select.replaceChildren(...wanted.map((item)=>{
@@ -837,24 +790,46 @@
     const select = ra('#ra-difficulty');
     syncRecordOptions(select, '전체 난이도', allowed);
     select.value = recordFilters.difficulty;
-    const players = [...new Set(records.filter(recordMatchesBaseFilters)
+    const stages = [...new Set(records.filter(record => recordMatchesBaseFilters(record, false))
+      .map(record => String(record.stage)))].sort((a,b) => Number(b) - Number(a));
+    if (recordFilters.stage !== '전체' && !stages.includes(recordFilters.stage)) recordFilters.stage = '전체';
+    const stageSelect = ra('#ra-stage');
+    const stageSuffix = ['도전의 탑','행성탐사'].includes(mode) ? '층' : ' 고행';
+    syncRecordOptions(stageSelect, '전체 고행 / 층', stages, stage => `${stage}${stageSuffix}`);
+    stageSelect.value = recordFilters.stage;
+    const players = [...new Set(records.filter(record => recordMatchesBaseFilters(record))
       .map((r) => r.player))].sort((a,b) => a.localeCompare(b, 'ko'));
     if (recordFilters.player !== '전체' && !players.includes(recordFilters.player)) recordFilters.player = '전체';
     const playerSelect = ra('#ra-player');
     syncRecordOptions(playerSelect, '전체 플레이어', players);
     playerSelect.value = recordFilters.player;
   }
-  function recordMatchesBaseFilters(record) {
+  function recordMatchesBaseFilters(record, withStage = true) {
     return record.mode === recordFilters.mode &&
       (!['개인전','협동전'].includes(record.mode) || recordFilters.battle === '전체' || record.battle === recordFilters.battle) &&
       (recordFilters.game === '전체' || record.game === recordFilters.game) &&
-      (recordFilters.difficulty === '전체' || record.difficulty === recordFilters.difficulty);
+      (recordFilters.difficulty === '전체' || record.difficulty === recordFilters.difficulty) &&
+      (!withStage || recordFilters.stage === '전체' || String(record.stage) === recordFilters.stage);
   }
   function filteredRecords() {
     return records.filter(record => recordMatchesBaseFilters(record) &&
       (recordFilters.player === '전체' || record.player === recordFilters.player));
   }
-  // 동일 게임 종류·기록 유형 안에서 모드·난이도·고행·DPS 종류가 모두 같은 기록만 비교한다.
+  // 클리어 분석 · 게임 종류·기록 유형·모드·난이도·고행·라운드가 일치하는 기록만 비교한다.
+  // 달성률 DPS는 실제 DPS가 아니라 유닛 보드가 보고서에 저장한 달성률(%)을 사용한다.
+  // 유물 기록은 달성률로 클리어 조건을 비교할 수 없어 이 분석에서 제외한다.
+  function recordAnalysisRound(record) {
+    return record.round === null ? '없음' : String(record.round);
+  }
+  function recordAchievementValue(record) {
+    const match = /^\s*([\d,]+(?:\.\d+)?)\s*%\s*$/u.exec(String(record.achievement || ''));
+    return match ? Number(match[1].replace(/,/gu,'')) : NaN;
+  }
+  function recordAnalysisValue(record, kind) {
+    if (kind === '달성률') return record.battle === '유물' ? NaN : recordAchievementValue(record);
+    if (record.dpsKind !== kind) return NaN;
+    return Number(String(record.dps).replace(/,/gu,''));
+  }
   function syncAnalysisControls() {
     const possibleBattles = recordFilters.mode === '개인전' ? ['일반','유물','명예'] :
       recordFilters.mode === '협동전' ? ['일반','유물'] : ['전체'];
@@ -864,22 +839,30 @@
     const base = records.filter(record => record.mode === recordFilters.mode &&
       (recordFilters.battle === '전체' || record.battle === recordFilters.battle));
     const controls = [
-      ['game', 'ra-analysis-game', [...new Set(base.map(record=>record.game))].sort((a,b)=>a === '일반' ? -1 : b === '일반' ? 1 : a.localeCompare(b,'ko'))],
-      ['difficulty', 'ra-analysis-difficulty', []],
-      ['stage', 'ra-analysis-stage', []],
-      ['kind', 'ra-analysis-kind', []],
+      ['game', 'ra-analysis-game'],
+      ['difficulty', 'ra-analysis-difficulty'],
+      ['stage', 'ra-analysis-stage'],
+      ['round', 'ra-analysis-round'],
+      ['kind', 'ra-analysis-kind'],
     ];
-    for (const row of controls) {
-      const [key,id] = row;
+    for (const [key,id] of controls) {
       const current = base.filter(record => (key === 'game' || record.game === analysisFilters.game) &&
         (['game','difficulty'].includes(key) || record.difficulty === analysisFilters.difficulty) &&
-        (['game','difficulty','stage'].includes(key) || String(record.stage) === analysisFilters.stage));
-      const values = key === 'game' ? row[2] : key === 'difficulty' ? [...new Set(current.map(r=>r.difficulty))].sort((a,b)=>a.localeCompare(b,'ko')) :
-        key === 'stage' ? [...new Set(current.map(r=>String(r.stage)))].sort((a,b)=>Number(b)-Number(a)) :
-        [...new Set(current.map(r=>r.dpsKind))].sort((a,b)=>a === '스펙' ? -1 : b === '스펙' ? 1 : a.localeCompare(b,'ko'));
+        (['game','difficulty','stage'].includes(key) || String(record.stage) === analysisFilters.stage) &&
+        (['game','difficulty','stage','round'].includes(key) || recordAnalysisRound(record) === analysisFilters.round));
+      const values = key === 'game' ? [...new Set(base.map(record => record.game))].sort((a,b)=>a === '일반' ? -1 : b === '일반' ? 1 : a.localeCompare(b,'ko')) :
+        key === 'difficulty' ? [...new Set(current.map(record => record.difficulty))].sort((a,b)=>a.localeCompare(b,'ko')) :
+        key === 'stage' ? [...new Set(current.map(record => String(record.stage)))].sort((a,b)=>Number(b)-Number(a)) :
+        key === 'round' ? [...new Set(current.map(record => recordAnalysisRound(record)))].sort((a,b)=>Number(b)-Number(a)) :
+        ['스펙','유물','달성률'].filter(kind => current.some(record => {
+          const value = recordAnalysisValue(record,kind);
+          return Number.isFinite(value) && value >= 0;
+        }));
       if (!values.includes(analysisFilters[key])) analysisFilters[key] = values[0] || '';
       const select = ra('#'+id);
-      const labels = values.map(value => ({value, label:key === 'stage' ? `${value}${['도전의 탑','행성탐사'].includes(recordFilters.mode) ? '층' : ' 고행'}` : key === 'kind' ? `${value} DPS` : value}));
+      const labels = values.map(value => ({value, label:key === 'stage' ? `${value}${['도전의 탑','행성탐사'].includes(recordFilters.mode) ? '층' : ' 고행'}` :
+        key === 'round' ? (value === '없음' ? '해당 없음' : `${value} 라운드`) :
+        key === 'kind' ? `${value} DPS` : value}));
       if (!labels.length) labels.push({value:'',label:'기록 없음'});
       if (select.options.length !== labels.length || labels.some((item,index)=>select.options[index].value !== item.value || select.options[index].textContent !== item.label)) {
         select.replaceChildren(...labels.map(item=>{const option=escapeElement('option',item.label);option.value=item.value;return option;}));
@@ -892,13 +875,14 @@
     return records.filter(record => record.mode === recordFilters.mode &&
       (recordFilters.battle === '전체' || record.battle === recordFilters.battle) &&
       record.game === analysisFilters.game && record.difficulty === analysisFilters.difficulty &&
-      String(record.stage) === analysisFilters.stage && record.dpsKind === analysisFilters.kind)
-      .map(record => ({record,value:Number(String(record.dps).replace(/,/gu,''))}))
+      String(record.stage) === analysisFilters.stage && recordAnalysisRound(record) === analysisFilters.round)
+      .map(record => ({record,value:recordAnalysisValue(record,analysisFilters.kind)}))
       .filter(item => Number.isFinite(item.value) && item.value >= 0)
       .sort((a,b)=>a.value-b.value || Date.parse(a.record.publishedAt)-Date.parse(b.record.publishedAt) || a.record.number-b.record.number);
   }
   function renderRecordAnalysis() {
     const matches = matchingAnalysisRecords();
+    const isAchievement = analysisFilters.kind === '달성률';
     raStatus.textContent = `클리어 분석 · 동일 조건 ${matches.length}건${recordFetchFailed ? ' · 최신 목록 확인 실패' : ''}`;
     if (!matches.length) {
       raEmpty.hidden = false;
@@ -909,42 +893,51 @@
     const minimum = matches[0];
     const context = [analysisFilters.game,analysisFilters.difficulty,
       `${analysisFilters.stage}${['도전의 탑','행성탐사'].includes(recordFilters.mode) ? '층' : ' 고행'}`,
+      analysisFilters.round === '없음' ? '라운드 해당 없음' : `${analysisFilters.round} 라운드`,
       `${analysisFilters.kind} DPS`].join(' · ');
     const overview = escapeElement('div','','ra-analysis-overview');
-    for(const [label,value] of [['최저 클리어 DPS',minimum.record.dps],['동일 조건 기록',`${matches.length}건`]]){
+    for(const [label,value] of [[isAchievement ? '최저 클리어 달성률' : '최저 클리어 DPS',
+      isAchievement ? minimum.record.achievement : minimum.record.dps],['동일 조건 기록',`${matches.length}건`]]){
       const block=escapeElement('div','','ra-analysis-metric');
       block.append(escapeElement('small',label),escapeElement('strong',value));
       overview.append(block);
     }
     raList.append(overview);
     const chartSection=escapeElement('section','','ra-analysis-section');
-    chartSection.append(escapeElement('h3','클리어 DPS 비교','ra-analysis-heading'));
+    chartSection.append(escapeElement('h3',isAchievement ? '클리어 달성률 비교' : '클리어 DPS 비교','ra-analysis-heading'));
     chartSection.append(escapeElement('p',context,'ra-analysis-note'));
     const chart=escapeElement('div','','ra-analysis-chart');
     chart.setAttribute('role','group');
-    chart.setAttribute('aria-label','동일 조건 클리어 DPS 비교 그래프');
+    chart.setAttribute('aria-label',isAchievement ? '동일 조건 클리어 달성률 비교 그래프' : '동일 조건 클리어 DPS 비교 그래프');
     const max=Math.max(...matches.map(item=>item.value));
     for(const item of matches){
+      const displayValue = isAchievement ? item.record.achievement : item.record.dps;
       const bar=escapeElement('button','','ra-analysis-bar');
       bar.type='button';
       bar.dataset.recordNumber=String(item.record.number);
       if(item.value===minimum.value) bar.dataset.min='true';
-      bar.setAttribute('aria-label',`${item.record.player}, ${analysisFilters.kind} DPS ${item.record.dps}, 기록 카드 보기`);
+      bar.setAttribute('aria-label',`${item.record.player}, ${isAchievement ? '클리어 달성률' : `${analysisFilters.kind} DPS`} ${displayValue}, 기록 카드 보기`);
       const track=escapeElement('span','','ra-analysis-track');
       const fill=escapeElement('span','','ra-analysis-fill');
       fill.style.width=`${max ? Math.max(2,item.value/max*100) : 0}%`;
       track.append(fill);
-      bar.append(escapeElement('span',item.record.player,'ra-analysis-player'),track,escapeElement('span',item.record.dps,'ra-analysis-value'));
+      bar.append(escapeElement('span',item.record.player,'ra-analysis-player'),track,escapeElement('span',displayValue,'ra-analysis-value'));
       chart.append(bar);
     }
     chartSection.append(chart,escapeElement('p','막대를 누르면 해당 기록 카드를 바로 볼 수 있습니다.','ra-analysis-note'));
     raList.append(chartSection);
     const recommend=escapeElement('section','','ra-analysis-section ra-analysis-recommend');
-    recommend.append(escapeElement('h3','최저 기록 추천','ra-analysis-heading'));
-    const open=escapeElement('button','최저 기록 카드 보기','ra-analysis-open');
-    open.type='button';
-    open.dataset.recordNumber=String(minimum.record.number);
-    recommend.append(open);
+    recommend.append(escapeElement('h3',isAchievement ? '최저 달성률 기록 추천' : '최저 기록 추천','ra-analysis-heading'));
+    if (isAchievement) {
+      const results = escapeElement('div','','ra-analysis-results');
+      for(const [label,value] of [['클리어 기준',minimum.record.required],
+        ['클리어 기대값',minimum.record.expected],['클리어 달성률',minimum.record.achievement]]) {
+        const result = escapeElement('div','','ra-analysis-result');
+        result.append(escapeElement('small',label),escapeElement('strong',value));
+        results.append(result);
+      }
+      recommend.append(results);
+    }
     const cards=escapeElement('div','','ra-cards');
     cards.append(makeRecordCard(minimum.record));
     recommend.append(cards);
@@ -1313,7 +1306,7 @@
       const title = escapeElement('h3', '클리어 기록 보고서', 'ra-report-heading');
       holder.append(title);
       const metrics = escapeElement('div', '', 'ra-detail-summary');
-      const stageText = `${detail.battle === '명예' ? '명예 ' : '일반 '}${detail.stage}${['도전의 탑','행성탐사'].includes(detail.mode) ? '층' : ' 고행'}`;
+      const stageText = `${['개인전','협동전'].includes(detail.mode) ? detail.battle + ' ' : ''}${detail.stage}${['도전의 탑','행성탐사'].includes(detail.mode) ? '층' : ' 고행'}`;
       const values = [
         ['모드 난이도', [detail.game,detail.mode,detail.dataMode,detail.team,detail.difficulty].filter(Boolean).join(' · ')],
         ['고행 라운드', `${stageText}\n${detail.round === null ? '—' : `${detail.round} 라운드`}`],
@@ -1344,30 +1337,29 @@
       return;
     }
     const kind = ['도전의 탑','행성탐사'].includes(recordFilters.mode) ? '층' : '고행';
-    const recordsByStage = new Map();
+    const recordsByGroup = new Map();
     for (const record of selected) {
-      if (!recordsByStage.has(record.stage)) recordsByStage.set(record.stage, []);
-      recordsByStage.get(record.stage).push(record);
+      const groupKey = kind === '고행' ? `${record.stage}:${record.battle}` : String(record.stage);
+      if (!recordsByGroup.has(groupKey)) recordsByGroup.set(groupKey, { stage: record.stage, battle: kind === '고행' ? record.battle : '', items: [] });
+      recordsByGroup.get(groupKey).items.push(record);
     }
-    const stages = [...recordsByStage.keys()].sort((a,b) => b-a);
-    for (const stage of stages) {
+    const battleOrder = { '일반': 0, '유물': 1, '명예': 2 };
+    const groups = [...recordsByGroup.values()].sort((a,b) => b.stage - a.stage ||
+      (battleOrder[a.battle] ?? 3) - (battleOrder[b.battle] ?? 3));
+    for (const {stage, battle, items} of groups) {
       const group = escapeElement('section', '', 'ra-group');
       recordPenanceTheme(group, stage, kind);
       const groupHead = escapeElement('header', '', 'ra-group-head');
-      const stageName = kind === '층' ? `${stage}층` : recordFilters.battle === '전체' ? `${stage} 고행` : `${recordFilters.battle === '명예' ? '명예' : '일반'} ${stage} 고행`;
+      groupHead.append(escapeElement('h3', kind === '층' ? `${stage}층` : `${stage} 고행`, 'ra-group-name'));
+      if (kind === '고행') groupHead.append(escapeElement('span', battle, 'ra-group-battle'));
       const normalGrade = stage <= 16 ? `Ex ${stage}` : ({17:'Ex M',18:'Le S',19:'Le SS',20:'Le SSS'}[stage] || '');
-      const stageGrade = kind !== '고행' || recordFilters.battle === '전체' ? '' : recordFilters.battle === '명예'
-        ? recordStageLabel(recordFilters.battle, stage) : normalGrade;
-      groupHead.append(escapeElement('h3', stageName, 'ra-group-name'));
+      const stageGrade = kind !== '고행' ? '' : battle === '명예' ? recordStageLabel(battle, stage) : normalGrade;
       if (stageGrade) groupHead.append(escapeElement('span', stageGrade, 'ra-legend'));
-      const stageItems = recordsByStage.get(stage)
-        .sort((a,b) => (Date.parse(b.publishedAt) - Date.parse(a.publishedAt)) || b.number - a.number);
+      const stageItems = items.sort((a,b) => (Date.parse(b.publishedAt) - Date.parse(a.publishedAt)) || b.number - a.number);
       groupHead.append(escapeElement('span', `${stageItems.length}건`, 'ra-group-count'));
       group.append(groupHead);
       const cards = escapeElement('div', '', 'ra-cards');
-      for (const record of stageItems) {
-        cards.append(makeRecordCard(record));
-      }
+      for (const record of stageItems) cards.append(makeRecordCard(record));
       group.append(cards);
       raList.append(group);
     }
@@ -1462,7 +1454,7 @@
     renderRecordArchive();
   });
   for (const [id,key] of [['ra-analysis-game','game'],['ra-analysis-difficulty','difficulty'],
-    ['ra-analysis-stage','stage'],['ra-analysis-kind','kind']]) {
+    ['ra-analysis-stage','stage'],['ra-analysis-round','round'],['ra-analysis-kind','kind']]) {
     ra('#'+id).addEventListener('change',event=>{
       analysisFilters[key] = event.target.value;
       openedRecord = null;
@@ -1478,6 +1470,7 @@
     if (recordView === 'analysis') recordListBattle = '전체';
     recordFilters.game = '전체';
     recordFilters.difficulty = '전체';
+    recordFilters.stage = '전체';
     recordFilters.player = '전체';
     openedRecord = null;
     raScroll.scrollTop = 0;
@@ -1489,6 +1482,7 @@
     recordFilters.battle = button.dataset.raBattle;
     if (recordView === 'records') {
       recordFilters.difficulty = '전체';
+      recordFilters.stage = '전체';
       recordFilters.player = '전체';
     }
     openedRecord = null;
@@ -1507,6 +1501,12 @@
     raScroll.scrollTop = 0;
     renderRecordArchive();
   });
+  ra('#ra-stage').addEventListener('change', (event) => {
+    recordFilters.stage = event.target.value;
+    openedRecord = null;
+    raScroll.scrollTop = 0;
+    renderRecordArchive();
+  });
   ra('#ra-player').addEventListener('change', (event) => {
     recordFilters.player = event.target.value;
     openedRecord = null;
@@ -1516,7 +1516,7 @@
   raRefresh.addEventListener('click', () => void refresh(true));
   ra('.ra-close').addEventListener('click', () => archiveDialog.close());
   archiveTrigger?.addEventListener('click', () => {
-    if (archiveDialog.open) return;
+    if (document.body.matches('.is-mobile,.is-tablet') || archiveDialog.open) return;
     archiveDialog.showModal();
     archiveTrigger.setAttribute('aria-expanded', 'true');
     openedRecord = null;
@@ -1566,7 +1566,7 @@
   refreshButton.addEventListener('click', () => void refresh(true));
   $('#bp-close').addEventListener('click', () => dialog.close());
   trigger.addEventListener('click', () => {
-    if (dialog.open) return;
+    if (document.body.matches('.is-mobile,.is-tablet') || dialog.open) return;
     dialog.showModal();
     trigger.setAttribute('aria-expanded', 'true');
     chosenVersion = '';
