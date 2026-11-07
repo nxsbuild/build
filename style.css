@@ -523,8 +523,6 @@ body .right-workspace-copy-btn{display:inline-flex;align-items:center;justify-co
 body .right-workspace-copy-btn .nexus-control-icon svg{display:block;flex:none;width:17px;height:17px;}
 body .right-workspace-copy-btn:hover:not(:disabled),body .right-workspace-copy-btn:focus-visible{border-color:#96b7d4;background:#283b4b;}
 body .right-workspace-copy-btn:disabled{opacity:.45;cursor:default;}
-/* 기록의 전당·기록 복사: PC 전용 진입 버튼 */
-body:is(.is-mobile,.is-tablet) .right-workspace-copy-btn:is(#btnRecordArchive,[data-analysis-board-copy]){display:none!important;}
 
 /* 헤더 내부로 연결되는 동일한 탭 패턴: 설정·룬·승단·빌드·유닛 */
 .integrated-tabs{display:flex;flex-wrap:nowrap;gap:0;width:100%;min-width:0;padding:0;margin:0;border:0;border-bottom:1px solid var(--ui-line);background:var(--ui-integrated-subhead-bg);box-sizing:border-box;overflow-x:auto;overflow-y:hidden;overscroll-behavior-x:contain;scroll-snap-type:x proximity;}
@@ -1707,8 +1705,6 @@ body .trait-optimizer-panel .optimizer-head-title::before{content:"";display:gri
 .btn.subtle.header-nexus-link:active{transform:translateY(1px);box-shadow:inset 0 2px 5px rgba(0,0,0,.32);}
 .header-nexus-mark{display:block;width:21px;height:21px;filter:drop-shadow(0 0 3px rgba(109,195,255,.24));}
 body .hdr.app-header :is(.right-workspace-window-toggle,.header-patch-notes){display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box;flex:0 0 30px;width:30px;min-width:30px;height:30px;min-height:30px;padding:0;border:1px solid #416080;border-radius:8px;background:#13263e;color:#dcecff;box-shadow:none;cursor:pointer;}
-/* 패치노트: PC 전용 진입 버튼 */
-body:is(.is-mobile,.is-tablet) .hdr.app-header .header-patch-notes{display:none!important;}
 .header-convenience{display:flex;align-items:center;position:relative;min-width:0;}
 .header-reference-actions{display:flex;align-items:center;justify-content:flex-end;gap:6px;min-width:0;}
 /* 단일 PIP 버튼을 기준으로 분석 보드·투자 보조·버스 성소·승단 점수 아이콘의 테두리, 배경, 크기, 상태를 통일합니다. */
@@ -2079,6 +2075,26 @@ body #unitSanctuaryPanel .unit-sanctuary-summary th:nth-child(1){width:12%;}
 body #unitSanctuaryPanel .unit-sanctuary-summary th:nth-child(2),body #unitSanctuaryPanel .unit-sanctuary-summary th:nth-child(3){width:17%;}
 body #unitSanctuaryPanel .unit-sanctuary-summary th:nth-child(4),body #unitSanctuaryPanel .unit-sanctuary-summary th:nth-child(5){width:27%;}
 body #unitSanctuaryPanel .unit-sanctuary-summary tbody td{font-family:var(--font-main);font-variant-numeric:tabular-nums;}
+/* 성소 자동 입력 요약: 모바일에서 슬롯별 3열 정보 카드로 표시 */
+@media(max-width:600px){
+ body #unitSanctuaryPanel .unit-sanctuary-summary{overflow-x:hidden;overflow-y:visible;}
+ body #unitSanctuaryPanel .unit-sanctuary-summary table{display:block;width:100%;min-width:0;}
+ body #unitSanctuaryPanel .unit-sanctuary-summary thead{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap;}
+ body #unitSanctuaryPanel .unit-sanctuary-summary tbody{display:grid;gap:7px;padding:7px;}
+ body #unitSanctuaryPanel .unit-sanctuary-summary tbody tr{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));min-width:0;border:1px solid #35485c;border-radius:7px;overflow:hidden;}
+ body #unitSanctuaryPanel .unit-sanctuary-summary tbody tr>:is(th,td){display:flex;align-items:center;justify-content:center;gap:3px;min-width:0;width:auto;height:auto;min-height:34px;padding:7px 4px;border-bottom:1px solid #293b4d;white-space:normal;overflow-wrap:anywhere;line-height:1.35;text-align:center;}
+ body #unitSanctuaryPanel .unit-sanctuary-summary tbody tr>th:first-child{width:100%;white-space:nowrap;}
+ body #unitSanctuaryPanel .unit-sanctuary-summary tbody tr>th:before{content:'슬롯 ';color:#92a8c0;}
+ body #unitSanctuaryPanel .unit-sanctuary-summary tbody tr>td:nth-child(2):before{content:'시작 ';color:#92a8c0;}
+ body #unitSanctuaryPanel .unit-sanctuary-summary tbody tr>td:nth-child(3):before{content:'종료 ';color:#92a8c0;}
+ body #unitSanctuaryPanel .unit-sanctuary-summary tbody tr>td:nth-child(4),body #unitSanctuaryPanel .unit-sanctuary-summary tbody tr>td:nth-child(5){grid-column:1/-1;justify-content:space-between;gap:8px;padding:8px 10px;text-align:right;}
+ body #unitSanctuaryPanel .unit-sanctuary-summary tbody tr>td:nth-child(4):before{content:'1번 스킬 / 사용 횟수';flex:0 0 auto;color:#92a8c0;font-size:calc(10px * var(--app-font-scale));}
+ body #unitSanctuaryPanel .unit-sanctuary-summary tbody tr>td:nth-child(5):before{content:'2번 스킬 / 사용 횟수';flex:0 0 auto;color:#92a8c0;font-size:calc(10px * var(--app-font-scale));}
+ body #unitSanctuaryPanel .unit-sanctuary-summary tbody tr>td:last-child{border-bottom:0;}
+ body #unitSanctuaryPanel .unit-sanctuary-summary tbody tr>td[colspan]{grid-column:1/-1;justify-content:center;text-align:center;}
+ body #unitSanctuaryPanel .unit-sanctuary-summary tbody tr>td[colspan]:before{content:none;}
+ body .unit-sanctuary-field>span{white-space:normal;overflow-wrap:anywhere;}
+}
 body #dpsBaseUnitSlotStack .unit-basic-number{width:12%;}
 body #dpsBaseUnitSlotStack .unit-basic-name{width:28%;}
 body #dpsBaseUnitSlotStack .unit-basic-quantity{width:12%;}

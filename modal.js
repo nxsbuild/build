@@ -110,7 +110,31 @@
 #builderPatchDialog .bp-reader button:not(:disabled):hover{border-color:#91bdf5;background:#2d486a}
 #builderPatchDialog .bp-reader button:disabled{opacity:.38;cursor:not-allowed}
 #builderPatchDialog .bp-position{text-align:center;color:#b5d5ff;font:700 11px ui-monospace,SFMono-Regular,Consolas,monospace}
-
+@media(max-width:540px){
+ #builderPatchDialog{width:calc(100vw - 18px);height:min(690px,calc(100dvh - 20px));border-radius:13px}
+ #builderPatchDialog .bp-head{gap:9px;padding:13px 12px}
+ #builderPatchDialog .bp-mark svg{width:19px;height:19px}
+ #builderPatchDialog .bp-kicker{font-size:8px}
+ #builderPatchDialog .bp-controls{padding:9px 11px}
+ #builderPatchDialog .bp-periodbar{gap:4px;margin-bottom:8px}
+ #builderPatchDialog .bp-range{font-size:9px;letter-spacing:-.035em}
+ #builderPatchDialog .bp-periodtabs{gap:7px}
+ #builderPatchDialog .bp-periodtabs button{font-size:10px;padding:4px 0 5px}
+ #builderPatchDialog .bp-version{width:90px;min-height:28px;padding:3px 4px;font-size:10px}
+ #builderPatchDialog .bp-scroll{padding:12px 10px 15px}
+ #builderPatchDialog .bp-filters{gap:4px}
+ #builderPatchDialog .bp-filters button{padding:4px 9px;font-size:10.5px}
+ #builderPatchDialog .bp-release-head{gap:6px 10px;padding-bottom:10px}
+ #builderPatchDialog .bp-release-title{font-size:17px}
+ #builderPatchDialog .bp-release-meta{font-size:9.5px}
+ #builderPatchDialog .bp-card>summary{padding:10px 10px 10px 11px}
+ #builderPatchDialog .bp-preview{font-size:12.5px}
+ #builderPatchDialog .bp-excerpt{font-size:11px}
+ #builderPatchDialog .bp-body{padding:12px}
+ #builderPatchDialog .bp-reader{grid-template-columns:76px minmax(0,1fr) 76px;gap:7px;padding:8px 10px}
+ #builderPatchDialog .bp-reader button{font-size:11px}
+}
+@media(max-width:360px){#builderPatchDialog .bp-filters button{padding:4px 8px}#builderPatchDialog .bp-second{gap:4px 6px}#builderPatchDialog time{font-size:9px}}
 @media(prefers-reduced-motion:reduce){#builderPatchDialog .bp-card,#builderPatchDialog button{transition:none}}
 
 /* ── 기록 보관소 · 기존 패치노트와 GitHub 연동을 공유하는 별도 다이얼로그 ── */
@@ -261,7 +285,63 @@
 #builderRecordDialog .ra-report .ra-units tr[data-slot-start] td:nth-child(2){text-align:left;color:#e5eaf1;font-weight:650}
 #builderRecordDialog .ra-report .ra-units tbody tr[data-slot-start]:not(:first-child) td{border-top:1px solid #475161}
 #builderRecordDialog .ra-report .ra-report-note{padding:12px;border:1px dashed #4a6078;border-radius:8px;color:#b1c6dd}
-
+@media(max-width:640px){#builderRecordDialog .ra-cards{grid-template-columns:minmax(0,1fr)}#builderRecordDialog .ra-analysis-recommend .ra-cards{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:560px){
+ #builderRecordDialog{width:calc(100vw - 16px);height:calc(100dvh - 18px);border-radius:12px}
+ #builderRecordDialog .ra-head{gap:6px;padding:6px 10px}
+ #builderRecordDialog .ra-head-brand{gap:6px}
+ #builderRecordDialog .ra-head-actions{gap:5px}
+ #builderRecordDialog .ra-mark{flex-basis:28px;width:28px;height:28px;border-radius:8px}
+ #builderRecordDialog .ra-mark svg{width:17px;height:17px}
+ #builderRecordDialog .ra-title small{display:none}
+ #builderRecordDialog .ra-title h2{font-size:13px}
+ #builderRecordDialog .ra-viewtabs{gap:2px;padding:2px;border-radius:7px}
+ #builderRecordDialog .ra-viewtabs button{min-height:28px;padding:5px 7px;font-size:10.5px}
+ #builderRecordDialog .ra-controls{padding:7px 10px 9px}
+ #builderRecordDialog .ra-analysis-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+ #builderRecordDialog .ra-analysis-grid select{height:38px}
+ #builderRecordDialog .ra-analysis-grid label:last-child{grid-column:1/-1}
+ #builderRecordDialog .ra-analysis-results{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+ #builderRecordDialog .ra-analysis-result{padding:8px}
+ #builderRecordDialog .ra-analysis-result strong{font-size:13px}
+ #builderRecordDialog .ra-analysis-bar{grid-template-columns:minmax(61px,95px) minmax(0,1fr) minmax(54px,77px);gap:6px;padding:4px}
+ #builderRecordDialog .ra-analysis-overview{gap:7px}
+ #builderRecordDialog .ra-analysis-metric{padding:10px}
+ #builderRecordDialog .ra-analysis-metric strong{font-size:16px}
+ #builderRecordDialog .ra-filter-matrix{gap:7px}
+ #builderRecordDialog .ra-filter-group{grid-template-columns:55px minmax(0,1fr);gap:6px}
+ #builderRecordDialog .ra-filter-label{font-size:10.5px}
+ #builderRecordDialog .ra-tabs,#builderRecordDialog .ra-battle{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px;overflow:visible}
+ #builderRecordDialog .ra-tabs button,#builderRecordDialog .ra-battle button{flex:none;min-width:0;min-height:36px;padding:6px 4px;font-size:11px;white-space:normal}
+ #builderRecordDialog .ra-filter-row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;overflow:visible}
+ #builderRecordDialog .ra-filter-row label{min-width:0}
+ #builderRecordDialog .ra-filter-row select{height:38px}
+ #builderRecordDialog .ra-refresh{width:30px;min-height:32px;height:32px;padding:0}
+ #builderRecordDialog .ra-refresh-label{display:none}
+ #builderRecordDialog .ra-close{flex-basis:30px;width:30px;height:32px}
+ #builderRecordDialog .ra-scroll{padding:13px 11px 18px}
+ #builderRecordDialog .ra-detail-summary{gap:4px}
+ #builderRecordDialog .ra-metric strong{font-size:12px}
+ #builderRecordDialog .ra-card{min-height:110px;padding:11px 10px}
+ #builderRecordDialog .ra-card-layout{grid-template-columns:minmax(0,1fr) minmax(90px,112px);gap:8px}
+ #builderRecordDialog .ra-card-mode{font-size:10.5px}
+ #builderRecordDialog .ra-difficulty-name{font-size:24px}
+ #builderRecordDialog .ra-card-field strong{font-size:16px}
+ #builderRecordDialog .ra-card-right{gap:11px}
+ #builderRecordDialog .ra-report :is(td,th){padding:7px 6px}
+ #builderRecordDialog .ra-report .ra-table-wrap{scrollbar-width:thin;scrollbar-color:#52677e transparent;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain}
+ #builderRecordDialog .ra-metric{min-height:66px;padding:7px 3px}
+}
+@media(max-width:360px){
+ #builderRecordDialog .ra-head{gap:4px;padding-inline:8px}
+ #builderRecordDialog .ra-mark{display:none}
+ #builderRecordDialog .ra-title h2{font-size:12px}
+ #builderRecordDialog .ra-viewtabs{gap:1px;padding:2px}
+ #builderRecordDialog .ra-viewtabs button{padding-inline:5px;font-size:9.5px}
+ #builderRecordDialog .ra-head-actions{gap:3px}
+ #builderRecordDialog .ra-refresh{width:27px}
+ #builderRecordDialog .ra-close{flex-basis:27px;width:27px}
+}
 @media(prefers-reduced-motion:reduce){#builderRecordDialog .ra-card{transition:none}}
 `;
   document.head.appendChild(style);
@@ -1516,7 +1596,7 @@
   raRefresh.addEventListener('click', () => void refresh(true));
   ra('.ra-close').addEventListener('click', () => archiveDialog.close());
   archiveTrigger?.addEventListener('click', () => {
-    if (document.body.matches('.is-mobile,.is-tablet') || archiveDialog.open) return;
+    if (archiveDialog.open) return;
     archiveDialog.showModal();
     archiveTrigger.setAttribute('aria-expanded', 'true');
     openedRecord = null;
@@ -1566,7 +1646,7 @@
   refreshButton.addEventListener('click', () => void refresh(true));
   $('#bp-close').addEventListener('click', () => dialog.close());
   trigger.addEventListener('click', () => {
-    if (document.body.matches('.is-mobile,.is-tablet') || dialog.open) return;
+    if (dialog.open) return;
     dialog.showModal();
     trigger.setAttribute('aria-expanded', 'true');
     chosenVersion = '';
