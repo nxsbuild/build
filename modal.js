@@ -168,6 +168,33 @@
 #builderRecordDialog .ra-select-caption{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
 #builderRecordDialog .ra-filter-row select{width:100%;min-width:0;height:36px;padding:6px 26px 6px 10px;border:1px solid #465465;border-radius:8px;background:#151c25;color:#e3e8f0;font-size:12px}
 #builderRecordDialog .ra-filter-row select:focus-visible{border-color:#99b3cf}
+#builderRecordDialog .ra-viewtabs{display:flex;gap:8px;flex:0 0 auto;padding:10px 18px 0;background:#0d1015}
+#builderRecordDialog .ra-viewtabs button{flex:1;min-height:35px;padding:6px 12px;border:1px solid #435166;border-radius:8px 8px 0 0;background:#141b24;color:#aebfd1;font-weight:700}
+#builderRecordDialog .ra-viewtabs button[aria-pressed="true"]{border-color:#91abca;border-bottom-color:#283c55;background:#233650;color:#f3f8ff}
+#builderRecordDialog .ra-analysis-filters{display:grid;gap:7px;min-width:0}
+#builderRecordDialog .ra-analysis-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;min-width:0}
+#builderRecordDialog .ra-analysis-grid label{display:grid;gap:5px;min-width:0;color:#b8c5d3;font-size:10px;font-weight:650}
+#builderRecordDialog .ra-analysis-grid select{width:100%;min-width:0;height:36px;padding:6px 23px 6px 9px;border:1px solid #465465;border-radius:8px;background:#151c25;color:#e3e8f0;font-size:12px}
+#builderRecordDialog .ra-analysis-grid select:disabled{opacity:.5}
+#builderRecordDialog .ra-analysis-overview{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin-bottom:16px}
+#builderRecordDialog .ra-analysis-metric{display:grid;gap:5px;min-width:0;padding:12px;border:1px solid #40536a;border-radius:10px;background:#111b27}
+#builderRecordDialog .ra-analysis-metric small{color:#aec4df;font-size:10px}
+#builderRecordDialog .ra-analysis-metric strong{color:#ecf5ff;font-size:20px;overflow-wrap:anywhere;font-variant-numeric:tabular-nums}
+#builderRecordDialog .ra-analysis-section{display:grid;gap:10px;min-width:0;margin:0 0 19px}
+#builderRecordDialog .ra-analysis-heading{margin:0;color:#e9f2ff;font-size:14px;font-weight:800}
+#builderRecordDialog .ra-analysis-note{margin:0;color:#9bb1c7;font-size:10.5px}
+#builderRecordDialog .ra-analysis-chart{display:grid;gap:7px;max-height:300px;min-width:0;overflow:auto;padding:9px;border:1px solid #384b60;border-radius:10px;background:#0d151e}
+#builderRecordDialog .ra-analysis-bar{display:grid;grid-template-columns:minmax(75px,126px) minmax(0,1fr) minmax(62px,90px);align-items:center;gap:10px;min-height:31px;width:100%;padding:4px 7px;border:1px solid transparent;border-radius:7px;background:#141e2a;color:#e7f2ff;text-align:left}
+#builderRecordDialog .ra-analysis-bar:hover,#builderRecordDialog .ra-analysis-bar:focus-visible{border-color:#83b3e7;background:#22354b}
+#builderRecordDialog .ra-analysis-bar[data-min="true"]{border-color:#bfa16a;background:#2a281f}
+#builderRecordDialog .ra-analysis-player{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px}
+#builderRecordDialog .ra-analysis-track{display:block;height:12px;overflow:hidden;border-radius:5px;background:#27374a}
+#builderRecordDialog .ra-analysis-fill{display:block;height:100%;border-radius:5px;background:#779fc9}
+#builderRecordDialog .ra-analysis-bar[data-min="true"] .ra-analysis-fill{background:#dfbf7a}
+#builderRecordDialog .ra-analysis-value{text-align:right;font-size:11px;font-weight:750;font-variant-numeric:tabular-nums}
+#builderRecordDialog .ra-analysis-open{justify-self:start;min-height:34px;padding:6px 12px;border:1px solid #7b9dbb;border-radius:7px;background:#233c55;color:#f2f7ff;font-weight:700}
+#builderRecordDialog .ra-analysis-open:hover{background:#305473}
+#builderRecordDialog .ra-analysis-recommend .ra-cards{grid-template-columns:minmax(0,1fr)}
 #builderRecordDialog .ra-refresh{flex:0 0 auto;display:flex;align-items:center;justify-content:center;gap:5px;min-height:34px;padding:5px 10px;border:1px solid #526681;border-radius:8px;background:#202a35;color:#d4e0ed;font-size:11.5px;white-space:nowrap}
 #builderRecordDialog .ra-refresh:hover:not(:disabled){border-color:#8195ab;background:#2c3949}
 #builderRecordDialog .ra-refresh:disabled{opacity:.55;cursor:wait}
@@ -250,11 +277,19 @@
 #builderRecordDialog .ra-report .ra-units tr[data-slot-start] td:nth-child(2){text-align:left;color:#e5eaf1;font-weight:650}
 #builderRecordDialog .ra-report .ra-units tbody tr[data-slot-start]:not(:first-child) td{border-top:1px solid #475161}
 #builderRecordDialog .ra-report .ra-report-note{padding:12px;border:1px dashed #4a6078;border-radius:8px;color:#b1c6dd}
-@media(max-width:640px){#builderRecordDialog .ra-cards{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:640px){#builderRecordDialog .ra-cards{grid-template-columns:minmax(0,1fr)}#builderRecordDialog .ra-analysis-recommend .ra-cards{grid-template-columns:minmax(0,1fr)}}
 @media(max-width:560px){
  #builderRecordDialog{width:calc(100vw - 16px);height:calc(100dvh - 18px);border-radius:12px}
  #builderRecordDialog .ra-head{padding:10px 12px}
  #builderRecordDialog .ra-controls{padding:7px 10px 9px}
+ #builderRecordDialog .ra-viewtabs{padding:7px 10px 0;gap:5px}
+ #builderRecordDialog .ra-viewtabs button{min-height:35px;padding:6px}
+ #builderRecordDialog .ra-analysis-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+ #builderRecordDialog .ra-analysis-grid select{height:38px}
+ #builderRecordDialog .ra-analysis-bar{grid-template-columns:minmax(61px,95px) minmax(0,1fr) minmax(54px,77px);gap:6px;padding:4px}
+ #builderRecordDialog .ra-analysis-overview{gap:7px}
+ #builderRecordDialog .ra-analysis-metric{padding:10px}
+ #builderRecordDialog .ra-analysis-metric strong{font-size:16px}
  #builderRecordDialog .ra-filter-matrix{gap:7px}
  #builderRecordDialog .ra-filter-group{grid-template-columns:64px minmax(0,1fr);gap:7px}
  #builderRecordDialog .ra-filter-label{font-size:10.5px}
@@ -307,7 +342,8 @@
   archiveDialog.id = 'builderRecordDialog';
   archiveDialog.setAttribute('aria-labelledby', 'ra-title');
   archiveDialog.innerHTML = `
-    <header class="ra-head"><span class="ra-mark" aria-hidden="true"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4M7 4h10v7a5 5 0 0 1-10 0V4Z"/><path d="M7 6H4v2a4 4 0 0 0 4 4M17 6h3v2a4 4 0 0 1-4 4"/></svg></span><div class="ra-title"><small>BUILDER · RECORD HALL</small><h2 id="ra-title">기록의 전당</h2></div><button class="ra-refresh" id="ra-refresh" type="button" title="GitHub 기록 새로고침" aria-label="GitHub 기록 새로고침"><span aria-hidden="true">↻</span><span class="ra-refresh-label">새로고침</span></button><button class="ra-close" type="button" aria-label="기록의 전당 닫기">×</button></header>
+    <header class="ra-head"><span class="ra-mark" aria-hidden="true"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4M7 4h10v7a5 5 0 0 1-10 0V4Z"/><path d="M7 6H4v2a4 4 0 0 0 4 4M17 6h3v2a4 4 0 0 1-4 4"/></svg></span><div class="ra-title"><small>BUILDER · RECORD HALL</small><h2 id="ra-title">기록의 전당</h2></div><button class="ra-refresh" id="ra-refresh" type="button" title="기록 새로고침" aria-label="기록 새로고침"><span aria-hidden="true">↻</span><span class="ra-refresh-label">새로고침</span></button><button class="ra-close" type="button" aria-label="기록의 전당 닫기">×</button></header>
+    <nav class="ra-viewtabs" aria-label="기록 보기 방식"><button type="button" data-ra-view="records" aria-pressed="true">기록 목록</button><button type="button" data-ra-view="analysis" aria-pressed="false">클리어 분석</button></nav>
     <div class="ra-controls" id="ra-controls">
       <div class="ra-filter-matrix" aria-label="기록의 전당 기록 필터">
         <div class="ra-filter-group">
@@ -320,11 +356,19 @@
         </div>
         <div class="ra-filter-group">
           <span class="ra-filter-label">기록 조건</span>
-          <div class="ra-filter-row"><label><span class="ra-select-caption">게임 모드</span><select id="ra-game"><option value="전체">게임 모드 전체</option><option value="일반">일반 모드</option><option value="스피드">스피드 모드</option></select></label><label><span class="ra-select-caption">난이도</span><select id="ra-difficulty"><option value="전체">전체 난이도</option></select></label><label><span class="ra-select-caption">플레이어</span><select id="ra-player"><option value="전체">전체 플레이어</option></select></label></div>
+          <div class="ra-filter-row"><label><span class="ra-select-caption">게임 모드</span><select id="ra-game" class="ra-native-select"><option value="전체">게임 모드 전체</option><option value="일반">일반 모드</option><option value="스피드">스피드 모드</option></select></label><label><span class="ra-select-caption">난이도</span><select id="ra-difficulty" class="ra-native-select"><option value="전체">전체 난이도</option></select></label><label><span class="ra-select-caption">플레이어</span><select id="ra-player" class="ra-native-select"><option value="전체">전체 플레이어</option></select></label></div>
+        </div>
+        <div class="ra-analysis-filters" id="ra-analysis-filters" hidden>
+          <div class="ra-analysis-grid">
+            <label>모드<select id="ra-analysis-game" class="ra-native-select"></select></label>
+            <label>난이도<select id="ra-analysis-difficulty" class="ra-native-select"></select></label>
+            <label>고행 / 층<select id="ra-analysis-stage" class="ra-native-select"></select></label>
+            <label>DPS 종류<select id="ra-analysis-kind" class="ra-native-select"></select></label>
+          </div>
         </div>
       </div>
     </div>
-    <main class="ra-scroll"><p class="ra-status" id="ra-status" role="status">GitHub 기록을 불러오는 중입니다.</p><div class="ra-empty" id="ra-empty" hidden></div><section class="ra-list" id="ra-list" aria-label="고행별 기록 목록"></section></main>
+    <main class="ra-scroll"><p class="ra-status" id="ra-status" role="status">기록을 불러오는 중입니다.</p><div class="ra-empty" id="ra-empty" hidden></div><section class="ra-list" id="ra-list" aria-label="고행별 기록 목록"></section></main>
   `;
   document.body.appendChild(archiveDialog);
   const ra = (selector) => archiveDialog.querySelector(selector);
@@ -381,6 +425,9 @@
   let openedRecord = null;
   let recordScrollPosition = 0;
   let recordFetchFailed = false;
+  let recordView = 'records';
+  let recordListBattle = '전체';
+  const analysisFilters = {game:'',difficulty:'',stage:'',kind:''};
 
   // ── 03 · GitHub 이슈 분류·본문 처리 ──
   // Version labels identify a release; content categories are independent of the version.
@@ -743,13 +790,16 @@
 
   // ── 04-B · 기록의 전당 필터·보고서·기록 카드 ──
   // 기록 보관소 · 기록 메타데이터, 버전별 패치노트와 동일한 묶음 구조로 표시
-  const recordDifficultyBase = typeof DPS_CONFIG !== 'undefined' ? DPS_CONFIG.dpsTable.difficulties : [];
   function recordDifficultyOptions() {
-    if (recordFilters.mode === '도전의 탑') return ['도전의 탑'];
-    if (recordFilters.mode === '행성탐사') return [...new Set(records.filter((r) => r.mode === '행성탐사').map((r) => r.difficulty))];
-    return recordDifficultyBase.filter((name) =>
-      (recordFilters.mode !== '협동전' || recordDifficultyBase.indexOf(name) <= recordDifficultyBase.indexOf('Hall Of Fame')) &&
-      (recordFilters.battle !== '유물' || !['Abyss road','Deep Abyss'].includes(name)));
+    const possible = records.filter(record => record.mode === recordFilters.mode &&
+      (recordFilters.battle === '전체' || record.battle === recordFilters.battle) &&
+      (recordFilters.game === '전체' || record.game === recordFilters.game));
+    const names = [...new Set(possible.map(record => record.difficulty))];
+    const order = typeof DPS_CONFIG !== 'undefined' ? DPS_CONFIG.dpsTable.difficulties : [];
+    return names.sort((a,b) => {
+      const ia = order.indexOf(a), ib = order.indexOf(b);
+      return (ia < 0 ? Number.MAX_SAFE_INTEGER : ia) - (ib < 0 ? Number.MAX_SAFE_INTEGER : ib) || a.localeCompare(b,'ko');
+    });
   }
   function syncRecordOptions(select, label, values) {
     const wanted = [{value:'전체', label}, ...values.map(value=>({value,label:value}))];
@@ -768,15 +818,18 @@
       mode === '협동전' ? ['전체','일반','유물'] : ['전체'];
     if (!availableKinds.includes(recordFilters.battle)) recordFilters.battle = '전체';
     for (const button of ra('.ra-battle').querySelectorAll('button[data-ra-battle]')) {
-      button.disabled = !availableKinds.includes(button.dataset.raBattle);
+      button.disabled = !availableKinds.includes(button.dataset.raBattle) || (recordView === 'analysis' && availableKinds.length > 1 && button.dataset.raBattle === '전체');
       button.setAttribute('aria-pressed', String(button.dataset.raBattle === recordFilters.battle));
       button.title = button.disabled ? (button.dataset.raBattle === '명예' ? '개인전 전용 기록' : '선택한 게임 종류에서는 사용할 수 없습니다.') : '';
     }
     for (const button of ra('.ra-tabs').querySelectorAll('button[data-ra-mode]')) {
       button.setAttribute('aria-pressed', String(button.dataset.raMode === mode));
     }
+    // 분석 화면에서 숨겨진 목록 필터의 선택값을 덮어쓰지 않는다.
+    if (recordView === 'analysis') return;
     const gameSelect = ra('#ra-game');
-    gameSelect.querySelector('[value="스피드"]').disabled = ['도전의 탑','행성탐사'].includes(mode);
+    gameSelect.querySelector('[value="스피드"]').disabled = ['도전의 탑','행성탐사'].includes(mode) &&
+      !records.some(record => record.mode === mode && record.game === '스피드');
     if (gameSelect.querySelector('[value="스피드"]').disabled && recordFilters.game === '스피드') recordFilters.game = '전체';
     gameSelect.value = recordFilters.game;
     const allowed = recordDifficultyOptions();
@@ -800,6 +853,102 @@
   function filteredRecords() {
     return records.filter(record => recordMatchesBaseFilters(record) &&
       (recordFilters.player === '전체' || record.player === recordFilters.player));
+  }
+  // 동일 게임 종류·기록 유형 안에서 모드·난이도·고행·DPS 종류가 모두 같은 기록만 비교한다.
+  function syncAnalysisControls() {
+    const possibleBattles = recordFilters.mode === '개인전' ? ['일반','유물','명예'] :
+      recordFilters.mode === '협동전' ? ['일반','유물'] : ['전체'];
+    if (recordFilters.battle === '전체' && possibleBattles.length > 1) {
+      recordFilters.battle = possibleBattles.find(kind => records.some(record => record.mode === recordFilters.mode && record.battle === kind)) || possibleBattles[0];
+    }
+    const base = records.filter(record => record.mode === recordFilters.mode &&
+      (recordFilters.battle === '전체' || record.battle === recordFilters.battle));
+    const controls = [
+      ['game', 'ra-analysis-game', [...new Set(base.map(record=>record.game))].sort((a,b)=>a === '일반' ? -1 : b === '일반' ? 1 : a.localeCompare(b,'ko'))],
+      ['difficulty', 'ra-analysis-difficulty', []],
+      ['stage', 'ra-analysis-stage', []],
+      ['kind', 'ra-analysis-kind', []],
+    ];
+    for (const row of controls) {
+      const [key,id] = row;
+      const current = base.filter(record => (key === 'game' || record.game === analysisFilters.game) &&
+        (['game','difficulty'].includes(key) || record.difficulty === analysisFilters.difficulty) &&
+        (['game','difficulty','stage'].includes(key) || String(record.stage) === analysisFilters.stage));
+      const values = key === 'game' ? row[2] : key === 'difficulty' ? [...new Set(current.map(r=>r.difficulty))].sort((a,b)=>a.localeCompare(b,'ko')) :
+        key === 'stage' ? [...new Set(current.map(r=>String(r.stage)))].sort((a,b)=>Number(b)-Number(a)) :
+        [...new Set(current.map(r=>r.dpsKind))].sort((a,b)=>a === '스펙' ? -1 : b === '스펙' ? 1 : a.localeCompare(b,'ko'));
+      if (!values.includes(analysisFilters[key])) analysisFilters[key] = values[0] || '';
+      const select = ra('#'+id);
+      const labels = values.map(value => ({value, label:key === 'stage' ? `${value}${['도전의 탑','행성탐사'].includes(recordFilters.mode) ? '층' : ' 고행'}` : key === 'kind' ? `${value} DPS` : value}));
+      if (!labels.length) labels.push({value:'',label:'기록 없음'});
+      if (select.options.length !== labels.length || labels.some((item,index)=>select.options[index].value !== item.value || select.options[index].textContent !== item.label)) {
+        select.replaceChildren(...labels.map(item=>{const option=escapeElement('option',item.label);option.value=item.value;return option;}));
+      }
+      select.value = analysisFilters[key];
+      select.disabled = !values.length;
+    }
+  }
+  function matchingAnalysisRecords() {
+    return records.filter(record => record.mode === recordFilters.mode &&
+      (recordFilters.battle === '전체' || record.battle === recordFilters.battle) &&
+      record.game === analysisFilters.game && record.difficulty === analysisFilters.difficulty &&
+      String(record.stage) === analysisFilters.stage && record.dpsKind === analysisFilters.kind)
+      .map(record => ({record,value:Number(String(record.dps).replace(/,/gu,''))}))
+      .filter(item => Number.isFinite(item.value) && item.value >= 0)
+      .sort((a,b)=>a.value-b.value || Date.parse(a.record.publishedAt)-Date.parse(b.record.publishedAt) || a.record.number-b.record.number);
+  }
+  function renderRecordAnalysis() {
+    const matches = matchingAnalysisRecords();
+    raStatus.textContent = `클리어 분석 · 동일 조건 ${matches.length}건${recordFetchFailed ? ' · 최신 목록 확인 실패' : ''}`;
+    if (!matches.length) {
+      raEmpty.hidden = false;
+      raEmpty.textContent = recordFetchFailed && !records.length ? '기록 데이터를 불러오지 못했습니다. 새로고침해 주세요.' :
+        !records.length && !lastAttempt ? '기록을 불러오는 중입니다.' : '현재 선택한 조건에 집계 가능한 기록이 없습니다.';
+      return;
+    }
+    const minimum = matches[0];
+    const context = [analysisFilters.game,analysisFilters.difficulty,
+      `${analysisFilters.stage}${['도전의 탑','행성탐사'].includes(recordFilters.mode) ? '층' : ' 고행'}`,
+      `${analysisFilters.kind} DPS`].join(' · ');
+    const overview = escapeElement('div','','ra-analysis-overview');
+    for(const [label,value] of [['최저 클리어 DPS',minimum.record.dps],['동일 조건 기록',`${matches.length}건`]]){
+      const block=escapeElement('div','','ra-analysis-metric');
+      block.append(escapeElement('small',label),escapeElement('strong',value));
+      overview.append(block);
+    }
+    raList.append(overview);
+    const chartSection=escapeElement('section','','ra-analysis-section');
+    chartSection.append(escapeElement('h3','클리어 DPS 비교','ra-analysis-heading'));
+    chartSection.append(escapeElement('p',context,'ra-analysis-note'));
+    const chart=escapeElement('div','','ra-analysis-chart');
+    chart.setAttribute('role','group');
+    chart.setAttribute('aria-label','동일 조건 클리어 DPS 비교 그래프');
+    const max=Math.max(...matches.map(item=>item.value));
+    for(const item of matches){
+      const bar=escapeElement('button','','ra-analysis-bar');
+      bar.type='button';
+      bar.dataset.recordNumber=String(item.record.number);
+      if(item.value===minimum.value) bar.dataset.min='true';
+      bar.setAttribute('aria-label',`${item.record.player}, ${analysisFilters.kind} DPS ${item.record.dps}, 기록 카드 보기`);
+      const track=escapeElement('span','','ra-analysis-track');
+      const fill=escapeElement('span','','ra-analysis-fill');
+      fill.style.width=`${max ? Math.max(2,item.value/max*100) : 0}%`;
+      track.append(fill);
+      bar.append(escapeElement('span',item.record.player,'ra-analysis-player'),track,escapeElement('span',item.record.dps,'ra-analysis-value'));
+      chart.append(bar);
+    }
+    chartSection.append(chart,escapeElement('p','막대를 누르면 해당 기록 카드를 바로 볼 수 있습니다.','ra-analysis-note'));
+    raList.append(chartSection);
+    const recommend=escapeElement('section','','ra-analysis-section ra-analysis-recommend');
+    recommend.append(escapeElement('h3','최저 기록 추천','ra-analysis-heading'));
+    const open=escapeElement('button','최저 기록 카드 보기','ra-analysis-open');
+    open.type='button';
+    open.dataset.recordNumber=String(minimum.record.number);
+    recommend.append(open);
+    const cards=escapeElement('div','','ra-cards');
+    cards.append(makeRecordCard(minimum.record));
+    recommend.append(cards);
+    raList.append(recommend);
   }
   function recordPenanceTheme(group, stage, kind) {
     if (kind !== '고행') {
@@ -1086,6 +1235,44 @@
     for (const tag of tags) row.append(escapeElement('span', `#${tag}`, 'ra-tag'));
     return row;
   }
+  function makeRecordCard(record) {
+    const kind = ['도전의 탑','행성탐사'].includes(record.mode) ? '층' : '고행';
+    const card = escapeElement('button', '', 'ra-card');
+    card.type = 'button';
+    card.setAttribute('aria-label', `${record.player} · ${record.stage}${kind} · 상세 보고서 보기`);
+    const layout = escapeElement('div', '', 'ra-card-layout');
+    const left = escapeElement('div', '', 'ra-card-left');
+    if (record.tags.length) left.append(makeRecordTags(record.tags));
+    left.append(escapeElement('div', [record.game === '스피드' ? '스피드' : '일반',record.mode,record.dataMode,record.team].filter(Boolean).join(' · '), 'ra-card-mode'));
+    const cardStageName = kind === '층' ? `${record.stage}층` : `${record.battle === '명예' ? '명예 ' : ''}${record.stage} 고행`;
+    left.append(escapeElement('div', [cardStageName,record.round === null ? '' : `${record.round} 라운드`].filter(Boolean).join(' · '), 'ra-card-context'));
+    const difficulty = escapeElement('div', '', 'ra-card-difficulty');
+    difficulty.append(escapeElement('small', '난이도'));
+    const difficultyName = escapeElement('strong', record.difficulty || '—', 'ra-difficulty-name');
+    difficultyName.style.setProperty('--ra-difficulty-color', recordDifficultyColors[record.difficulty] || 'var(--ra-accent)');
+    difficulty.append(difficultyName);
+    const cardStageGrade = kind !== '고행' ? '' : record.battle === '명예' ? recordStageLabel(record.battle, record.stage) : (record.stage <= 16 ? `Ex ${record.stage}` : ({17:'Ex M',18:'Le S',19:'Le SS',20:'Le SSS'}[record.stage] || ''));
+    if (cardStageGrade) {
+      if(record.battle !== '명예' && record.stage >= 18) card.dataset.grade = String(record.stage);
+      difficulty.append(escapeElement('span', cardStageGrade, 'ra-stage-grade'));
+    }
+    left.append(difficulty);
+    const right = escapeElement('div', '', 'ra-card-right');
+    for (const [key, label, value] of [
+      ['player','플레이어',record.player],
+      ['dps',record.dpsKind === '유물' ? '유물 DPS' : '스펙 DPS',record.dps],
+      ['achievement','클리어 달성률',record.achievement],
+    ]) {
+      const field = escapeElement('div', '', 'ra-card-field');
+      field.dataset.field = key;
+      field.append(escapeElement('small',label), escapeElement('strong',value));
+      right.append(field);
+    }
+    layout.append(left,right);
+    card.append(layout);
+    card.dataset.recordNumber = String(record.number);
+    return card;
+  }
   function showRecordDetail(record) {
     openedRecord = record.number;
     recordScrollPosition = raScroll.scrollTop;
@@ -1094,18 +1281,24 @@
     ra('.ra-back')?.focus({ preventScroll: true });
   }
   function renderRecordArchive() {
+    if (recordView === 'analysis') syncAnalysisControls();
     updateRecordControls();
     const selected = filteredRecords();
-    const detail = selected.find((record) => record.number === openedRecord);
+    const detail = recordView === 'analysis' ? records.find(record=>record.number===openedRecord) :
+      selected.find((record) => record.number === openedRecord);
     if (!detail) openedRecord = null;
     ra('#ra-controls').hidden = !!detail;
+    ra('.ra-viewtabs').hidden = !!detail;
+    ra('.ra-filter-row').closest('.ra-filter-group').hidden = recordView === 'analysis';
+    ra('#ra-analysis-filters').hidden = recordView !== 'analysis';
+    for (const button of ra('.ra-viewtabs').querySelectorAll('[data-ra-view]')) button.setAttribute('aria-pressed',String(button.dataset.raView === recordView));
     raList.replaceChildren();
     raEmpty.hidden = true;
     if (detail) {
       raStatus.textContent = `${detail.player}님의 클리어 기록 보고서`;
       const holder = escapeElement('section', '', 'ra-detail');
       const head = escapeElement('header', '', 'ra-detail-head');
-      const back = escapeElement('button', '← 기록 목록', 'ra-back');
+      const back = escapeElement('button', recordView === 'analysis' ? '← 클리어 분석' : '← 기록 목록', 'ra-back');
       back.type = 'button';
       back.addEventListener('click', () => {
         openedRecord = null;
@@ -1139,11 +1332,15 @@
       raList.append(holder);
       return;
     }
+    if (recordView === 'analysis') {
+      renderRecordAnalysis();
+      return;
+    }
     raStatus.textContent = `${recordFilters.mode} · ${selected.length}개 기록${recordFetchFailed ? ' · 최신 목록 확인 실패' : ''}`;
     if (!selected.length) {
       raEmpty.hidden = false;
-      raEmpty.textContent = recordFetchFailed ? 'GitHub 연결을 확인해 주세요. 새로고침으로 다시 시도할 수 있습니다.' :
-        lastAttempt && !loading ? '해당 조건에 등록된 기록이 없습니다.' : 'GitHub 기록을 불러오는 중입니다.';
+      raEmpty.textContent = recordFetchFailed ? '기록을 불러오지 못했습니다. 새로고침으로 다시 시도할 수 있습니다.' :
+        lastAttempt && !loading ? '해당 조건에 등록된 기록이 없습니다.' : '기록을 불러오는 중입니다.';
       return;
     }
     const kind = ['도전의 탑','행성탐사'].includes(recordFilters.mode) ? '층' : '고행';
@@ -1169,41 +1366,7 @@
       group.append(groupHead);
       const cards = escapeElement('div', '', 'ra-cards');
       for (const record of stageItems) {
-        const card = escapeElement('button', '', 'ra-card');
-        card.type = 'button';
-        card.setAttribute('aria-label', `${record.player} · ${stage}${kind} · 상세 보고서 보기`);
-        const layout = escapeElement('div', '', 'ra-card-layout');
-        const left = escapeElement('div', '', 'ra-card-left');
-        if (record.tags.length) left.append(makeRecordTags(record.tags));
-        left.append(escapeElement('div', [record.game === '스피드' ? '스피드' : '일반',record.mode,record.dataMode,record.team].filter(Boolean).join(' · '), 'ra-card-mode'));
-        const cardStageName = kind === '층' ? `${stage}층` : `${record.battle === '명예' ? '명예 ' : ''}${stage} 고행`;
-        left.append(escapeElement('div', [cardStageName,record.round === null ? '' : `${record.round} 라운드`].filter(Boolean).join(' · '), 'ra-card-context'));
-        const difficulty = escapeElement('div', '', 'ra-card-difficulty');
-        difficulty.append(escapeElement('small', '난이도'));
-        const difficultyName = escapeElement('strong', record.difficulty || '—', 'ra-difficulty-name');
-        difficultyName.style.setProperty('--ra-difficulty-color', recordDifficultyColors[record.difficulty] || 'var(--ra-accent)');
-        difficulty.append(difficultyName);
-        const cardStageGrade = kind !== '고행' ? '' : record.battle === '명예' ? recordStageLabel(record.battle, stage) : normalGrade;
-        if (cardStageGrade) {
-          if(record.battle !== '명예' && stage >= 18) card.dataset.grade = String(stage);
-          difficulty.append(escapeElement('span', cardStageGrade, 'ra-stage-grade'));
-        }
-        left.append(difficulty);
-        const right = escapeElement('div', '', 'ra-card-right');
-        for (const [key, label, value] of [
-          ['player','플레이어',record.player],
-          ['dps',record.dpsKind === '유물' ? '유물 DPS' : '스펙 DPS',record.dps],
-          ['achievement','클리어 달성률',record.achievement],
-        ]) {
-          const field = escapeElement('div', '', 'ra-card-field');
-          field.dataset.field = key;
-          field.append(escapeElement('small',label), escapeElement('strong',value));
-          right.append(field);
-        }
-        layout.append(left,right);
-        card.append(layout);
-        card.dataset.recordNumber = String(record.number);
-        cards.append(card);
+        cards.append(makeRecordCard(record));
       }
       group.append(cards);
       raList.append(group);
@@ -1283,16 +1446,36 @@
   // ── 06 · 모달 이벤트 연결 ──
   // 기록 보관소 · 필터, 전체 카드 클릭, 목록 복귀, GitHub 새로고침
   raList.addEventListener('click', (event) => {
-    const card = event.target.closest('button.ra-card[data-record-number]');
+    const card = event.target.closest('button[data-record-number]');
     if (!card || !raList.contains(card)) return;
     const record = records.find((item) => String(item.number) === card.dataset.recordNumber);
     if (record) showRecordDetail(record);
   });
+  ra('.ra-viewtabs').addEventListener('click', event => {
+    const button = event.target.closest('button[data-ra-view]');
+    if (!button || recordView === button.dataset.raView) return;
+    if (button.dataset.raView === 'analysis') recordListBattle = recordFilters.battle;
+    else recordFilters.battle = recordListBattle;
+    recordView = button.dataset.raView;
+    openedRecord = null;
+    raScroll.scrollTop = 0;
+    renderRecordArchive();
+  });
+  for (const [id,key] of [['ra-analysis-game','game'],['ra-analysis-difficulty','difficulty'],
+    ['ra-analysis-stage','stage'],['ra-analysis-kind','kind']]) {
+    ra('#'+id).addEventListener('change',event=>{
+      analysisFilters[key] = event.target.value;
+      openedRecord = null;
+      raScroll.scrollTop = 0;
+      renderRecordArchive();
+    });
+  }
   ra('.ra-tabs').addEventListener('click', (event) => {
     const button = event.target.closest('button[data-ra-mode]');
     if (!button) return;
     recordFilters.mode = button.dataset.raMode;
     recordFilters.battle = '전체';
+    if (recordView === 'analysis') recordListBattle = '전체';
     recordFilters.game = '전체';
     recordFilters.difficulty = '전체';
     recordFilters.player = '전체';
@@ -1304,8 +1487,10 @@
     const button = event.target.closest('button[data-ra-battle]');
     if (!button || button.disabled) return;
     recordFilters.battle = button.dataset.raBattle;
-    recordFilters.difficulty = '전체';
-    recordFilters.player = '전체';
+    if (recordView === 'records') {
+      recordFilters.difficulty = '전체';
+      recordFilters.player = '전체';
+    }
     openedRecord = null;
     raScroll.scrollTop = 0;
     renderRecordArchive();
