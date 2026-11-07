@@ -1,143 +1,128 @@
 (() => {
   'use strict';
-  // Builder release archive: one owner for both its presentation and behavior.
-  const trigger = document.getElementById('btnPatchNotes');
-  if (!trigger || document.getElementById('builderPatchDialog')) return;
+  // 기록의 전당: 패치노트·기록 목록·기록 분석의 유일한 모달 소유자.
+  const trigger = document.getElementById('btnRecordArchive');
+  if (!trigger || document.getElementById('builderRecordDialog')) return;
 
-  // ── 01 · 패치노트 스타일 ──
+  // ── 01 · 기록의 전당 통합 스타일 ──
   const style = document.createElement('style');
-  style.id = 'builder-patch-style';
+  style.id = 'builder-record-hall-style';
   style.textContent = String.raw`
 /* 패치노트: 빌더 기본 모달 색상 토큰 사용; 헤더 버튼은 style.css 공통 규칙 적용 */
-#builderPatchDialog{--patch-text:var(--ui-text,#e2e7f0);position:fixed;inset:0;box-sizing:border-box;width:min(820px,calc(100vw - 42px));height:min(690px,calc(100dvh - 50px));max-width:none;max-height:none;margin:auto;padding:0;overflow:hidden;border:1px solid #425875;border-radius:var(--ui-modal-radius,15px);background:var(--ui-panel-body-bg,#08090b);color:var(--patch-text);box-shadow:var(--ui-modal-shadow,0 28px 95px #000b);font:calc(12.5px * var(--app-font-scale,1))/1.5 var(--font-main,system-ui,sans-serif);color-scheme:dark}
-#builderPatchDialog[open]{display:flex;flex-direction:column}
-#builderPatchDialog::backdrop{background:rgba(0,0,0,.78);backdrop-filter:blur(7px)}
-#builderPatchDialog *{box-sizing:border-box}
-#builderPatchDialog [hidden]{display:none!important}
-#builderPatchDialog button,#builderPatchDialog input,#builderPatchDialog select{font:inherit}
-#builderPatchDialog button{cursor:pointer;transition:border-color .15s,background .15s,color .15s}
-#builderPatchDialog :is(button,input,select,summary):focus-visible{outline:2px solid #92bdf8;outline-offset:2px}
-#builderPatchDialog .bp-head{display:flex;align-items:flex-start;gap:12px;flex:0 0 auto;padding:11px 22px 10px;border-bottom:1px solid var(--ui-integrated-head-line,#252d35);background:linear-gradient(115deg,rgba(111,147,191,.09),transparent 64%),var(--ui-integrated-head-bg,linear-gradient(105deg,#13181e,#0c1014 78%))}
-#builderPatchDialog .bp-mark{display:grid;place-items:center;flex:0 0 34px;width:34px;height:34px;border:1px solid #45658b;border-radius:11px;background:linear-gradient(140deg,#193955,#111924);color:#a9c8ff;box-shadow:inset 0 1px #ffffff18}
-#builderPatchDialog .bp-mark svg{width:21px;height:21px}
-#builderPatchDialog .bp-head-copy{flex:1;min-width:0}
-#builderPatchDialog .bp-kicker{display:block;margin:0 0 3px;color:#8dbaf2;font:700 9px/1.3 ui-monospace,SFMono-Regular,Consolas,monospace;letter-spacing:.14em}
-#builderPatchDialog h2{margin:0;color:var(--ui-integrated-head-text,#e6edf7);font-size:18px;font-weight:700;line-height:1.2;letter-spacing:-.025em}
-#builderPatchDialog #bp-close{display:grid;place-items:center;flex:0 0 32px;width:32px;height:32px;padding:0;border:1px solid #47566b;border-radius:8px;background:#18212d;color:#c5d5e9;font-size:22px;line-height:1}
-#builderPatchDialog #bp-close:hover{border-color:#94bfff;color:#fff;background:#24354a}
-#builderPatchDialog .bp-controls{flex:0 0 auto;padding:10px 22px;border-bottom:1px solid #273343;background:#090b0d}
-#builderPatchDialog .bp-toolbar{display:flex;align-items:center;gap:8px;margin-bottom:8px}
-#builderPatchDialog .bp-search{display:flex;align-items:center;flex:1;min-width:0;min-height:36px;gap:8px;padding:0 11px;border:1px solid #405674;border-radius:8px;background:#080d13;transition:border-color .15s}
-#builderPatchDialog .bp-search:focus-within{border-color:#80b6fb;box-shadow:0 0 0 2px #75aaff20}
-#builderPatchDialog .bp-search svg{width:15px;height:15px;flex:0 0 15px;color:#829cb9}
-#builderPatchDialog .bp-search input{flex:1;min-width:0;width:100%;height:34px;border:0;background:transparent;color:#eff6ff;outline:0;font-size:12px}
-#builderPatchDialog .bp-search input::placeholder{color:#879cb6}
-#builderPatchDialog #bp-refresh{flex:0 0 auto;min-height:36px;padding:5px 12px;border:1px solid #405674;border-radius:8px;background:#1a2634;color:#c7d9ed;font-size:11px}
-#builderPatchDialog #bp-refresh:hover:not(:disabled){border-color:#88aff2;background:#243b57}
-#builderPatchDialog #bp-refresh:disabled{cursor:wait;opacity:.65}
-#builderPatchDialog .bp-periodbar{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;gap:8px;min-width:0;margin-bottom:9px}
-#builderPatchDialog .bp-range{min-width:0;overflow:hidden;color:#9fb4cb;font-size:10px;white-space:nowrap;font-variant-numeric:tabular-nums}
-#builderPatchDialog .bp-periodtabs{display:flex;align-items:center;justify-content:center;gap:16px;white-space:nowrap}
-#builderPatchDialog .bp-periodtabs button{padding:4px 1px 5px;border:0;border-bottom:2px solid transparent;border-radius:0;background:transparent;color:#96a9bf;font-size:11px;line-height:1.25;transition:none}
-#builderPatchDialog .bp-periodtabs button[aria-pressed="true"]{border-bottom-color:#80b8ff;color:#eff6ff;font-weight:700}
-#builderPatchDialog .bp-periodtabs button:hover{color:#eff6ff}
-#builderPatchDialog .bp-version{justify-self:end;width:116px;min-width:0;max-width:100%;min-height:30px;padding:4px 8px;border:1px solid #405674;border-radius:7px;background:#151e29;color:#c7d9ed;font-size:11px;cursor:pointer}
-#builderPatchDialog .bp-month{display:grid;gap:12px;min-width:0}
-#builderPatchDialog .bp-month-head{margin:0 0 2px;padding:0 1px 7px;border-bottom:1px solid #2d3e52;color:#adc4df;font-size:12px;font-weight:650}
-#builderPatchDialog .bp-month-releases{display:grid;gap:20px;min-width:0}
-#builderPatchDialog .bp-filters{display:flex;justify-content:center;gap:6px;flex-wrap:wrap}
-#builderPatchDialog .bp-filters button{min-height:30px;padding:5px 12px;border:1px solid #344457;border-radius:7px;background:#161e28;color:#afc2da;font-size:11px;line-height:1.2}
-#builderPatchDialog .bp-filters button:hover{background:#223248;color:#e7f2ff}
-#builderPatchDialog .bp-filters [aria-pressed="true"]{border-color:#6f9bcf;background:#263e59;color:#e7f2ff;font-weight:700;box-shadow:inset 0 1px #ffffff12}
-#builderPatchDialog .bp-filters [data-kind="new"][aria-pressed="true"]{border-color:#549b94;background:#173b3b;color:#a6eadf}
-#builderPatchDialog .bp-filters [data-kind="preset"][aria-pressed="true"]{border-color:#9981d1;background:#302840;color:#ddcaff}
-#builderPatchDialog .bp-scroll{flex:1;min-height:0;overflow:auto;overscroll-behavior:contain;padding:14px 22px 18px;background:#090b0d;scrollbar-width:thin;scrollbar-color:#465b73 transparent}
-#builderPatchDialog .bp-summary{display:flex;align-items:center;gap:8px;margin-bottom:10px;color:#9aa9bc;font-size:11px}
-#builderPatchDialog .bp-summary:before{content:'';flex:0 0 3px;width:3px;height:13px;border-radius:3px;background:#83b8f5}
-#builderPatchDialog .bp-empty{display:grid;place-items:center;min-height:170px;padding:20px;border:1px dashed #3c516a;border-radius:12px;background:#111a24;color:#b7c9dc;text-align:center;line-height:1.65;white-space:pre-line}
-#builderPatchDialog .bp-list{display:grid;gap:23px}
-#builderPatchDialog .bp-release{min-width:0}
-#builderPatchDialog .bp-release-head{display:flex;align-items:end;justify-content:space-between;flex-wrap:wrap;gap:8px 14px;margin-bottom:11px;padding:4px 2px 12px;border-bottom:1px solid #314156}
-#builderPatchDialog .bp-release-heading{min-width:0;padding-left:12px;border-left:3px solid #80b8ff}
-#builderPatchDialog .bp-release-kicker{display:block;margin:0 0 3px;color:#8fb8e9;font:700 9px/1.3 ui-monospace,SFMono-Regular,Consolas,monospace;letter-spacing:.13em}
-#builderPatchDialog .bp-release-title{margin:0;color:#f2f6fc;font-size:19px;font-weight:750;line-height:1.3;letter-spacing:-.025em;overflow-wrap:anywhere}
-#builderPatchDialog .bp-release-meta{display:flex;align-items:center;gap:10px;padding-bottom:2px;color:#91a5bf;font-size:10px;white-space:nowrap}
-#builderPatchDialog .bp-release-meta time{margin:0;color:inherit}
-#builderPatchDialog .bp-release-items{display:grid;gap:8px;min-width:0}
-#builderPatchDialog .bp-card{--bp-tone:#80b8ff;--bp-rgb:128,184,255;overflow-wrap:anywhere;min-width:0;border:1px solid #334457;border-radius:9px;background:linear-gradient(120deg,rgba(76,112,151,.035),transparent 72%),#141b24;box-shadow:inset 0 1px #ffffff05;transition:border-color .15s,background .15s}
-#builderPatchDialog .bp-card[data-tone="fix"]{--bp-tone:#cc858e;--bp-rgb:204,133,142}
-#builderPatchDialog .bp-card[data-tone="improve"]{--bp-tone:#aeb8c4;--bp-rgb:174,184,196}
-#builderPatchDialog .bp-card:hover{border-color:#536e8c;background:linear-gradient(120deg,rgba(var(--bp-rgb),.065),transparent 72%),#17212c}
-#builderPatchDialog .bp-card[open]{border-color:#59718a;background:#141c26}
-#builderPatchDialog .bp-card>summary{display:block;padding:12px 14px;border-left:3px solid var(--bp-tone);border-radius:8px;list-style:none;cursor:pointer;scroll-margin-top:8px}
-#builderPatchDialog .bp-card>summary::-webkit-details-marker{display:none}
-#builderPatchDialog .bp-card>summary::marker{content:''}
-#builderPatchDialog .bp-card[open]>summary{border-bottom:1px solid #344559;border-radius:8px 8px 0 0;background:rgba(var(--bp-rgb),.035)}
-#builderPatchDialog .bp-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px 12px;min-width:0}
-#builderPatchDialog .bp-kind{flex:0 0 auto;font:600 9px/1.5 ui-monospace,SFMono-Regular,Consolas,monospace;letter-spacing:.055em;white-space:nowrap}
-#builderPatchDialog .bp-kind[data-kind="update"]{color:#80b8ff}
-#builderPatchDialog .bp-kind[data-kind="new"]{color:#c4a0ff}
-#builderPatchDialog .bp-kind[data-kind="preset"]{color:#67d8e8}
-#builderPatchDialog .bp-kind[data-kind="fix"]{color:#ff8585}
-#builderPatchDialog .bp-kind[data-kind="improve"]{color:#c4cbd4}
-#builderPatchDialog .bp-kinds{display:inline-flex;align-items:center;flex-wrap:wrap;gap:4px 9px;min-width:0}
-#builderPatchDialog .bp-kind-unit{display:inline-flex;align-items:center;gap:7px;white-space:nowrap}
-#builderPatchDialog .bp-kind-separator{color:#657386;font:600 10px/1 ui-monospace,SFMono-Regular,Consolas,monospace}
-#builderPatchDialog .bp-tag{padding:2px 7px;border:1px solid #3d526c;border-radius:5px;background:#233247;color:#c6daef;font-size:10px;line-height:1.4}
-#builderPatchDialog time{flex:0 0 auto;margin-left:auto;color:#9aa9bc;white-space:nowrap;font:10px/1.4 ui-monospace,SFMono-Regular,Consolas,monospace;font-variant-numeric:tabular-nums}
-#builderPatchDialog .bp-second{display:flex;align-items:center;flex-wrap:wrap;gap:5px 9px;margin-top:7px;min-width:0}
-#builderPatchDialog .bp-preview{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;flex:1 1 0;min-width:0;overflow:hidden;overflow-wrap:anywhere;color:#f1f5f9;font-size:13.5px;font-weight:650;line-height:1.45}
-#builderPatchDialog .bp-excerpt{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin:9px 0 0;color:#aebed0;font-size:11.5px;line-height:1.55}
-#builderPatchDialog .bp-body{padding:14px 16px 18px;background:#0b0d10;color:#e6edf7;font-size:12px;line-height:1.65;overflow-wrap:anywhere}
-#builderPatchDialog .bp-body>*+*{margin-top:8px}
-#builderPatchDialog .bp-body h4{margin:13px 0 6px;padding-left:9px;border-left:2px solid #6795cd;color:#e6f1ff;font-size:13px}
-#builderPatchDialog .bp-body :is(ul,ol){padding-left:18px}
-#builderPatchDialog .bp-body li+li{margin-top:4px}
-#builderPatchDialog .bp-body strong{color:#f1f7ff}
-#builderPatchDialog .bp-body pre{overflow:auto;padding:10px;border-radius:7px;background:#090d12}
-#builderPatchDialog .bp-body code{padding:2px 4px;border-radius:4px;background:#222c38}
-#builderPatchDialog .bp-body pre code{padding:0;background:none}
-#builderPatchDialog .bp-body blockquote{padding-left:11px;border-left:2px solid #465d7c}
-#builderPatchDialog .bp-body a{color:#9bcaff;text-decoration:underline}
-#builderPatchDialog .bp-body :is(th,td){padding:5px 7px;border:1px solid #3c4f66}
-#builderPatchDialog .bp-body table{display:block;overflow:auto;border-collapse:collapse}
-#builderPatchDialog .bp-body hr{border:0;border-top:1px solid #344558}
-#builderPatchDialog .bp-plain{white-space:pre-wrap}
-#builderPatchDialog .bp-image-link{display:inline-block;max-width:100%}
-#builderPatchDialog .bp-image{display:block;max-width:100%;max-height:420px;border:1px solid #3c4f66;border-radius:7px}
-#builderPatchDialog .bp-reader{display:grid;grid-template-columns:95px minmax(0,1fr) 95px;align-items:center;gap:10px;flex:0 0 auto;padding:10px 22px;border-top:1px solid #34485f;background:linear-gradient(110deg,#182434,#0d131b)}
-#builderPatchDialog .bp-reader button{min-height:34px;padding:4px 8px;border:1px solid #466389;border-radius:8px;background:#20334a;color:#e0edfb;font-size:12px}
-#builderPatchDialog .bp-reader button:not(:disabled):hover{border-color:#91bdf5;background:#2d486a}
-#builderPatchDialog .bp-reader button:disabled{opacity:.38;cursor:not-allowed}
-#builderPatchDialog .bp-position{text-align:center;color:#b5d5ff;font:700 11px ui-monospace,SFMono-Regular,Consolas,monospace}
+#builderRecordDialog .ra-patch-pane{--patch-text:var(--ui-text,#e2e7f0);display:flex;flex:1;flex-direction:column;min-height:0;overflow:hidden;color:var(--patch-text)}
+#builderRecordDialog .ra-patch-pane *{box-sizing:border-box}
+#builderRecordDialog .ra-patch-pane [hidden]{display:none!important}
+#builderRecordDialog .ra-patch-pane button,#builderRecordDialog .ra-patch-pane input,#builderRecordDialog .ra-patch-pane select{font:inherit}
+#builderRecordDialog .ra-patch-pane button{cursor:pointer;transition:border-color .15s,background .15s,color .15s}
+#builderRecordDialog .ra-patch-pane :is(button,input,select,summary):focus-visible{outline:2px solid #92bdf8;outline-offset:2px}
+#builderRecordDialog .ra-patch-pane .bp-controls{flex:0 0 auto;padding:10px 22px;border-bottom:1px solid #273343;background:#090b0d}
+#builderRecordDialog .ra-patch-pane .bp-toolbar{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+#builderRecordDialog .ra-patch-pane .bp-search{display:flex;align-items:center;flex:1;min-width:0;min-height:36px;gap:8px;padding:0 11px;border:1px solid #405674;border-radius:8px;background:#080d13;transition:border-color .15s}
+#builderRecordDialog .ra-patch-pane .bp-search:focus-within{border-color:#80b6fb;box-shadow:0 0 0 2px #75aaff20}
+#builderRecordDialog .ra-patch-pane .bp-search svg{width:15px;height:15px;flex:0 0 15px;color:#829cb9}
+#builderRecordDialog .ra-patch-pane .bp-search input{flex:1;min-width:0;width:100%;height:34px;border:0;background:transparent;color:#eff6ff;outline:0;font-size:12px}
+#builderRecordDialog .ra-patch-pane .bp-search input::placeholder{color:#879cb6}
+#builderRecordDialog .ra-patch-pane #bp-refresh{flex:0 0 auto;min-height:36px;padding:5px 12px;border:1px solid #405674;border-radius:8px;background:#1a2634;color:#c7d9ed;font-size:11px}
+#builderRecordDialog .ra-patch-pane #bp-refresh:hover:not(:disabled){border-color:#88aff2;background:#243b57}
+#builderRecordDialog .ra-patch-pane #bp-refresh:disabled{cursor:wait;opacity:.65}
+#builderRecordDialog .ra-patch-pane .bp-periodbar{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;gap:8px;min-width:0;margin-bottom:9px}
+#builderRecordDialog .ra-patch-pane .bp-range{min-width:0;overflow:hidden;color:#9fb4cb;font-size:10px;white-space:nowrap;font-variant-numeric:tabular-nums}
+#builderRecordDialog .ra-patch-pane .bp-periodtabs{display:flex;align-items:center;justify-content:center;gap:16px;white-space:nowrap}
+#builderRecordDialog .ra-patch-pane .bp-periodtabs button{padding:4px 1px 5px;border:0;border-bottom:2px solid transparent;border-radius:0;background:transparent;color:#96a9bf;font-size:11px;line-height:1.25;transition:none}
+#builderRecordDialog .ra-patch-pane .bp-periodtabs button[aria-pressed="true"]{border-bottom-color:#80b8ff;color:#eff6ff;font-weight:700}
+#builderRecordDialog .ra-patch-pane .bp-periodtabs button:hover{color:#eff6ff}
+#builderRecordDialog .ra-patch-pane .bp-version{justify-self:end;width:116px;min-width:0;max-width:100%;min-height:30px;padding:4px 8px;border:1px solid #405674;border-radius:7px;background:#151e29;color:#c7d9ed;font-size:11px;cursor:pointer}
+#builderRecordDialog .ra-patch-pane .bp-month{display:grid;gap:12px;min-width:0}
+#builderRecordDialog .ra-patch-pane .bp-month-head{margin:0 0 2px;padding:0 1px 7px;border-bottom:1px solid #2d3e52;color:#adc4df;font-size:12px;font-weight:650}
+#builderRecordDialog .ra-patch-pane .bp-month-releases{display:grid;gap:20px;min-width:0}
+#builderRecordDialog .ra-patch-pane .bp-filters{display:flex;justify-content:center;gap:6px;flex-wrap:wrap}
+#builderRecordDialog .ra-patch-pane .bp-filters button{min-height:30px;padding:5px 12px;border:1px solid #344457;border-radius:7px;background:#161e28;color:#afc2da;font-size:11px;line-height:1.2}
+#builderRecordDialog .ra-patch-pane .bp-filters button:hover{background:#223248;color:#e7f2ff}
+#builderRecordDialog .ra-patch-pane .bp-filters [aria-pressed="true"]{border-color:#6f9bcf;background:#263e59;color:#e7f2ff;font-weight:700;box-shadow:inset 0 1px #ffffff12}
+#builderRecordDialog .ra-patch-pane .bp-filters [data-kind="preset"][aria-pressed="true"]{border-color:#9981d1;background:#302840;color:#ddcaff}
+#builderRecordDialog .ra-patch-pane .bp-scroll{flex:1;min-height:0;overflow:auto;overscroll-behavior:contain;padding:14px 22px 18px;background:#090b0d;scrollbar-width:thin;scrollbar-color:#465b73 transparent}
+#builderRecordDialog .ra-patch-pane .bp-summary{display:flex;align-items:center;gap:8px;margin-bottom:10px;color:#9aa9bc;font-size:11px}
+#builderRecordDialog .ra-patch-pane .bp-summary:before{content:'';flex:0 0 3px;width:3px;height:13px;border-radius:3px;background:#83b8f5}
+#builderRecordDialog .ra-patch-pane .bp-empty{display:grid;place-items:center;min-height:170px;padding:20px;border:1px dashed #3c516a;border-radius:12px;background:#111a24;color:#b7c9dc;text-align:center;line-height:1.65;white-space:pre-line}
+#builderRecordDialog .ra-patch-pane .bp-list{display:grid;gap:23px}
+#builderRecordDialog .ra-patch-pane .bp-release{min-width:0}
+#builderRecordDialog .ra-patch-pane .bp-release-head{display:flex;align-items:end;justify-content:space-between;flex-wrap:wrap;gap:8px 14px;margin-bottom:11px;padding:4px 2px 12px;border-bottom:1px solid #314156}
+#builderRecordDialog .ra-patch-pane .bp-release-heading{min-width:0;padding-left:12px;border-left:3px solid #80b8ff}
+#builderRecordDialog .ra-patch-pane .bp-release-kicker{display:block;margin:0 0 3px;color:#8fb8e9;font:700 9px/1.3 ui-monospace,SFMono-Regular,Consolas,monospace;letter-spacing:.13em}
+#builderRecordDialog .ra-patch-pane .bp-release-title{margin:0;color:#f2f6fc;font-size:19px;font-weight:750;line-height:1.3;letter-spacing:-.025em;overflow-wrap:anywhere}
+#builderRecordDialog .ra-patch-pane .bp-release-meta{display:flex;align-items:center;gap:10px;padding-bottom:2px;color:#91a5bf;font-size:10px;white-space:nowrap}
+#builderRecordDialog .ra-patch-pane .bp-release-meta time{margin:0;color:inherit}
+#builderRecordDialog .ra-patch-pane .bp-release-items{display:grid;gap:8px;min-width:0}
+#builderRecordDialog .ra-patch-pane .bp-card{--bp-tone:#80b8ff;--bp-rgb:128,184,255;overflow-wrap:anywhere;min-width:0;border:1px solid #334457;border-radius:9px;background:linear-gradient(120deg,rgba(76,112,151,.035),transparent 72%),#141b24;box-shadow:inset 0 1px #ffffff05;transition:border-color .15s,background .15s}
+#builderRecordDialog .ra-patch-pane .bp-card[data-tone="fix"]{--bp-tone:#cc858e;--bp-rgb:204,133,142}
+#builderRecordDialog .ra-patch-pane .bp-card[data-tone="improve"]{--bp-tone:#aeb8c4;--bp-rgb:174,184,196}
+#builderRecordDialog .ra-patch-pane .bp-card:hover{border-color:#536e8c;background:linear-gradient(120deg,rgba(var(--bp-rgb),.065),transparent 72%),#17212c}
+#builderRecordDialog .ra-patch-pane .bp-card[open]{border-color:#59718a;background:#141c26}
+#builderRecordDialog .ra-patch-pane .bp-card>summary{display:block;padding:12px 14px;border-left:3px solid var(--bp-tone);border-radius:8px;list-style:none;cursor:pointer;scroll-margin-top:8px}
+#builderRecordDialog .ra-patch-pane .bp-card>summary::-webkit-details-marker{display:none}
+#builderRecordDialog .ra-patch-pane .bp-card>summary::marker{content:''}
+#builderRecordDialog .ra-patch-pane .bp-card[open]>summary{border-bottom:1px solid #344559;border-radius:8px 8px 0 0;background:rgba(var(--bp-rgb),.035)}
+#builderRecordDialog .ra-patch-pane .bp-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px 12px;min-width:0}
+#builderRecordDialog .ra-patch-pane .bp-kind{flex:0 0 auto;font:600 9px/1.5 ui-monospace,SFMono-Regular,Consolas,monospace;letter-spacing:.055em;white-space:nowrap}
+#builderRecordDialog .ra-patch-pane .bp-kind[data-kind="update"]{color:#80b8ff}
+#builderRecordDialog .ra-patch-pane .bp-kind[data-kind="new"]{color:#c4a0ff}
+#builderRecordDialog .ra-patch-pane .bp-kind[data-kind="preset"]{color:#67d8e8}
+#builderRecordDialog .ra-patch-pane .bp-kind[data-kind="fix"]{color:#ff8585}
+#builderRecordDialog .ra-patch-pane .bp-kind[data-kind="improve"]{color:#c4cbd4}
+#builderRecordDialog .ra-patch-pane .bp-kinds{display:inline-flex;align-items:center;flex-wrap:wrap;gap:4px 9px;min-width:0}
+#builderRecordDialog .ra-patch-pane .bp-kind-unit{display:inline-flex;align-items:center;gap:7px;white-space:nowrap}
+#builderRecordDialog .ra-patch-pane .bp-kind-separator{color:#657386;font:600 10px/1 ui-monospace,SFMono-Regular,Consolas,monospace}
+#builderRecordDialog .ra-patch-pane .bp-tag{padding:2px 7px;border:1px solid #3d526c;border-radius:5px;background:#233247;color:#c6daef;font-size:10px;line-height:1.4}
+#builderRecordDialog .ra-patch-pane time{flex:0 0 auto;margin-left:auto;color:#9aa9bc;white-space:nowrap;font:10px/1.4 ui-monospace,SFMono-Regular,Consolas,monospace;font-variant-numeric:tabular-nums}
+#builderRecordDialog .ra-patch-pane .bp-second{display:flex;align-items:center;flex-wrap:wrap;gap:5px 9px;margin-top:7px;min-width:0}
+#builderRecordDialog .ra-patch-pane .bp-preview{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;flex:1 1 0;min-width:0;overflow:hidden;overflow-wrap:anywhere;color:#f1f5f9;font-size:13.5px;font-weight:650;line-height:1.45}
+#builderRecordDialog .ra-patch-pane .bp-excerpt{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin:9px 0 0;color:#aebed0;font-size:11.5px;line-height:1.55}
+#builderRecordDialog .ra-patch-pane .bp-body{padding:14px 16px 18px;background:#0b0d10;color:#e6edf7;font-size:12px;line-height:1.65;overflow-wrap:anywhere}
+#builderRecordDialog .ra-patch-pane .bp-body>*+*{margin-top:8px}
+#builderRecordDialog .ra-patch-pane .bp-body h4{margin:13px 0 6px;padding-left:9px;border-left:2px solid #6795cd;color:#e6f1ff;font-size:13px}
+#builderRecordDialog .ra-patch-pane .bp-body :is(ul,ol){padding-left:18px}
+#builderRecordDialog .ra-patch-pane .bp-body li+li{margin-top:4px}
+#builderRecordDialog .ra-patch-pane .bp-body strong{color:#f1f7ff}
+#builderRecordDialog .ra-patch-pane .bp-body pre{overflow:auto;padding:10px;border-radius:7px;background:#090d12}
+#builderRecordDialog .ra-patch-pane .bp-body code{padding:2px 4px;border-radius:4px;background:#222c38}
+#builderRecordDialog .ra-patch-pane .bp-body pre code{padding:0;background:none}
+#builderRecordDialog .ra-patch-pane .bp-body blockquote{padding-left:11px;border-left:2px solid #465d7c}
+#builderRecordDialog .ra-patch-pane .bp-body a{color:#9bcaff;text-decoration:underline}
+#builderRecordDialog .ra-patch-pane .bp-body :is(th,td){padding:5px 7px;border:1px solid #3c4f66}
+#builderRecordDialog .ra-patch-pane .bp-body table{display:block;overflow:auto;border-collapse:collapse}
+#builderRecordDialog .ra-patch-pane .bp-body hr{border:0;border-top:1px solid #344558}
+#builderRecordDialog .ra-patch-pane .bp-plain{white-space:pre-wrap}
+#builderRecordDialog .ra-patch-pane .bp-image-link{display:inline-block;max-width:100%}
+#builderRecordDialog .ra-patch-pane .bp-image{display:block;max-width:100%;max-height:420px;border:1px solid #3c4f66;border-radius:7px}
+#builderRecordDialog .ra-patch-pane .bp-reader{display:grid;grid-template-columns:95px minmax(0,1fr) 95px;align-items:center;gap:10px;flex:0 0 auto;padding:10px 22px;border-top:1px solid #34485f;background:linear-gradient(110deg,#182434,#0d131b)}
+#builderRecordDialog .ra-patch-pane .bp-reader button{min-height:34px;padding:4px 8px;border:1px solid #466389;border-radius:8px;background:#20334a;color:#e0edfb;font-size:12px}
+#builderRecordDialog .ra-patch-pane .bp-reader button:not(:disabled):hover{border-color:#91bdf5;background:#2d486a}
+#builderRecordDialog .ra-patch-pane .bp-reader button:disabled{opacity:.38;cursor:not-allowed}
+#builderRecordDialog .ra-patch-pane .bp-position{text-align:center;color:#b5d5ff;font:700 11px ui-monospace,SFMono-Regular,Consolas,monospace}
 @media(max-width:540px){
- #builderPatchDialog{width:calc(100vw - 18px);height:min(690px,calc(100dvh - 20px));border-radius:13px}
- #builderPatchDialog .bp-head{gap:9px;padding:13px 12px}
- #builderPatchDialog .bp-mark svg{width:19px;height:19px}
- #builderPatchDialog .bp-kicker{font-size:8px}
- #builderPatchDialog .bp-controls{padding:9px 11px}
- #builderPatchDialog .bp-periodbar{gap:4px;margin-bottom:8px}
- #builderPatchDialog .bp-range{font-size:9px;letter-spacing:-.035em}
- #builderPatchDialog .bp-periodtabs{gap:7px}
- #builderPatchDialog .bp-periodtabs button{font-size:10px;padding:4px 0 5px}
- #builderPatchDialog .bp-version{width:90px;min-height:28px;padding:3px 4px;font-size:10px}
- #builderPatchDialog .bp-scroll{padding:12px 10px 15px}
- #builderPatchDialog .bp-filters{gap:4px}
- #builderPatchDialog .bp-filters button{padding:4px 9px;font-size:10.5px}
- #builderPatchDialog .bp-release-head{gap:6px 10px;padding-bottom:10px}
- #builderPatchDialog .bp-release-title{font-size:17px}
- #builderPatchDialog .bp-release-meta{font-size:9.5px}
- #builderPatchDialog .bp-card>summary{padding:10px 10px 10px 11px}
- #builderPatchDialog .bp-preview{font-size:12.5px}
- #builderPatchDialog .bp-excerpt{font-size:11px}
- #builderPatchDialog .bp-body{padding:12px}
- #builderPatchDialog .bp-reader{grid-template-columns:76px minmax(0,1fr) 76px;gap:7px;padding:8px 10px}
- #builderPatchDialog .bp-reader button{font-size:11px}
+ #builderRecordDialog .ra-patch-pane .bp-controls{padding:9px 11px}
+ #builderRecordDialog .ra-patch-pane .bp-periodbar{gap:4px;margin-bottom:8px}
+ #builderRecordDialog .ra-patch-pane .bp-range{font-size:9px;letter-spacing:-.035em}
+ #builderRecordDialog .ra-patch-pane .bp-periodtabs{gap:7px}
+ #builderRecordDialog .ra-patch-pane .bp-periodtabs button{font-size:10px;padding:4px 0 5px}
+ #builderRecordDialog .ra-patch-pane .bp-version{width:90px;min-height:28px;padding:3px 4px;font-size:10px}
+ #builderRecordDialog .ra-patch-pane .bp-scroll{padding:12px 10px 15px}
+ #builderRecordDialog .ra-patch-pane .bp-filters{gap:4px;flex-wrap:nowrap}
+ #builderRecordDialog .ra-patch-pane .bp-filters button{flex:1 1 0;min-width:0;padding:4px 3px;font-size:10px;white-space:nowrap}
+ #builderRecordDialog .ra-patch-pane .bp-release-head{gap:6px 10px;padding-bottom:10px}
+ #builderRecordDialog .ra-patch-pane .bp-release-title{font-size:17px}
+ #builderRecordDialog .ra-patch-pane .bp-release-meta{font-size:9.5px}
+ #builderRecordDialog .ra-patch-pane .bp-card>summary{padding:10px 10px 10px 11px}
+ #builderRecordDialog .ra-patch-pane .bp-preview{font-size:12.5px}
+ #builderRecordDialog .ra-patch-pane .bp-excerpt{font-size:11px}
+ #builderRecordDialog .ra-patch-pane .bp-body{padding:12px}
+ #builderRecordDialog .ra-patch-pane .bp-reader{grid-template-columns:76px minmax(0,1fr) 76px;gap:7px;padding:8px 10px}
+ #builderRecordDialog .ra-patch-pane .bp-reader button{font-size:11px}
 }
-@media(max-width:360px){#builderPatchDialog .bp-filters button{padding:4px 8px}#builderPatchDialog .bp-second{gap:4px 6px}#builderPatchDialog time{font-size:9px}}
-@media(prefers-reduced-motion:reduce){#builderPatchDialog .bp-card,#builderPatchDialog button{transition:none}}
+@media(max-width:360px){#builderRecordDialog .ra-patch-pane .bp-filters button{padding:4px 2px;font-size:9.5px}#builderRecordDialog .ra-patch-pane .bp-second{gap:4px 6px}#builderRecordDialog .ra-patch-pane time{font-size:9px}}
+@media(prefers-reduced-motion:reduce){#builderRecordDialog .ra-patch-pane .bp-card,#builderRecordDialog .ra-patch-pane button{transition:none}}
 
-/* ── 기록 보관소 · 기존 패치노트와 GitHub 연동을 공유하는 별도 다이얼로그 ── */
+/* ── 기록의 전당 · 패치노트와 기록 조회를 하나의 다이얼로그로 통합 ── */
 #builderRecordDialog{position:fixed;inset:0;box-sizing:border-box;width:min(860px,calc(100vw - 36px));height:min(750px,calc(100dvh - 34px));max-width:none;max-height:none;margin:auto;padding:0;overflow:hidden;border:1px solid #475d79;border-radius:var(--ui-modal-radius,15px);background:var(--ui-panel-body-bg,#08090b);color:var(--ui-text,#e2e7f0);box-shadow:var(--ui-modal-shadow,0 28px 95px #000b);font:calc(12.5px * var(--app-font-scale,1))/1.5 var(--font-main,system-ui,sans-serif);color-scheme:dark}
 #builderRecordDialog[open]{display:flex;flex-direction:column}
 #builderRecordDialog::backdrop{background:rgba(0,0,0,.8);backdrop-filter:blur(7px)}
@@ -156,6 +141,7 @@
 #builderRecordDialog .ra-title h2{margin:0;color:#eff6ff;font-size:16px;line-height:1.2;white-space:nowrap}
 #builderRecordDialog .ra-close{flex:0 0 30px;width:30px;height:30px;border:1px solid #526681;border-radius:8px;background:#182538;color:#d7e7f9;font-size:21px;line-height:1}
 #builderRecordDialog .ra-close:hover{background:#27415e}
+#builderRecordDialog .ra-record-pane{display:flex;flex:1;flex-direction:column;min-height:0;overflow:hidden}
 #builderRecordDialog .ra-controls{flex:0 0 auto;padding:10px 18px 11px;border-bottom:1px solid #303640;background:#0d1015}
 #builderRecordDialog .ra-filter-matrix{display:grid;gap:8px;min-width:0}
 #builderRecordDialog .ra-filter-group{display:grid;grid-template-columns:78px minmax(0,1fr);align-items:center;gap:10px;min-width:0}
@@ -288,7 +274,11 @@
 @media(max-width:640px){#builderRecordDialog .ra-cards{grid-template-columns:minmax(0,1fr)}#builderRecordDialog .ra-analysis-recommend .ra-cards{grid-template-columns:minmax(0,1fr)}}
 @media(max-width:560px){
  #builderRecordDialog{width:calc(100vw - 16px);height:calc(100dvh - 18px);border-radius:12px}
- #builderRecordDialog .ra-head{gap:6px;padding:6px 10px}
+ #builderRecordDialog .ra-head{grid-template-columns:minmax(0,1fr) auto;gap:6px;padding:6px 10px}
+ #builderRecordDialog .ra-head-brand{grid-column:1;grid-row:1}
+ #builderRecordDialog .ra-head-actions{grid-column:2;grid-row:1}
+ #builderRecordDialog .ra-viewtabs{grid-column:1/-1;grid-row:2;width:100%;justify-self:stretch}
+ #builderRecordDialog .ra-viewtabs button{flex:1 1 0;min-width:0}
  #builderRecordDialog .ra-head-brand{gap:6px}
  #builderRecordDialog .ra-head-actions{gap:5px}
  #builderRecordDialog .ra-mark{flex-basis:28px;width:28px;height:28px;border-radius:8px}
@@ -337,7 +327,7 @@
  #builderRecordDialog .ra-mark{display:none}
  #builderRecordDialog .ra-title h2{font-size:12px}
  #builderRecordDialog .ra-viewtabs{gap:1px;padding:2px}
- #builderRecordDialog .ra-viewtabs button{padding-inline:5px;font-size:9.5px}
+ #builderRecordDialog .ra-viewtabs button{padding-inline:5px;font-size:10px}
  #builderRecordDialog .ra-head-actions{gap:3px}
  #builderRecordDialog .ra-refresh{width:27px}
  #builderRecordDialog .ra-close{flex-basis:27px;width:27px}
@@ -348,34 +338,26 @@
 
   // ── 02 · 모달 구조·공통 상태 ──
   // Keep markup inside the owner file; only the trigger belongs to the existing header.
-  const dialog = document.createElement('dialog');
-  dialog.id = 'builderPatchDialog';
-  dialog.setAttribute('aria-labelledby', 'bp-title');
-  dialog.innerHTML = `
-    <header class="bp-head">
-      <span class="bp-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4h9l4 4v12H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Z"/><path d="M15 4v4h4M8 12h8M8 16h6"/></svg></span>
-      <div class="bp-head-copy"><span class="bp-kicker">BUILDER · PATCH NOTES</span><h2 id="bp-title">패치노트</h2></div>
-      <button id="bp-close" type="button" aria-label="패치노트 닫기">×</button>
-    </header>
-    <div class="bp-controls">
-      <div class="bp-toolbar"><label class="bp-search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.3"/><path d="m15 15 5 5"/></svg><input id="bp-query" type="search" placeholder="버전 · 태그 · 내용 검색" aria-label="패치노트 검색" autocomplete="off"/></label><button id="bp-refresh" type="button">새로고침</button></div>
-      <div class="bp-periodbar" aria-label="기간 및 버전 선택"><span id="bp-range" class="bp-range"></span><div class="bp-periodtabs" role="group" aria-label="패치노트 기간"><button type="button" data-period="latest" aria-pressed="true">최신 내역</button><button type="button" data-period="past" aria-pressed="false">이전 내역</button></div><select id="bp-version" class="bp-version" aria-label="버전 선택"></select></div>
-      <nav class="bp-filters" aria-label="패치노트 카테고리"><button type="button" data-kind="all" aria-pressed="true">전체</button><button type="button" data-kind="update" aria-pressed="false">업데이트</button><button type="button" data-kind="new" aria-pressed="false">신규기능</button><button type="button" data-kind="preset" aria-pressed="false">프리셋</button><button type="button" data-kind="fix" aria-pressed="false">오류수정</button><button type="button" data-kind="improve" aria-pressed="false">개선사항</button></nav>
-    </div>
-    <main class="bp-scroll"><div id="bp-summary" class="bp-summary">전체 기간 · 불러오는 중</div><div id="bp-empty" class="bp-empty" role="status">패치노트를 불러오는 중입니다.</div><section id="bp-list" class="bp-list" aria-label="패치노트 목록"></section></main>
-    <footer id="bp-reader" class="bp-reader" hidden><button id="bp-prev" type="button">‹ 이전</button><span id="bp-position" class="bp-position"></span><button id="bp-next" type="button">다음 ›</button></footer>
-  `;
-  document.body.appendChild(dialog);
-  const archiveTrigger = document.getElementById('btnRecordArchive');
+  const archiveTrigger = trigger;
   const archiveDialog = document.createElement('dialog');
   archiveDialog.id = 'builderRecordDialog';
   archiveDialog.setAttribute('aria-labelledby', 'ra-title');
   archiveDialog.innerHTML = `
     <header class="ra-head">
       <div class="ra-head-brand"><span class="ra-mark" aria-hidden="true"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4M7 4h10v7a5 5 0 0 1-10 0V4Z"/><path d="M7 6H4v2a4 4 0 0 0 4 4M17 6h3v2a4 4 0 0 1-4 4"/></svg></span><div class="ra-title"><small>BUILDER · RECORD HALL</small><h2 id="ra-title">기록의 전당</h2></div></div>
-      <nav class="ra-viewtabs" aria-label="기록 보기 방식"><button type="button" data-ra-view="records" aria-pressed="true">기록 목록</button><button type="button" data-ra-view="analysis" aria-pressed="false">클리어 분석</button></nav>
+      <nav class="ra-viewtabs" aria-label="기록의 전당 메뉴"><button type="button" data-ra-view="patch" aria-pressed="true">패치노트</button><button type="button" data-ra-view="records" aria-pressed="false">기록 목록</button><button type="button" data-ra-view="analysis" aria-pressed="false">기록 분석</button></nav>
       <div class="ra-head-actions"><button class="ra-refresh" id="ra-refresh" type="button" title="기록 새로고침" aria-label="기록 새로고침"><span aria-hidden="true">↻</span><span class="ra-refresh-label">새로고침</span></button><button class="ra-close" type="button" aria-label="기록의 전당 닫기">×</button></div>
     </header>
+    <section class="ra-patch-pane" aria-label="패치노트">
+    <div class="bp-controls">
+      <div class="bp-toolbar"><label class="bp-search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.3"/><path d="m15 15 5 5"/></svg><input id="bp-query" type="search" placeholder="버전 · 태그 · 내용 검색" aria-label="패치노트 검색" autocomplete="off"/></label><button id="bp-refresh" type="button">새로고침</button></div>
+      <div class="bp-periodbar" aria-label="기간 및 버전 선택"><span id="bp-range" class="bp-range"></span><div class="bp-periodtabs" role="group" aria-label="패치노트 기간"><button type="button" data-period="latest" aria-pressed="true">최신 내역</button><button type="button" data-period="past" aria-pressed="false">이전 내역</button></div><select id="bp-version" class="bp-version" aria-label="버전 선택"></select></div>
+      <nav class="bp-filters" aria-label="패치노트 카테고리"><button type="button" data-kind="all" aria-pressed="true">전체</button><button type="button" data-kind="update" aria-pressed="false">업데이트</button><button type="button" data-kind="preset" aria-pressed="false">프리셋</button><button type="button" data-kind="fix" aria-pressed="false">오류수정</button><button type="button" data-kind="improve" aria-pressed="false">개선사항</button></nav>
+    </div>
+    <main class="bp-scroll"><div id="bp-summary" class="bp-summary">전체 기간 · 불러오는 중</div><div id="bp-empty" class="bp-empty" role="status">패치노트를 불러오는 중입니다.</div><section id="bp-list" class="bp-list" aria-label="패치노트 목록"></section></main>
+    <footer id="bp-reader" class="bp-reader" hidden><button id="bp-prev" type="button">‹ 이전</button><span id="bp-position" class="bp-position"></span><button id="bp-next" type="button">다음 ›</button></footer>
+    </section>
+    <section class="ra-record-pane" aria-label="기록 목록과 분석" hidden>
     <div class="ra-controls" id="ra-controls">
       <div class="ra-filter-matrix" aria-label="기록의 전당 기록 필터">
         <div class="ra-filter-group">
@@ -402,6 +384,7 @@
       </div>
     </div>
     <main class="ra-scroll"><p class="ra-status" id="ra-status" role="status">기록을 불러오는 중입니다.</p><div class="ra-empty" id="ra-empty" hidden></div><section class="ra-list" id="ra-list" aria-label="고행별 기록 목록"></section></main>
+    </section>
   `;
   document.body.appendChild(archiveDialog);
   const ra = (selector) => archiveDialog.querySelector(selector);
@@ -410,7 +393,7 @@
   const raEmpty = ra('#ra-empty');
   const raStatus = ra('#ra-status');
   const raRefresh = ra('#ra-refresh');
-  const $ = (selector) => dialog.querySelector(selector);
+  const $ = (selector) => archiveDialog.querySelector(selector);
   const scroll = $('.bp-scroll');
   const list = $('#bp-list');
   const empty = $('#bp-empty');
@@ -459,6 +442,7 @@
   let recordScrollPosition = 0;
   let recordFetchFailed = false;
   let recordView = 'records';
+  let activeView = 'patch';
   let recordListBattle = '전체';
   const analysisFilters = {game:'',difficulty:'',stage:'',round:'',kind:''};
 
@@ -895,7 +879,7 @@
     return records.filter(record => recordMatchesBaseFilters(record) &&
       (recordFilters.player === '전체' || record.player === recordFilters.player));
   }
-  // 클리어 분석 · 게임 종류·기록 유형·모드·난이도·고행·라운드가 일치하는 기록만 비교한다.
+  // 기록 분석 · 게임 종류·기록 유형·모드·난이도·고행·라운드가 일치하는 기록만 비교한다.
   // 달성률 DPS는 실제 DPS가 아니라 유닛 보드가 보고서에 저장한 달성률(%)을 사용한다.
   // 유물 기록은 달성률로 클리어 조건을 비교할 수 없어 이 분석에서 제외한다.
   function recordAnalysisRound(record) {
@@ -963,7 +947,7 @@
   function renderRecordAnalysis() {
     const matches = matchingAnalysisRecords();
     const isAchievement = analysisFilters.kind === '달성률';
-    raStatus.textContent = `클리어 분석 · 동일 조건 ${matches.length}건${recordFetchFailed ? ' · 최신 목록 확인 실패' : ''}`;
+    raStatus.textContent = `기록 분석 · 동일 조건 ${matches.length}건${recordFetchFailed ? ' · 최신 목록 확인 실패' : ''}`;
     if (!matches.length) {
       raEmpty.hidden = false;
       raEmpty.textContent = recordFetchFailed && !records.length ? '기록 데이터를 불러오지 못했습니다. 새로고침해 주세요.' :
@@ -1361,17 +1345,15 @@
       selected.find((record) => record.number === openedRecord);
     if (!detail) openedRecord = null;
     ra('#ra-controls').hidden = !!detail;
-    ra('.ra-viewtabs').hidden = !!detail;
     ra('.ra-filter-row').closest('.ra-filter-group').hidden = recordView === 'analysis';
     ra('#ra-analysis-filters').hidden = recordView !== 'analysis';
-    for (const button of ra('.ra-viewtabs').querySelectorAll('[data-ra-view]')) button.setAttribute('aria-pressed',String(button.dataset.raView === recordView));
     raList.replaceChildren();
     raEmpty.hidden = true;
     if (detail) {
       raStatus.textContent = `${detail.player}님의 클리어 기록 보고서`;
       const holder = escapeElement('section', '', 'ra-detail');
       const head = escapeElement('header', '', 'ra-detail-head');
-      const back = escapeElement('button', recordView === 'analysis' ? '← 클리어 분석' : '← 기록 목록', 'ra-back');
+      const back = escapeElement('button', recordView === 'analysis' ? '← 기록 분석' : '← 기록 목록', 'ra-back');
       back.type = 'button';
       back.addEventListener('click', () => {
         openedRecord = null;
@@ -1452,7 +1434,7 @@
       empty.hidden = false;
       empty.textContent = 'GitHub 요청 한도에 도달했습니다. 이후 다시 시도해 주세요.';
       recordFetchFailed = true;
-      if (archiveDialog.open) renderRecordArchive();
+      if (archiveDialog.open && activeView !== 'patch') renderRecordArchive();
       return;
     }
     loading = true;
@@ -1497,11 +1479,10 @@
       notes = updated;
       records = incomingRecords;
       recordFetchFailed = false;
-      if (dialog.open) render();
-      if (archiveDialog.open) renderRecordArchive();
+      if (archiveDialog.open) { if (activeView === 'patch') render(); else renderRecordArchive(); }
     } catch {
       recordFetchFailed = true;
-      if (archiveDialog.open) renderRecordArchive();
+      if (archiveDialog.open && activeView !== 'patch') renderRecordArchive();
       // Keep previously fetched records visible after a temporary network failure.
       if (!notes.length) { empty.hidden = false; empty.textContent = '패치노트를 불러오지 못했습니다. 연결 상태를 확인하고 다시 시도해 주세요.'; }
       else summary.textContent = '저장된 목록 표시 · 새로고침 실패';
@@ -1516,6 +1497,17 @@
   }
 
   // ── 06 · 모달 이벤트 연결 ──
+  // 선택 탭의 화면만 보이고 각 탭의 기존 검색·필터 상태는 유지한다.
+  function showRecordHallView(){
+    ra('.ra-patch-pane').hidden = activeView !== 'patch';
+    ra('.ra-record-pane').hidden = activeView === 'patch';
+    raRefresh.hidden = activeView === 'patch';
+    for (const button of ra('.ra-viewtabs').querySelectorAll('[data-ra-view]')) {
+      button.setAttribute('aria-pressed',String(button.dataset.raView === activeView));
+    }
+    if (activeView === 'patch') render();
+    else renderRecordArchive();
+  }
   // 기록 보관소 · 필터, 전체 카드 클릭, 목록 복귀, GitHub 새로고침
   raList.addEventListener('click', (event) => {
     const card = event.target.closest('button[data-record-number]');
@@ -1525,13 +1517,19 @@
   });
   ra('.ra-viewtabs').addEventListener('click', event => {
     const button = event.target.closest('button[data-ra-view]');
-    if (!button || recordView === button.dataset.raView) return;
-    if (button.dataset.raView === 'analysis') recordListBattle = recordFilters.battle;
-    else recordFilters.battle = recordListBattle;
-    recordView = button.dataset.raView;
-    openedRecord = null;
-    raScroll.scrollTop = 0;
-    renderRecordArchive();
+    if (!button || activeView === button.dataset.raView) return;
+    const nextView = button.dataset.raView;
+    if (nextView !== 'patch') {
+      if (recordView !== nextView) {
+        if (nextView === 'analysis') recordListBattle = recordFilters.battle;
+        else recordFilters.battle = recordListBattle;
+        recordView = nextView;
+      }
+      openedRecord = null;
+      raScroll.scrollTop = 0;
+    }
+    activeView = nextView;
+    showRecordHallView();
   });
   for (const [id,key] of [['ra-analysis-game','game'],['ra-analysis-difficulty','difficulty'],
     ['ra-analysis-stage','stage'],['ra-analysis-round','round'],['ra-analysis-kind','kind']]) {
@@ -1599,9 +1597,10 @@
     if (archiveDialog.open) return;
     archiveDialog.showModal();
     archiveTrigger.setAttribute('aria-expanded', 'true');
+    activeView = 'patch';
     openedRecord = null;
     raScroll.scrollTop = 0;
-    renderRecordArchive();
+    showRecordHallView();
     void refresh();
   });
   archiveDialog.addEventListener('close', () => {
@@ -1644,31 +1643,8 @@
   $('#bp-prev').addEventListener('click', () => move(-1));
   $('#bp-next').addEventListener('click', () => move(1));
   refreshButton.addEventListener('click', () => void refresh(true));
-  $('#bp-close').addEventListener('click', () => dialog.close());
-  trigger.addEventListener('click', () => {
-    if (dialog.open) return;
-    dialog.showModal();
-    trigger.setAttribute('aria-expanded', 'true');
-    chosenVersion = '';
-    versionManuallySelected = false;
-    render();
-    if (!lastAttempt) { empty.hidden = false; empty.textContent = '패치노트를 불러오는 중입니다.'; }
-    void refresh();
-  });
-  dialog.addEventListener('close', () => { trigger.setAttribute('aria-expanded', 'false'); trigger.focus({ preventScroll: true }); });
-  let backdropPress = false;
-  function outside(event) {
-    const r = dialog.getBoundingClientRect();
-    return event.clientX < r.left || event.clientX > r.right || event.clientY < r.top || event.clientY > r.bottom;
-  }
-  dialog.addEventListener('pointerdown', (event) => { backdropPress = event.target === dialog && outside(event); });
-  dialog.addEventListener('click', (event) => {
-    if (backdropPress && event.target === dialog && outside(event)) dialog.close();
-    backdropPress = false;
-  });
-  dialog.addEventListener('keydown', (event) => event.stopPropagation());
   const refreshIfDue = () => {
-    if ((!dialog.open && !archiveDialog.open) || document.hidden) return;
+    if (!archiveDialog.open || document.hidden) return;
     if (monthKey(new Date()) !== renderedMonth) { chosenVersion = ''; versionManuallySelected = false; resetReader(); render(); }
     void refresh();
   };

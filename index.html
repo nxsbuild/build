@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <script>
-window.APP_VERSION = "builder-V34-Fix8";
+window.APP_VERSION = "builder-V35";
 window.DPS_BUILD_VERSION = window.APP_VERSION;
 window.DPS_STANDALONE_VIEW = (function(){
   var requested=new URLSearchParams(window.location.search).get('dpsWindow');
@@ -224,14 +224,14 @@ html:not(.dps-booting) #dpsBootScreen{display:none}
 <meta content="개복디 빌더 - 통합 빌드 계산 HUB" property="og:title"/>
 <meta content="특성 투자·재화 사용량 계산부터 스펙·DPS 분석까지 한 번에, 통합 빌드 계산 HUB" property="og:description"/>
 <!-- OG/Twitter 이미지 캐시: 앱 버전 변경 시 아래 세 URL을 같은 버전으로 맞춥니다. -->
-<meta content="https://nxsbuild.github.io/build/logo.png?v=builder-V34-Fix8" property="og:image"/>
-<meta content="https://nxsbuild.github.io/build/logo.png?v=builder-V34-Fix8" property="og:image:secure_url"/>
+<meta content="https://nxsbuild.github.io/build/logo.png?v=builder-V35" property="og:image"/>
+<meta content="https://nxsbuild.github.io/build/logo.png?v=builder-V35" property="og:image:secure_url"/>
 <meta content="image/png" property="og:image:type"/>
 <meta content="개복디 빌더 로고" property="og:image:alt"/>
 <meta content="summary_large_image" name="twitter:card"/>
 <meta content="개복디 빌더 - 통합 빌드 계산 HUB" name="twitter:title"/>
 <meta content="특성 투자·재화 사용량 계산부터 스펙·DPS 분석까지 한 번에, 통합 빌드 계산 HUB" name="twitter:description"/>
-<meta content="https://nxsbuild.github.io/build/logo.png?v=builder-V34-Fix8" name="twitter:image"/>
+<meta content="https://nxsbuild.github.io/build/logo.png?v=builder-V35" name="twitter:image"/>
 <meta content="개복디 빌더 로고" name="twitter:image:alt"/>
 <link href="https://cdn.jsdelivr.net" rel="preconnect"/>
 <link crossorigin="" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" rel="stylesheet"/>
@@ -266,9 +266,8 @@ html:not(.dps-booting) #dpsBootScreen{display:none}
       ['#btnFontSizePopup','글씨 크기 조절',window.innerWidth<768?32:34],
       ['.font-scale-trigger','글씨 크기 조절',30],
       ['.header-nexus-link','개복디 넥서스',window.innerWidth<600?30:35],
-      ['#btnPatchNotes','패치노트',30],
+      ['#btnRecordArchive','기록의 전당',30],
       ['#independentWindowToggle','독립 창 선택',35],
-      ['#btnRecordArchive','기록의 전당',32],
       ['#unitSanctuaryReset','전체 초기화',30],
       ['[data-analysis-board-copy]','기록 복사',32],
     ];
@@ -457,7 +456,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 </div>
 </div>
 <div class="hdr-meta">
-<button id="btnPatchNotes" class="btn subtle ui-action-btn header-patch-notes" type="button" aria-haspopup="dialog" aria-controls="builderPatchDialog" aria-expanded="false" title="패치노트" aria-label="패치노트 열기"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3.5h8l4 4V20a1 1 0 0 1-1 1H7a2 2 0 0 1-2-2V5.5a2 2 0 0 1 2-2Z"/><path d="M15 3.5v4h4M9 12h6M9 16h6"/></svg></button>
+<button id="btnRecordArchive" class="btn subtle ui-action-btn header-record-archive" type="button" aria-haspopup="dialog" aria-controls="builderRecordDialog" aria-expanded="false" title="기록의 전당" aria-label="기록의 전당 열기"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4M7 4h10v7a5 5 0 0 1-10 0V4Z"/><path d="M7 6H4v2a4 4 0 0 0 4 4M17 6h3v2a4 4 0 0 1-4 4"/></svg></button>
 <button type="button" id="independentWindowToggle" class="ui-action-btn right-workspace-window-toggle" aria-label="독립 창 보기 선택" aria-haspopup="menu" aria-controls="independentWindowMenu" aria-expanded="false"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="3.5" width="19" height="17" rx="2.5"/><rect x="11" y="12" width="8" height="5.5" rx="1"/></svg></button>
 <div class="header-convenience" aria-label="빠른 이동">
 <div class="header-reference-actions">
@@ -1170,7 +1169,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 <div class="col-right">
 <!-- 스펙·유닛 보드: 전환 버튼·결과 -->
 <div class="data-card stat-dps-card right-analytics-workspace analytics-polish">
-<div class="right-workspace-navigation"><header class="right-workspace-head"><span class="right-workspace-mark" aria-hidden="true"><svg class="ui-header-glyph" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><use href="#dpsUiSparklesGlyph"/></svg></span><span class="right-workspace-copy"><strong>분석 보드</strong></span><button type="button" class="right-workspace-copy-btn" id="btnRecordArchive" aria-label="기록의 전당" aria-haspopup="dialog" aria-controls="builderRecordDialog" aria-expanded="false" title="기록의 전당"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M8 21h8M12 17v4M7 4h10v7a5 5 0 0 1-10 0V4Z"/><path d="M7 6H4v2a4 4 0 0 0 4 4M17 6h3v2a4 4 0 0 1-4 4"/></svg></button><button type="button" class="right-workspace-copy-btn" data-analysis-board-copy aria-label="기록 복사"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="8" y="8" width="13" height="13" rx="2"/><path d="M16 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h3"/></svg></button></header>
+<div class="right-workspace-navigation"><header class="right-workspace-head"><span class="right-workspace-mark" aria-hidden="true"><svg class="ui-header-glyph" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><use href="#dpsUiSparklesGlyph"/></svg></span><span class="right-workspace-copy"><strong>분석 보드</strong></span><button type="button" class="right-workspace-copy-btn" data-analysis-board-copy aria-label="기록 복사"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M8 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/><path d="M16 4h2a2 2 0 0 1 2 2v4"/><path d="M21 14H11"/><path d="m15 10-4 4 4 4"/></svg></button></header>
 <section class="damage-board-analysis-view" id="damageBoardAnalysisPanel" aria-label="분석 보드 내용">
 <div class="damage-board-subtabs integrated-tabs" role="tablist" aria-label="분석 보드 세부 선택" data-damage-board-subtabs>
 <button class="integrated-tab is-active" id="damageBoardSpecTab" type="button" role="tab" aria-selected="true" aria-controls="damageBoardSpecPanel" data-damage-board-subtab="spec" tabindex="0">스펙 보드</button>
@@ -1364,14 +1363,12 @@ loadScriptSequence(['data.js','calc.js','app.js','preset.js','responsive.js'],fu
   function startApp(){
     if(typeof window.dpsStartApp==='function') window.dpsStartApp();
     else if(typeof window.dpsShowBootError==='function') window.dpsShowBootError('D1003',new Error('app start function missing'));
-    // 패치노트는 정보 모달이므로 핵심 계산기 부팅을 차단하지 않습니다.
+    // 통합 기록의 전당은 정보 모달이므로 핵심 계산기 부팅을 차단하지 않습니다.
     if(window.__dpsBootError) return;
     var patchScript=document.createElement('script');
     patchScript.src=window.dpsAssetUrl('./modal.js','modal.js');
     patchScript.charset='UTF-8';
     patchScript.addEventListener('error',function(){
-      var trigger=document.getElementById('btnPatchNotes');
-      if(trigger){trigger.disabled=true;trigger.title='패치노트를 불러오지 못했습니다';}
       var archive=document.getElementById('btnRecordArchive');
       if(archive){archive.disabled=true;archive.title='기록의 전당을 불러오지 못했습니다';}
     },{once:true});
@@ -1438,13 +1435,6 @@ loadScriptSequence(['data.js','calc.js','app.js','preset.js','responsive.js'],fu
   </section>
 </dialog>
 <!-- 앱 자체 슬롯 삭제 확인: 브라우저의 window.confirm 팝업 사용하지 않음 -->
-<dialog id="traitPresetRecoveryDialog" class="preset-recovery-dialog" aria-labelledby="traitPresetRecoveryTitle" aria-describedby="traitPresetRecoveryNote">
-  <form method="dialog" class="preset-recovery-form">
-    <header class="preset-recovery-head"><div class="trait-preset-modal-heading"><span class="trait-preset-modal-mark" aria-hidden="true"><svg class="ui-header-glyph" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><use href="#dpsUiWarningGlyph"/></svg></span><h2 id="traitPresetRecoveryTitle">프리셋 오류 검출 안내</h2></div></header>
-    <div class="preset-recovery-body"><p id="traitPresetRecoveryNote"></p><section id="traitPresetRecoveryShared" class="preset-recovery-common" aria-label="공통 설정 정리"></section><div id="traitPresetRecoveryList" class="preset-recovery-list"></div></div>
-    <footer class="preset-recovery-actions"><button type="submit" value="cancel">취소</button><button type="submit" value="apply" id="traitPresetRecoveryApply">변경 적용 후 가져오기</button></footer>
-  </form>
-</dialog>
 <dialog id="appConfirmDialog" class="unit-slot-remove-dialog app-confirm-dialog" aria-labelledby="appConfirmTitle" aria-describedby="appConfirmDescription">
   <form method="dialog" class="unit-slot-remove-dialog-inner">
     <h2 id="appConfirmTitle">프리셋 전체 교체</h2>
@@ -1466,6 +1456,6 @@ loadScriptSequence(['data.js','calc.js','app.js','preset.js','responsive.js'],fu
   </div>
 </dialog>
 
-<div id="traitPresetBackupOverlay" class="trait-preset-backup-overlay" hidden><section id="traitPresetBackupPanel" class="trait-preset-backup-panel" role="dialog" aria-modal="true" aria-labelledby="traitPresetBackupTitle" tabindex="-1"><header class="trait-preset-modal-head"><div class="trait-preset-modal-heading"><span class="trait-preset-modal-mark" aria-hidden="true"><svg class="ui-header-glyph" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><use href="#dpsUiSparklesGlyph"/></svg></span><h2 id="traitPresetBackupTitle">프리셋 백업</h2></div><button type="button" class="ui-icon-btn trait-preset-modal-close" data-trait-preset-backup-close="1" aria-label="프리셋 백업 닫기">×</button></header><div class="trait-preset-modal-body trait-preset-backup-body" id="traitPresetBackupBody"></div></section></div>
+<div id="traitPresetBackupOverlay" class="trait-preset-backup-overlay" hidden><section id="traitPresetBackupPanel" class="trait-preset-backup-panel" role="dialog" aria-modal="true" aria-labelledby="traitPresetBackupTitle" tabindex="-1"><header class="trait-preset-modal-head"><div class="trait-preset-modal-heading"><span class="trait-preset-modal-mark" aria-hidden="true"><svg class="ui-header-glyph" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><use href="#dpsUiSparklesGlyph"/></svg></span><h2 id="traitPresetBackupTitle">프리셋 최신화</h2></div><button type="button" class="ui-icon-btn trait-preset-modal-close" data-trait-preset-backup-close="1" aria-label="프리셋 최신화 닫기">×</button></header><div class="trait-preset-modal-body trait-preset-backup-body" id="traitPresetBackupBody"></div></section></div>
 </body>
 </html>
