@@ -373,7 +373,6 @@ function makeTraitPresetStateObject(sourceState=makeStateObject()){
 /* 유닛 보드 프리셋 상태 */
 function normalizeTraitPresetUnitBoardState(value){
   const source=value && typeof value==='object' && !Array.isArray(value) ? value : {};
-  const validUnits=new Set(dpsBaseUnitList().map(unit=>unit.id));
   const usedUnits=new Set();
   const usedSlots=new Set();
   const units=[];
@@ -381,7 +380,7 @@ function normalizeTraitPresetUnitBoardState(value){
     if(!item || typeof item!=='object') return;
     const unitId=String(item.unitId || '').trim();
     const unit=dpsBaseUnitById(unitId);
-    if(!validUnits.has(unitId) || !unit || usedUnits.has(unitId)) return;
+    if(!unit || usedUnits.has(unitId)) return;
     let slot=Math.max(0,Math.min(dpsBaseUnitSelectionLimit()-1,Math.round(Number(item.slot ?? index)||0)));
     while(usedSlots.has(slot) && slot<dpsBaseUnitSelectionLimit()-1) slot++;
     if(usedSlots.has(slot)) slot=Array.from({length:dpsBaseUnitSelectionLimit()},(_,i)=>i).find(i=>!usedSlots.has(i));
@@ -403,13 +402,12 @@ function normalizeTraitPresetUnitBoardState(value){
     });
   });
   units.sort((a,b)=>a.slot-b.slot);
-  const unitMap=new Map(units.map(item=>[item.unitId,item]));
+  const selectedUnitIds=new Set(units.map(item=>item.unitId));
   units.forEach(item=>{ if(item.unitId==='prodNarud') item.voidPower='OFF'; });
   const slotExpansions=normalizeDpsBaseUnitSlotExpansions(source.slotExpansions || [])
-    .filter(unitId=>unitMap.has(unitId));
-  const rawExtras=source.additionalUnitSettings || {};
-  const normalizedExtras=normalizeDpsBaseUnitExtraSettings(rawExtras);
-  const additionalUnitSettings=Object.fromEntries(Object.entries(normalizedExtras).filter(([unitId])=>unitMap.has(unitId)));
+    .filter(unitId=>selectedUnitIds.has(unitId));
+  const normalizedExtras=normalizeDpsBaseUnitExtraSettings(source.additionalUnitSettings || {});
+  const additionalUnitSettings=Object.fromEntries(Object.entries(normalizedExtras).filter(([unitId])=>selectedUnitIds.has(unitId)));
   const usedLegendaryJewels=new Set();
   units.forEach(item=>{
     const name=normalizeDpsJewelName(item.legendaryMythicJewel);
@@ -2925,6 +2923,7 @@ function readTraitPresetFileAsText(file){
     const reader=new FileReader();
     reader.addEventListener('load',()=>resolve(String(reader.result||'')),{once:true});
     reader.addEventListener('error',()=>reject(new Error('파일을 읽지 못했습니다.')),{once:true});
+    reader.addEventListener('abort',()=>reject(new Error('파일 읽기가 취소되었습니다.')),{once:true});
     reader.readAsText(file,'utf-8');
   });
 }
@@ -3128,13 +3127,16 @@ function handleTraitPresetKeydown(e){
     return;
   }
 }
+let traitPresetEventsBound=false;
 function bindTraitPresetEvents(){
+  if(traitPresetEventsBound) return;
   document.addEventListener('change',handleTraitPresetChange);
   document.addEventListener('click',handleTraitPresetClick);
   document.addEventListener('keydown',handleTraitPresetKeydown);
   document.addEventListener('input',scheduleTraitPresetChangePrompt);
   document.addEventListener('change',scheduleTraitPresetChangePrompt);
   document.addEventListener('click',scheduleTraitPresetChangePrompt);
+  traitPresetEventsBound=true;
 }
 
 /* ── 11 · 공개 API ── */
