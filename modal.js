@@ -441,6 +441,7 @@
   let openedRecord = null;
   let recordScrollPosition = 0;
   let recordFetchFailed = false;
+  let hasFetched = false;
   let recordView = 'records';
   let activeView = 'patch';
   let recordListBattle = '전체';
@@ -875,8 +876,8 @@
       (recordFilters.difficulty === '전체' || record.difficulty === recordFilters.difficulty) &&
       (!withStage || recordFilters.stage === '전체' || String(record.stage) === recordFilters.stage);
   }
-  function filteredRecords() {
-    return records.filter(record => recordMatchesBaseFilters(record) &&
+  function filteredRecords(source = records) {
+    return source.filter(record => recordMatchesBaseFilters(record) &&
       (recordFilters.player === '전체' || record.player === recordFilters.player));
   }
   // 기록 분석 · 게임 종류·기록 유형·모드·난이도·고행·라운드가 일치하는 기록만 비교한다.
@@ -935,8 +936,8 @@
       select.disabled = !values.length;
     }
   }
-  function matchingAnalysisRecords() {
-    return records.filter(record => record.mode === recordFilters.mode &&
+  function matchingAnalysisRecords(source = records) {
+    return source.filter(record => record.mode === recordFilters.mode &&
       (recordFilters.battle === '전체' || record.battle === recordFilters.battle) &&
       record.game === analysisFilters.game && record.difficulty === analysisFilters.difficulty &&
       String(record.stage) === analysisFilters.stage && recordAnalysisRound(record) === analysisFilters.round)
@@ -1395,7 +1396,7 @@
     if (!selected.length) {
       raEmpty.hidden = false;
       raEmpty.textContent = recordFetchFailed ? '기록을 불러오지 못했습니다. 새로고침으로 다시 시도할 수 있습니다.' :
-        lastAttempt && !loading ? '해당 조건에 등록된 기록이 없습니다.' : '기록을 불러오는 중입니다.';
+        hasFetched ? '해당 조건에 등록된 기록이 없습니다.' : '기록을 불러오는 중입니다.';
       return;
     }
     const kind = ['도전의 탑','행성탐사'].includes(recordFilters.mode) ? '층' : '고행';
@@ -1428,13 +1429,57 @@
   }
 
   // ── 05 · GitHub 목록 새로고침 ──
+  // 갱신 결과가 같으면 DOM을 유지해 보고서 읽기·스크롤 중 화면이 흔들리지 않게 한다.
+  function updateRecordFetchNotice() {
+    if (!archiveDialog.open || activeView === 'patch') return;
+    if (openedRecord === null) {
+      const suffix = ' · 최신 목록 확인 실패';
+      const base = raStatus.textContent.endsWith(suffix) ? raStatus.textContent.slice(0, -suffix.length) : raStatus.textContent;
+      raStatus.textContent = base + (recordFetchFailed ? suffix : '');
+    }
+    if (!raEmpty.hidden) {
+      if (recordView === 'analysis') {
+        raEmpty.textContent = recordFetchFailed && !records.length ? '기록 데이터를 불러오지 못했습니다. 새로고침해 주세요.' :
+          !records.length && !lastAttempt ? '기록을 불러오는 중입니다.' : '현재 선택한 조건에 집계 가능한 기록이 없습니다.';
+      } else {
+        raEmpty.textContent = recordFetchFailed ? '기록을 불러오지 못했습니다. 새로고침으로 다시 시도할 수 있습니다.' :
+          hasFetched ? '해당 조건에 등록된 기록이 없습니다.' : '기록을 불러오는 중입니다.';
+      }
+    }
+  }
+  function refreshDisplayedRecords(previousRecords) {
+    if (openedRecord !== null) {
+      const previous = previousRecords.find(record => record.number === openedRecord);
+      const current = records.find(record => record.number === openedRecord);
+      // 다른 기록이 추가·변경되더라도 보고 있는 상세 보고서는 그대로 유지한다.
+      if (previous && current && JSON.stringify(previous) === JSON.stringify(current)) return;
+    } else if (recordView === 'records') {
+      if (JSON.stringify(filteredRecords(previousRecords)) === JSON.stringify(filteredRecords())) {
+        updateRecordControls();
+        updateRecordFetchNotice();
+        return;
+      }
+    } else {
+      const before = JSON.stringify(matchingAnalysisRecords(previousRecords));
+      syncAnalysisControls();
+      updateRecordControls();
+      if (before === JSON.stringify(matchingAnalysisRecords())) {
+        updateRecordFetchNotice();
+        return;
+      }
+    }
+    const previousScroll = raScroll.scrollTop;
+    const hadDetail = openedRecord !== null;
+    renderRecordArchive();
+    raScroll.scrollTop = hadDetail && openedRecord === null ? recordScrollPosition : previousScroll;
+  }
   async function refresh(force = false) {
     if (loading || (!force && Date.now() - lastAttempt < refreshInterval)) return;
     if (Date.now() < retryAfter) {
       empty.hidden = false;
       empty.textContent = 'GitHub 요청 한도에 도달했습니다. 이후 다시 시도해 주세요.';
       recordFetchFailed = true;
-      if (archiveDialog.open && activeView !== 'patch') renderRecordArchive();
+      updateRecordFetchNotice();
       return;
     }
     loading = true;
@@ -1476,13 +1521,29 @@
         }
         if (!response.headers.get('link')?.includes('rel="next"')) break;
       }
+      const previousRecords = records;
+      const firstFetch = !hasFetched;
+      const notesChanged = JSON.stringify(notes) !== JSON.stringify(updated);
+      const recordsChanged = JSON.stringify(records) !== JSON.stringify(incomingRecords);
+      const wasFailed = recordFetchFailed;
       notes = updated;
       records = incomingRecords;
       recordFetchFailed = false;
-      if (archiveDialog.open) { if (activeView === 'patch') render(); else renderRecordArchive(); }
+      hasFetched = true;
+      if (archiveDialog.open) {
+        if (activeView === 'patch') {
+          if (firstFetch || notesChanged) {
+            const previousScroll = scroll.scrollTop;
+            render();
+            if (!firstFetch) scroll.scrollTop = previousScroll;
+          }
+        } else if (firstFetch) renderRecordArchive();
+        else if (recordsChanged) refreshDisplayedRecords(previousRecords);
+        else if (wasFailed) updateRecordFetchNotice();
+      }
     } catch {
       recordFetchFailed = true;
-      if (archiveDialog.open && activeView !== 'patch') renderRecordArchive();
+      updateRecordFetchNotice();
       // Keep previously fetched records visible after a temporary network failure.
       if (!notes.length) { empty.hidden = false; empty.textContent = '패치노트를 불러오지 못했습니다. 연결 상태를 확인하고 다시 시도해 주세요.'; }
       else summary.textContent = '저장된 목록 표시 · 새로고침 실패';
