@@ -13,7 +13,7 @@ const STORAGE_KEY=DPS_CONFIG.storage.key;
 const CLIENT_KEY=DPS_CONFIG.storage.clientKey;
 const TRAIT_PRESET_STORAGE_KEY=DPS_CONFIG.storage.traitPresetKey || 'gbd_dps_calculator:trait_presets';
 const TRAIT_PRESET_FILE_TYPE='sld_dps_total_preset';
-const TRAIT_PRESET_MANAGEMENT_VERSION=2;
+const TRAIT_PRESET_MANAGEMENT_VERSION=3;
 const PRESET_BATTLE_MODE_VALUE_ID='battleDpsMode';
 function normalizePresetBattleMode(value){return value==='artifact' ? 'artifact' : 'normal';}
 const APP_STATE_SCHEMA_VERSION=2;
@@ -22,7 +22,7 @@ const TRAIT_PRESET_FIELD_OPTIONS=new Map([...qsa('select[id]')].map(el=>[
   el.id,new Set([...el.options].map(option=>el.id==='diff' && isPlanetExplorationDifficulty(option.value) ? PLANET_EXPLORATION_STORAGE_NAME : option.value))
 ]));
 const TRAIT_PRESET_EXCLUDED_VALUE_IDS=new Set([
-  'dpsBaseUnits','dpsBaseUnitSlots','dpsJewelSettings','dpsBaseUnitExtraSettings','dpsBaseUnitSlotExpansions',
+  'dpsBaseUnits','dpsBaseUnitSlots','dpsJewelSettings','dpsBaseUnitExtraSettings','dpsBaseUnitSlotExpansions','dpsSanctuaryInfo',
   ...dpsBaseUnitQuantityIds(),
   ...dpsBaseUnitSettingIds()
 ]);
@@ -429,7 +429,8 @@ function normalizeTraitPresetUnitBoardState(value){
     units,
     visibleSlotCount,
     slotExpansions,
-    additionalUnitSettings:normalizeDpsBaseUnitExtraSettings(additionalUnitSettings)
+    additionalUnitSettings:normalizeDpsBaseUnitExtraSettings(additionalUnitSettings),
+    sanctuaryInfo:normalizeDpsSanctuaryInfo(source.sanctuaryInfo)
   };
 }
 function captureTraitPresetUnitBoardState(){
@@ -455,7 +456,8 @@ function captureTraitPresetUnitBoardState(){
     units,
     visibleSlotCount:dpsUnitVisibleCount(currentDpsBaseUnitSlots()),
     slotExpansions:dpsBaseUnitSlotExpansionIds().filter(unitId=>selectedIds.has(unitId)),
-    additionalUnitSettings:selectedExtras
+    additionalUnitSettings:selectedExtras,
+    sanctuaryInfo:currentDpsSanctuaryInfo()
   });
 }
 function writeTraitPresetUnitBoardStoreValues(unit,values={}){
@@ -480,6 +482,8 @@ function applyTraitPresetUnitBoardState(value,options={}){
   const expansionStore=$('dpsBaseUnitSlotExpansions');
   if(extraStore) extraStore.value=serializeDpsBaseUnitExtraSettings(state.additionalUnitSettings);
   if(expansionStore) expansionStore.value=serializeDpsBaseUnitSlotExpansions(state.slotExpansions);
+  const sanctuaryStore=$('dpsSanctuaryInfo');
+  if(sanctuaryStore) sanctuaryStore.value=JSON.stringify(state.sanctuaryInfo);
   dpsBaseUnitList().forEach(unit=>writeTraitPresetUnitBoardStoreValues(unit));
   const slots=emptyDpsBaseUnitSlots();
   state.units.forEach(item=>{
@@ -492,6 +496,7 @@ function applyTraitPresetUnitBoardState(value,options={}){
   const visibleCountInput=$('dpsBaseUnitVisibleSlotCount');
   if(visibleCountInput) visibleCountInput.value=String(state.visibleSlotCount);
   setDpsBaseUnitStoredValue(slots.filter(Boolean),false,{slots});
+  renderDpsSanctuaryInfo();
   if(options.recalculate!==false) recalc({save:options.save});
   return state;
 }
@@ -665,34 +670,47 @@ const TRAIT_PRESET_DRAFT_STORAGE_KEY=DPS_CONFIG.storage.traitPresetDraftKey || '
 function emptyTraitPresetStatusData(){
   return {updatedPresetIds:[],backupNeeded:false,lastAction:'latest',selectedTraitPresetId:'',pendingJewelSettings:false,pendingUnitBoardPresetIds:[],pendingCommonPresetIds:[],pendingCommonChangeKeys:[],pendingSingleChangeKeysByPreset:{},pendingChangeDetails:[]};
 }
+const TRAIT_PRESET_OBSOLETE_SANCTUARY_CHANGE_KEY='value:dpsSanctuaryInfo';
 function normalizeTraitPresetStatusData(data){
   const base=emptyTraitPresetStatusData();
   if(!data || typeof data!=='object' || Array.isArray(data)) return base;
   const uniqueStrings=values=>Array.isArray(values)
     ? [...new Set(values.map(value=>String(value || '').trim()).filter(Boolean))] : [];
-  const updatedPresetIds=uniqueStrings(data.updatedPresetIds);
-  const backupNeeded=data.backupNeeded===true || updatedPresetIds.length>0;
+  let updatedPresetIds=uniqueStrings(data.updatedPresetIds);
+  let backupNeeded=data.backupNeeded===true || updatedPresetIds.length>0;
   const lastAction=String(data.lastAction || base.lastAction || 'latest');
   const selectedTraitPresetId=String(data.selectedTraitPresetId || '').trim();
   const pendingJewelSettings=data.pendingJewelSettings===true;
   const pendingUnitBoardPresetIds=uniqueStrings(data.pendingUnitBoardPresetIds);
-  const pendingCommonChangeKeys=uniqueStrings(data.pendingCommonChangeKeys);
-  const pendingCommonPresetIds=uniqueStrings(data.pendingCommonPresetIds);
+  const pendingCommonChangeKeys=uniqueStrings(data.pendingCommonChangeKeys).filter(key=>key!==TRAIT_PRESET_OBSOLETE_SANCTUARY_CHANGE_KEY);
+  let pendingCommonPresetIds=uniqueStrings(data.pendingCommonPresetIds);
   const pendingSingleChangeKeysByPreset={};
   const byPreset=data.pendingSingleChangeKeysByPreset;
   if(byPreset && typeof byPreset==='object' && !Array.isArray(byPreset)){
     Object.entries(byPreset).forEach(([id,keys])=>{
       const presetId=String(id || '').trim();
       if(presetId && Array.isArray(keys)){
-        const normalized=uniqueStrings(keys);
+        const normalized=uniqueStrings(keys).filter(key=>key!==TRAIT_PRESET_OBSOLETE_SANCTUARY_CHANGE_KEY);
         if(normalized.length) pendingSingleChangeKeysByPreset[presetId]=normalized;
       }
     });
   }
   const pendingChangeDetails=Array.isArray(data.pendingChangeDetails) ? data.pendingChangeDetails.filter(row=>
     row && typeof row==='object' && typeof row.key==='string' && typeof row.presetId==='string' &&
-    (row.scope==='common' || row.scope==='single') && typeof row.before==='string' && typeof row.after==='string'
+    (row.scope==='common' || row.scope==='single') && row.key!==TRAIT_PRESET_OBSOLETE_SANCTUARY_CHANGE_KEY && typeof row.before==='string' && typeof row.after==='string'
   ).slice(0,800).map(row=>({presetId:row.presetId,key:row.key,scope:row.scope,before:row.before,after:row.after})) : [];
+  // V48에서 성소 정보만 공통 변경으로 기록된 과거 상태는 공통 변경 표시를 제거한다.
+  // 다른 공통 변경 또는 개별 변경이 있으면 그 증거와 해당 프리셋의 백업 상태를 보존한다.
+  const obsoleteOnly=uniqueStrings(data.pendingCommonChangeKeys).length===1 &&
+    uniqueStrings(data.pendingCommonChangeKeys)[0]===TRAIT_PRESET_OBSOLETE_SANCTUARY_CHANGE_KEY &&
+    !pendingJewelSettings && !pendingChangeDetails.some(row=>row.scope==='common');
+  if(obsoleteOnly){
+    pendingCommonPresetIds=[];
+    const independentIds=new Set([...pendingUnitBoardPresetIds,...Object.keys(pendingSingleChangeKeysByPreset),
+      ...pendingChangeDetails.filter(row=>row.scope==='single').map(row=>row.presetId)]);
+    updatedPresetIds=updatedPresetIds.filter(id=>independentIds.has(id));
+    backupNeeded=updatedPresetIds.length>0 || independentIds.size>0;
+  }
   return {updatedPresetIds,backupNeeded,lastAction,selectedTraitPresetId,pendingJewelSettings,pendingUnitBoardPresetIds,pendingCommonPresetIds,pendingCommonChangeKeys,pendingSingleChangeKeysByPreset,pendingChangeDetails};
 }
 /* ── 05 · 저장 상태 ── */
@@ -757,6 +775,9 @@ function storedTraitPresetCompatibility(){
   }catch(error){
     return {requiresUpdate:false,error:error?.message || '프리셋 데이터 형식을 확인할 수 없습니다.'};
   }
+}
+function requireCompatibleTraitPreset(compatibility){
+  if(compatibility.error || compatibility.requiresUpdate) throw new Error(compatibility.error || '프리셋 업데이트를 먼저 완료해 주세요.');
 }
 function renderTraitPresetRequiredNotice(){
   const compatibility=storedTraitPresetCompatibility();
@@ -1472,7 +1493,7 @@ function saveTraitPreset(){
 }
 function applyTraitPresetState(preset,options={}){
   const compatibility=storedTraitPresetCompatibility();
-  if(compatibility.error || compatibility.requiresUpdate) throw new Error(compatibility.error || '프리셋 업데이트를 먼저 완료해 주세요.');
+  requireCompatibleTraitPreset(compatibility);
   const state=buildTraitPresetApplyState(preset, options);
   if(!state) throw new Error('프리셋 데이터가 올바르지 않습니다.');
   state.ui={fontScale:getFontScale()};
@@ -1629,6 +1650,31 @@ function mergeTraitPresetChangeDetails(previous=[],incoming=[]){
   });
   return [...rows.values()].filter(row=>row.before!==row.after).slice(0,800);
 }
+// 유닛 구성과 성소 정보는 서로 독립적으로 변경을 감지한다.
+// 성소 슬롯의 길이는 실제 저장값을 보존하며, 신규·구형 미설정 프리셋은 0슬롯이다.
+function traitPresetUnitBoardChangeKeys(beforeBoard,afterBoard){
+  const previous=normalizeTraitPresetUnitBoardState(beforeBoard);
+  const current=normalizeTraitPresetUnitBoardState(afterBoard);
+  const withoutSanctuary=({sanctuaryInfo,...unitBoard})=>unitBoard;
+  const keys=[];
+  if(stableTraitPresetValue(withoutSanctuary(previous))!==stableTraitPresetValue(withoutSanctuary(current))) keys.push('unitBoard');
+  const before=previous.sanctuaryInfo.slots,after=current.sanctuaryInfo.slots;
+  if(beforeBoard && !hasOwn(beforeBoard,'sanctuaryInfo') && hasOwn(afterBoard || {},'sanctuaryInfo')) keys.push('sanctuaryInfo:init');
+  if(before.length!==after.length) keys.push('sanctuaryInfo:slotCount');
+  const blank=DPS_SANCTUARY_BLANK_SLOT();
+  for(let index=0;index<Math.max(before.length,after.length);index++){
+    const oldSlot=before[index] || blank,newSlot=after[index] || blank;
+    if(oldSlot.start!==newSlot.start || oldSlot.end!==newSlot.end) keys.push(`sanctuaryInfo:${index}:range`);
+    for(const field of ['skill1','count1','skill2','count2']){
+      if(oldSlot[field]!==newSlot[field]) keys.push(`sanctuaryInfo:${index}:${field}`);
+    }
+  }
+  return keys;
+}
+function traitPresetSanctuaryValueText(field,value){
+  if(field==='skill1' || field==='skill2') return value || '선택 안함';
+  return String(value ?? 0);
+}
 // 변경되는 순간의 값만 보관한다. 이전 버전에서 기록되지 않은 과거 값은 추정하지 않는다.
 function traitPresetChangeDetailsForStores(beforeStore,afterStore){
   const beforePresets=new Map((beforeStore?.presets || []).map(row=>[row.id,row]));
@@ -1651,7 +1697,8 @@ function traitPresetChangeDetailsForStores(beforeStore,afterStore){
       details.push(traitPresetChangeDetail('donationMigration','기존 중복 저장','통합 저장','common',next.id));
     const valueIds=new Set([...Object.keys(oldValues),...Object.keys(newValues)]);
     valueIds.forEach(id=>{
-      if(id==='dpsBaseUnitVisibleSlotCount' || id==='donationBuffType' || id==='soloMode' || id==='coopMode') return;
+      // V48까지 일반 입력값에 중복 저장된 성소 정보는 유닛 보드에서만 추적한다.
+      if(id==='dpsSanctuaryInfo' || id==='dpsBaseUnitVisibleSlotCount' || id==='donationBuffType' || id==='soloMode' || id==='coopMode') return;
       add(`value:${id}`,oldValues[id],newValues[id],TRAIT_PRESET_SINGLE_UPDATE_VALUE_IDS.has(id)?'single':'common',next.id,oldState,newState);
     });
     if(oldValues.soloMode!==newValues.soloMode || oldValues.coopMode!==newValues.coopMode){
@@ -1667,8 +1714,26 @@ function traitPresetChangeDetailsForStores(beforeStore,afterStore){
       details.push(traitPresetChangeDetail('zeroScore','이전 구성','변경된 구성','common',next.id));
     const oldBoard=beforeStore?.unitBoard?.presets?.[next.id];
     const newBoard=afterStore?.unitBoard?.presets?.[next.id];
-    if(stableTraitPresetValue(oldBoard)!==stableTraitPresetValue(newBoard))
-      details.push(traitPresetChangeDetail('unitBoard',oldBoard?'이전 보드':'보드 없음',newBoard?'변경된 보드':'보드 없음','single',next.id));
+    const boardKeys=traitPresetUnitBoardChangeKeys(oldBoard,newBoard);
+    const beforeSlots=normalizeDpsSanctuaryInfo(oldBoard?.sanctuaryInfo).slots;
+    const afterSlots=normalizeDpsSanctuaryInfo(newBoard?.sanctuaryInfo).slots;
+    boardKeys.forEach(key=>{
+      if(key==='unitBoard'){
+        details.push(traitPresetChangeDetail(key,oldBoard?'이전 보드':'보드 없음',newBoard?'변경된 보드':'보드 없음','single',next.id));
+      }else if(key==='sanctuaryInfo:init'){
+        details.push(traitPresetChangeDetail(key,'저장 항목 없음',`기본 ${afterSlots.length}슬롯 추가`,'single',next.id));
+      }else if(key==='sanctuaryInfo:slotCount'){
+        details.push(traitPresetChangeDetail(key,beforeSlots.length,afterSlots.length,'single',next.id));
+      }else{
+        const [,index,field]=key.split(':');
+        const fallback=DPS_SANCTUARY_BLANK_SLOT();
+        const oldSlot=beforeSlots[Number(index)] || fallback;
+        const newSlot=afterSlots[Number(index)] || fallback;
+        const beforeText=field==='range' ? `${oldSlot.start} ~ ${oldSlot.end}` : traitPresetSanctuaryValueText(field,oldSlot[field]);
+        const afterText=field==='range' ? `${newSlot.start} ~ ${newSlot.end}` : traitPresetSanctuaryValueText(field,newSlot[field]);
+        details.push(traitPresetChangeDetail(key,beforeText,afterText,'single',next.id));
+      }
+    });
   });
   if(stableTraitPresetValue(beforeStore?.jewelSettings)!==stableTraitPresetValue(afterStore?.jewelSettings))
     details.push(traitPresetChangeDetail('jewelSettings','이전 구성','변경된 구성','common'));
@@ -1850,7 +1915,10 @@ function updateTraitPreset(options={}){
         const withoutLegacy={...before,values:donated.values,inv:donated.inv};
         if(stableTraitPresetValue(withoutLegacy)!==stableTraitPresetValue(after) ||
            stableTraitPresetValue(originalBoard)!==stableTraitPresetValue(currentBoard)){
-          changesByPreset[preset.id]=['storedPreset'];
+          changesByPreset[preset.id]=originalBoard && !hasOwn(originalBoard,'sanctuaryInfo') &&
+            traitPresetUnitBoardChangeKeys(originalBoard,currentBoard).every(key=>key==='sanctuaryInfo:init') &&
+            stableTraitPresetValue(withoutLegacy)===stableTraitPresetValue(after)
+            ? ['sanctuaryInfo:init'] : ['storedPreset'];
         }
       });
       const sharedChanged=stableTraitPresetValue(raw.jewelSettings)!==stableTraitPresetValue(store.jewelSettings);
@@ -1888,9 +1956,10 @@ function updateTraitPreset(options={}){
     const stateChanged=stateChangeSummary.stateChanged;
     const statusCommonChangeKeys=new Set(stateChangeSummary.sharedKeys);
     const statusSingleChangeKeys=new Set(stateChangeSummary.singleKeys);
-    const unitBoardChanged=traitPresetHasUnitBoard(store,id) ? stableTraitPresetValue(traitPresetUnitBoardState(store,id))!==stableTraitPresetValue(currentUnitBoard) : true;
+    const unitBoardChanges=traitPresetUnitBoardChangeKeys(traitPresetUnitBoardState(store,id),currentUnitBoard);
+    const unitBoardChanged=!traitPresetHasUnitBoard(store,id) || unitBoardChanges.length>0;
     const jewelChanged=traitPresetJewelSettingsChanged(store);
-    if(unitBoardChanged) statusSingleChangeKeys.add('unitBoard');
+    if(unitBoardChanged) (unitBoardChanges.length ? unitBoardChanges : ['unitBoard']).forEach(key=>statusSingleChangeKeys.add(key));
     if(jewelChanged) statusCommonChangeKeys.add('jewelSettings');
     if(!stateChanged && !unitBoardChanged && !jewelChanged){
       acknowledgeTraitPresetAction(id);
@@ -2099,11 +2168,18 @@ const TRAIT_PRESET_CHANGE_LABEL_OVERRIDES=Object.freeze({
   penance:'고행 단계',
   spBankApply:'SP 은행 반영',
   jewelErosionRes:'어비스 심연 내성',
-  skillRound:'성소 사용 라운드',
-  skillMode:'성소 모드'
+  skillRound:'버스 성소 · 계산 라운드',
+  skillMode:'버스 성소 · 계산 모드'
 });
 function traitPresetChangeKeyLabel(key){
   const normalized=String(key || '');
+  if(normalized==='sanctuaryInfo:init') return '성소 정보 · 신규 항목';
+  if(normalized==='sanctuaryInfo:slotCount') return '성소 정보 · 슬롯 수';
+  const sanctuary=normalized.match(/^sanctuaryInfo:(\d+):(range|skill1|count1|skill2|count2)$/);
+  if(sanctuary){
+    const label={range:'적용 라운드·층',skill1:'1번 스킬',count1:'1번 사용 횟수',skill2:'2번 스킬',count2:'2번 사용 횟수'}[sanctuary[2]];
+    return `성소 정보 ${String(Number(sanctuary[1])+1).padStart(2,'0')}번 · ${label}`;
+  }
   if(normalized.startsWith('value:')){
     const id=normalized.slice(6);
     if(id==='gameMode') return '게임 모드';
@@ -2226,10 +2302,9 @@ function traitPresetBackupChangePlan(store=loadTraitPresetStore(),currentSnapsho
   stateChangeSummary.sharedKeys.forEach(key=>commonChangeKeys.add(key));
   if(stateChangeSummary.sharedChanged) store.presets.forEach(preset=>commonScopeIds.add(preset.id));
   if(stateChangeSummary.singleKeys.size) addSingleKeys(selectedId,stateChangeSummary.singleKeys);
-  const unitBoardChanged=traitPresetHasUnitBoard(store,selectedId)
-    ? stableTraitPresetValue(traitPresetUnitBoardState(store,selectedId))!==stableTraitPresetValue(currentUnitBoard)
-    : true;
-  if(unitBoardChanged) addSingleKeys(selectedId,['unitBoard']);
+  const unitBoardChanges=traitPresetUnitBoardChangeKeys(traitPresetUnitBoardState(store,selectedId),currentUnitBoard);
+  const unitBoardChanged=!traitPresetHasUnitBoard(store,selectedId) || unitBoardChanges.length>0;
+  if(unitBoardChanged) addSingleKeys(selectedId,unitBoardChanges.length ? unitBoardChanges : ['unitBoard']);
   const jewelChanged=traitPresetJewelSettingsChanged(store);
   if(jewelChanged){
     commonChangeKeys.add('jewelSettings');
@@ -2245,8 +2320,9 @@ function traitPresetBackupChangePlan(store=loadTraitPresetStore(),currentSnapsho
     summary.sharedKeys.forEach(key=>commonChangeKeys.add(key));
     if(summary.sharedChanged){ store.presets.forEach(item=>commonScopeIds.add(item.id)); hasDraftPending=true; }
     if(summary.singleKeys.size){ addSingleKeys(id,summary.singleKeys); hasDraftPending=true; }
-    if(draft.unitBoard && stableTraitPresetValue(traitPresetUnitBoardState(store,id))!==stableTraitPresetValue(normalizeTraitPresetUnitBoardState(draft.unitBoard))){
-      addSingleKeys(id,['unitBoard']);
+    const draftBoardChanges=draft.unitBoard ? traitPresetUnitBoardChangeKeys(traitPresetUnitBoardState(store,id),draft.unitBoard) : [];
+    if(draftBoardChanges.length){
+      addSingleKeys(id,draftBoardChanges);
       hasDraftPending=true;
     }
   });
@@ -2367,7 +2443,7 @@ function notifyTraitPresetBackupFileComplete(fileName){
 function openTraitPresetBackupPanel(){
   try{
     const compatibility=storedTraitPresetCompatibility();
-    if(compatibility.error || compatibility.requiresUpdate) throw new Error(compatibility.error || '프리셋 업데이트를 먼저 완료해 주세요.');
+    requireCompatibleTraitPreset(compatibility);
     const currentSnapshot=makeStateObject();
     if(!isStorageLocked()) saveState({silent:true,state:currentSnapshot});
     const store=loadTraitPresetStore();
@@ -2581,7 +2657,8 @@ function inspectTraitPresetImportCompatibility(parsed,options={}){
       }
       checkShape(value,canonical[id] ?? value,`${path}.${id}`);
     });
-    Object.keys(values).filter(id=>!hasOwn(defaults.values,id)).forEach(id=>issues.push(`${path}.${id}`));
+    // V47/V48 중복 저장 필드: 성소 정보의 권위 있는 위치는 유닛 보드 프리셋이다.
+    Object.keys(values).filter(id=>id!=='dpsSanctuaryInfo' && !hasOwn(defaults.values,id)).forEach(id=>issues.push(`${path}.${id}`));
     if(item.state.inv!==undefined && !object(item.state.inv)) invalid(`${path}.inv`);
     const inv=item.state.inv || {};
     Object.keys(defaults.inv).forEach(row=>{
@@ -2612,7 +2689,8 @@ function inspectTraitPresetImportCompatibility(parsed,options={}){
       if(!hasOwn(boards,item.id)) issues.push(`${item.name}.유닛 보드`);
       else{
         if(!object(boards[item.id])) invalid(`${item.name}.유닛 보드`);
-        checkShape(boards[item.id],normalizeTraitPresetUnitBoardState(boards[item.id]),`${item.name}.유닛 보드`);
+        const normalizedBoard=normalizeTraitPresetUnitBoardState(boards[item.id]);
+        checkShape(boards[item.id],normalizedBoard,`${item.name}.유닛 보드`);
       }
     });
     Object.keys(boards).filter(id=>!ids.has(id)).forEach(id=>issues.push(`유닛 보드.${id}`));
@@ -2623,7 +2701,7 @@ function traitPresetImportIssueChange(issue,source={}){
   const path=String(issue || '');
   const missing='저장 항목 없음';
   const info={
-    '프리셋 관리 버전':['프리셋 저장 형식',source.presetManagement ?? missing,TRAIT_PRESET_MANAGEMENT_VERSION],
+    '프리셋 관리 버전':['프리셋 관리 버전',source.presetManagement ?? missing,TRAIT_PRESET_MANAGEMENT_VERSION],
     '파일 종류':['프리셋 파일 종류',source.type ?? missing,TRAIT_PRESET_FILE_TYPE],
     '웹 버전 정보':['백업 생성 웹 버전',source.webDpsVersion ?? missing,currentWebDpsVersion()],
     '쥬얼 설정':['쥬얼 설정 저장 항목',missing,'기본 쥬얼 설정 추가'],
@@ -2688,6 +2766,21 @@ function prepareTraitPresetImportRecovery(parsed,fileName=''){
       if(missingInvestments.some(key=>key!=='116')) row.changes.push({key:'importRepair',label:`누락된 특성 투자 항목 ${missingInvestments.filter(key=>key!=='116').length}개`,before:'항목 없음',after:'기본값 0'});
       if(raw.state.zeroScore===undefined) row.changes.push({key:'zeroScore',label:'더제로 전당 계산값',before:'항목 없음',after:'기본값'});
       if(!hasOwn(source.unitBoard?.presets,raw.id)) row.changes.push({key:'unitBoard',label:'유닛 보드',before:'항목 없음',after:'빈 보드'});
+      else if(!hasOwn(source.unitBoard.presets[raw.id],'sanctuaryInfo')) row.changes.push({key:'sanctuaryInfo:init',label:'성소 정보 · 신규 항목',before:'저장 항목 없음',after:'기본 0슬롯'});
+      else{
+        // V2에서 0회로 저장된 선택 스킬 등, 정규화로 바뀌는 횟수만 개별 변경으로 명시한다.
+        const previous=source.unitBoard.presets[raw.id].sanctuaryInfo?.slots;
+        const nextSlots=completed.unitBoard.presets[raw.id]?.sanctuaryInfo.slots || [];
+        if(Array.isArray(previous)) previous.slice(0,10).forEach((slot,index)=>{
+          for(const count of ['count1','count2']){
+            const before=slot?.[count],after=nextSlots[index]?.[count];
+            if(typeof before==='number' && before!==after){
+              const key=`sanctuaryInfo:${index}:${count}`;
+              row.changes.push({key,label:traitPresetChangeKeyLabel(key),before:String(before),after:String(after)});
+            }
+          }
+        });
+      }
       if(row.issues.length && !row.changes.length) row.changes.push({key:'importRepair',label:'저장 항목 형식',before:'일부 항목 보완 필요',after:'현재 형식'});
     }catch(error){
       row.error=String(error?.message || '저장 상태를 확인해 주세요.').replace(traitPresetImportPresetPath(raw,0),traitPresetImportPresetPath(raw,index));

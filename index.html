@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <script>
-window.APP_VERSION = "builder-V33f";
+window.APP_VERSION = "builder-V34";
 window.DPS_BUILD_VERSION = window.APP_VERSION;
 window.DPS_STANDALONE_VIEW = (function(){
   var requested=new URLSearchParams(window.location.search).get('dpsWindow');
@@ -224,14 +224,14 @@ html:not(.dps-booting) #dpsBootScreen{display:none}
 <meta content="개복디 빌더 - 통합 빌드 계산 HUB" property="og:title"/>
 <meta content="특성 투자·재화 사용량 계산부터 스펙·DPS 분석까지 한 번에, 통합 빌드 계산 HUB" property="og:description"/>
 <!-- OG/Twitter 이미지 캐시: 앱 버전 변경 시 아래 세 URL을 같은 버전으로 맞춥니다. -->
-<meta content="https://nxsbuild.github.io/build/logo.png?v=builder-V33f" property="og:image"/>
-<meta content="https://nxsbuild.github.io/build/logo.png?v=builder-V33f" property="og:image:secure_url"/>
+<meta content="https://nxsbuild.github.io/build/logo.png?v=builder-V34" property="og:image"/>
+<meta content="https://nxsbuild.github.io/build/logo.png?v=builder-V34" property="og:image:secure_url"/>
 <meta content="image/png" property="og:image:type"/>
 <meta content="개복디 빌더 로고" property="og:image:alt"/>
 <meta content="summary_large_image" name="twitter:card"/>
 <meta content="개복디 빌더 - 통합 빌드 계산 HUB" name="twitter:title"/>
 <meta content="특성 투자·재화 사용량 계산부터 스펙·DPS 분석까지 한 번에, 통합 빌드 계산 HUB" name="twitter:description"/>
-<meta content="https://nxsbuild.github.io/build/logo.png?v=builder-V33f" name="twitter:image"/>
+<meta content="https://nxsbuild.github.io/build/logo.png?v=builder-V34" name="twitter:image"/>
 <meta content="개복디 빌더 로고" name="twitter:image:alt"/>
 <link href="https://cdn.jsdelivr.net" rel="preconnect"/>
 <link crossorigin="" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" rel="stylesheet"/>
@@ -268,7 +268,9 @@ html:not(.dps-booting) #dpsBootScreen{display:none}
       ['.header-nexus-link','개복디 넥서스',window.innerWidth<600?30:35],
       ['#btnPatchNotes','패치노트',30],
       ['#independentWindowToggle','독립 창 선택',35],
-      ['[data-analysis-board-copy]','클리어 기록 복사',32],
+      ['#btnRecordArchive','기록의 전당',32],
+      ['#unitSanctuaryReset','전체 초기화',30],
+      ['[data-analysis-board-copy]','기록 복사',32],
     ];
     definitions.forEach(function(definition){
       document.querySelectorAll(definition[0]).forEach(function(control){
@@ -1168,7 +1170,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 <div class="col-right">
 <!-- 스펙·유닛 보드: 전환 버튼·결과 -->
 <div class="data-card stat-dps-card right-analytics-workspace analytics-polish">
-<div class="right-workspace-navigation"><header class="right-workspace-head"><span class="right-workspace-mark" aria-hidden="true"><svg class="ui-header-glyph" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><use href="#dpsUiSparklesGlyph"/></svg></span><span class="right-workspace-copy"><strong>분석 보드</strong></span><button type="button" class="right-workspace-copy-btn" data-analysis-board-copy aria-label="클리어 기록 복사"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="8" y="8" width="13" height="13" rx="2"/><path d="M16 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h3"/></svg></button></header>
+<div class="right-workspace-navigation"><header class="right-workspace-head"><span class="right-workspace-mark" aria-hidden="true"><svg class="ui-header-glyph" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><use href="#dpsUiSparklesGlyph"/></svg></span><span class="right-workspace-copy"><strong>분석 보드</strong></span><button type="button" class="right-workspace-copy-btn" id="btnRecordArchive" aria-label="기록의 전당" aria-haspopup="dialog" aria-controls="builderRecordDialog" aria-expanded="false" title="기록의 전당"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M8 21h8M12 17v4M7 4h10v7a5 5 0 0 1-10 0V4Z"/><path d="M7 6H4v2a4 4 0 0 0 4 4M17 6h3v2a4 4 0 0 1-4 4"/></svg></button><button type="button" class="right-workspace-copy-btn" data-analysis-board-copy aria-label="기록 복사"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="8" y="8" width="13" height="13" rx="2"/><path d="M16 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h3"/></svg></button></header>
 <section class="damage-board-analysis-view" id="damageBoardAnalysisPanel" aria-label="분석 보드 내용">
 <div class="damage-board-subtabs integrated-tabs" role="tablist" aria-label="분석 보드 세부 선택" data-damage-board-subtabs>
 <button class="integrated-tab is-active" id="damageBoardSpecTab" type="button" role="tab" aria-selected="true" aria-controls="damageBoardSpecPanel" data-damage-board-subtab="spec" tabindex="0">스펙 보드</button>
@@ -1227,6 +1229,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 <input id="dpsBaseUnitExtraSettings" type="hidden" value="{}"/>
 <input id="dpsBaseUnitSlotExpansions" type="hidden" value="[]"/>
 <input id="dpsBaseUnitSpeedMode" type="hidden" value="OFF"/>
+<input id="dpsSanctuaryInfo" type="hidden" value=""/>
 <div id="dpsBaseUnitQuantityStore" hidden></div>
 
 
@@ -1235,6 +1238,25 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 <div class="dps-base-unit-slot-stack" id="dpsBaseUnitSlotStack" aria-label="유닛 보드"></div>
 </section>
 
+<section id="unitSanctuaryPanel" class="unit-sanctuary-panel" aria-label="성소 정보">
+  <header class="unit-sanctuary-heading">
+    <h3>성소 정보 <span id="unitSanctuaryCount">0 / 10</span></h3>
+    <details class="unit-sanctuary-help" id="unitSanctuaryGuideDetails"><summary id="unitSanctuaryGuideOpen" aria-label="성소 정보 사용 방법" aria-expanded="false">?</summary>
+      <div class="unit-sanctuary-guide" role="group" aria-label="성소 정보 사용 방법"><strong>사용 방법</strong><ul>
+        <li>적용 라운드·층과 스킬, 사용 횟수를 입력하세요</li>
+        <li>0 또는 선택 안함은 미입력입니다</li>
+        <li>두 스킬의 사용 횟수 합계는 최대 4입니다</li>
+        <li>프리셋에 저장되고 기록 복사 시 포함됩니다</li>
+      </ul></div>
+    </details>
+    <button type="button" class="unit-sanctuary-reset" id="unitSanctuaryReset" aria-label="전체 초기화"><svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14M10 10v7M14 10v7"/></svg></button>
+  </header>
+  <div id="unitSanctuarySummary" class="unit-basic-summary unit-sanctuary-summary" aria-label="설정된 성소 정보 요약"></div>
+  <div id="unitSanctuaryRows" class="unit-sanctuary-slots" role="group" aria-label="성소 정보 슬롯 목록"></div>
+  <div class="unit-sanctuary-footer">
+    <button type="button" class="unit-slot-add-card" id="unitSanctuaryAdd"><span class="unit-slot-add-symbol" aria-hidden="true">+</span><strong>성소 슬롯 추가</strong><small>1번 슬롯 · 최대 10개</small></button>
+  </div>
+</section>
 </div>
 <div id="unitDetailsPanel1" class="integrated-content" role="tabpanel" aria-labelledby="damageBoardJewelTab" data-damage-board-unit-panel="jewel" hidden><section class="trait-preset-unit-jewel-panel trait-preset-unit-jewel-settings-panel" data-trait-preset-unit-jewel-panel="jewel"><div class="dps-jewel-settings-body trait-preset-unit-jewel-settings-body" data-dps-jewel-config><div class="dps-jewel-config-grid" id="dpsJewelConfigGrid"></div></div></section></div>
 
@@ -1350,6 +1372,8 @@ loadScriptSequence(['data.js','calc.js','app.js','preset.js','responsive.js'],fu
     patchScript.addEventListener('error',function(){
       var trigger=document.getElementById('btnPatchNotes');
       if(trigger){trigger.disabled=true;trigger.title='패치노트를 불러오지 못했습니다';}
+      var archive=document.getElementById('btnRecordArchive');
+      if(archive){archive.disabled=true;archive.title='기록의 전당을 불러오지 못했습니다';}
     },{once:true});
     document.body.appendChild(patchScript);
   }

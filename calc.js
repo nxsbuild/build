@@ -185,6 +185,13 @@ function erosionStoredValue(id){
 
 /* ── 03 · DPS 표시값 ── */
 /* DPS표·스킬 표시값 */
+const SANCTUARY_SKILL_DAMAGE_DATA=Object.freeze([
+  ['어스퀘이크',0.0223,0.000066,10],
+  ['포이즌미스트',0.0432,0.0001755,15],
+  ['라이트닝스톰',0.517,0.0005,1],
+  ['퓨리파이어',0.0198,0.000142,30],
+  ['메테오 (1발)',0.259,0.00025,1]
+]);
 function calculateSkillDamageRows({ap=535,doubleSpace=1,round=1,mode='normal'}={}){
   const skillAp=Number.isFinite(Number(ap)) ? Number(ap) : 535;
   const doubleValue=Number.isFinite(Number(doubleSpace)) ? Number(doubleSpace) : 1;
@@ -197,19 +204,12 @@ function calculateSkillDamageRows({ap=535,doubleSpace=1,round=1,mode='normal'}={
   const baseRound=isPlanet ? 32 : (isTower ? 30 : 100);
   const perRound=isPlanet ? 0.016601 : (isTower ? 0.016601 : 0.005);
   const penalty=Math.max(0,Math.min(0.99,(roundValue-baseRound)*perRound));
-  const data=[
-    ['어스퀘이크',0.0223,0.000066,10],
-    ['포이즌미스트',0.0432,0.0001755,15],
-    ['라이트닝스톰',0.517,0.0005,1],
-    ['퓨리파이어',0.0198,0.000142,30],
-    ['메테오 (1발)',0.259,0.00025,1]
-  ];
   return {
     ap:skillAp,
     doubleSpace:doubleValue,
     round:roundValue,
     penalty,
-    items:data.map(([name,base,add,tick])=>({name,total:(base + add*skillAp*doubleValue) * tick * (1-penalty) * 100}))
+    items:SANCTUARY_SKILL_DAMAGE_DATA.map(([name,base,add,tick])=>({name,total:(base + add*skillAp*doubleValue) * tick * (1-penalty) * 100}))
   };
 }
 
@@ -417,6 +417,12 @@ function enemyDurabilityRemain(enemyData, displayHR, displaySR){
 }
 function targetDurabilityRemain(enemyData, targetEffects){
   return enemyDurabilityRemain(enemyData, targetEffects.hpReduce, targetEffects.shieldReduce);
+}
+/* 협동전 동승자별 내구도 계산은 스펙/유물 DPS에서 동일한 경로를 사용한다. */
+function coopPassengerDurabilityTargets(enemyData){
+  return coopPassengerTargetEffectsList().map(target=>({
+    ...target,hpRemain:targetDurabilityRemain(enemyData,target).remain
+  }));
 }
 function battleTargetDps0Average(ownTarget,passengerTargets,enemyArmor,dmgReduce){
   const playerCount=battleEnemyCountMultiplier();
@@ -1537,10 +1543,7 @@ function computeSpecBoardResult(context){
     shieldReduce:displaySR
   };
   const ownDurability=targetDurabilityRemain(enemyData,ownTargetEffects);
-  const passengerTargets=coopPassengerTargetEffectsList().map(target=>{
-    const durability=targetDurabilityRemain(enemyData,target);
-    return {...target,hpRemain:durability.remain};
-  });
+  const passengerTargets=coopPassengerDurabilityTargets(enemyData);
   const hpRatio=ownDurability.hpRatio;
   const shieldRatio=ownDurability.shieldRatio;
   const hpRemain=ownDurability.remain;
@@ -1846,10 +1849,7 @@ function calculateArtifactDpsRaw(stats=computeLightweightStatsRaw()){
   const enemyData=stats.enemyData || enemyRoundData(ctx.targetRound);
   const ownTarget={defenseReduce:stats.M12||0,pierce:0,hpReduce:stats.displayHR||0,shieldReduce:stats.displaySR||0};
   const ownDurability=targetDurabilityRemain(enemyData, ownTarget);
-  const passengerTargets=coopPassengerTargetEffectsList().map(target=>{
-    const durability=targetDurabilityRemain(enemyData, target);
-    return {...target, hpRemain:durability.remain};
-  });
+  const passengerTargets=coopPassengerDurabilityTargets(enemyData);
   const dmgReduce=ctx.diff.dmg * (1 - ctx.penDmg / 100) * (Number(enemyData.damageMultiplier)||1);
   const dps0Part=battleTargetDps0Average(
     {...ownTarget, hpRemain:ownDurability.remain},

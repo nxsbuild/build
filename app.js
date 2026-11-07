@@ -1090,6 +1090,7 @@ const FIELD_REGISTRY={
   dpsBaseUnitExtraSettings:{kind:'유닛 보드',name:'추가 유닛 쥬얼 & 한계 돌파',save:true},
   dpsBaseUnitSlotExpansions:{kind:'유닛 보드',name:'슬롯 확장',save:true},
   dpsBaseUnitSpeedMode:{kind:'유닛 보드',name:'스피드 모드',save:true},
+  dpsSanctuaryInfo:{kind:'유닛 보드',name:'성소 정보',save:true},
   erosionStack:{kind:'목표설정',name:'어비스 침식 스택',save:true},
   jewelErosionRes:{kind:'목표설정',name:'어비스 심연 내성',save:true},
   janRuneScope:{kind:'룬효과 버프',name:'1월 적용 범위',save:true},
@@ -2074,53 +2075,230 @@ function dpsBaseUnitSlotsHtml(slots){
   return `<section class="unit-list-collection" aria-label="유닛 슬롯 관리"><header class="ub-collection-head"><h3>유닛 구성 <span>${visibleCount} / 10</span></h3><small>카드를 눌러 상세 설정</small></header>${basicInfo}<div class="unit-slot-cards-grid" aria-label="유닛 슬롯 카드 목록">${rows}${next}</div></section>`;
 }
 
-// 붙여넣는 앱이 선택하는 text/plain(Markdown)과 text/html을 각각 구성한다.
+// 성소 정보: 버스 성소의 스킬 목록을 그대로 사용하며 유닛 보드·프리셋에서 같은 상태를 공유한다.
+const DPS_SANCTUARY_SKILLS=Object.freeze(SANCTUARY_SKILL_DAMAGE_DATA.map(skill=>skill[0]));
+const DPS_SANCTUARY_BLANK_SLOT=()=>({start:0,end:0,skill1:'',count1:0,skill2:'',count2:0});
+function normalizeDpsSanctuaryInfo(value){
+  let source=value;
+  if(typeof source==='string'){
+    try{source=JSON.parse(source);}catch{source=null;}
+  }
+  if(!source || typeof source!=='object' || Array.isArray(source)) source={};
+  const incoming=Array.isArray(source.slots) ? source.slots.slice(0,10) : [];
+  const clamp=(value,max)=>Math.max(0,Math.min(max,Math.round(Number(value)||0)));
+  const slots=incoming.map(raw=>{
+    if(!raw || typeof raw!=='object' || Array.isArray(raw)) raw={};
+    const slot=DPS_SANCTUARY_BLANK_SLOT();
+    slot.start=clamp(raw.start,300);
+    slot.end=clamp(raw.end,300);
+    slot.skill1=DPS_SANCTUARY_SKILLS.includes(raw.skill1) ? raw.skill1 : '';
+    slot.count1=slot.skill1 ? Math.max(1,clamp(raw.count1,4)) : 0;
+    // 두 스킬은 독립적으로 선택하되, 선택된 스킬은 반드시 1회 이상 사용한다.
+    slot.skill2=DPS_SANCTUARY_SKILLS.includes(raw.skill2) ? raw.skill2 : '';
+    slot.count2=slot.skill2 ? Math.max(1,clamp(raw.count2,4)) : 0;
+    if(slot.count1+slot.count2>4){
+      slot.count1=Math.min(slot.count1,slot.skill2 ? 3 : 4);
+      slot.count2=4-slot.count1;
+    }
+    return slot;
+  });
+  return {slots};
+}
+function currentDpsSanctuaryInfo(){return normalizeDpsSanctuaryInfo($('dpsSanctuaryInfo')?.value || '');}
+function dpsSanctuaryRoundLimit(){
+  return isTowerDifficulty() ? 90 : isPlanetExplorationDifficulty() ? 100 : 300;
+}
+function dpsSanctuaryRangeLabels(){
+  return (isTowerDifficulty() || isPlanetExplorationDifficulty())
+    ? ['시작 층','종료 층'] : ['시작 라운드','종료 라운드'];
+}
+function dpsSanctuaryValidRows(info=currentDpsSanctuaryInfo()){
+  const maximum=dpsSanctuaryRoundLimit();
+  return normalizeDpsSanctuaryInfo(info).slots.flatMap((slot,index)=>{
+    if(!(slot.start>0 && slot.end>=slot.start && slot.end<=maximum &&
+      ((slot.skill1 && slot.count1>=1) || (slot.skill2 && slot.count2>=1)))) return [];
+    return [{number:String(index+1).padStart(2,'0'),...slot,
+      skill1:slot.skill1 && slot.count1>0 ? slot.skill1 : '',
+      count1:slot.skill1 && slot.count1>0 ? slot.count1 : 0,
+      skill2:slot.skill2 && slot.count2>0 ? slot.skill2 : '',
+      count2:slot.skill2 && slot.count2>0 ? slot.count2 : 0}];
+  });
+}
+function renderDpsSanctuarySummary(info=currentDpsSanctuaryInfo()){
+  const summary=$('unitSanctuarySummary');
+  if(!summary) return;
+  const [startLabel,endLabel]=dpsSanctuaryRangeLabels();
+  // 슬롯의 입력 상태를 그대로 보여준다. 기록 복사에 적용되는 유효성 판정과는 별개다.
+  const rows=info.slots.flatMap((slot,index)=>{
+    if(!(slot.start || slot.end || slot.skill1 || slot.skill2 || slot.count1 || slot.count2)) return [];
+    return [`<tr><th scope="row">${String(index+1).padStart(2,'0')}</th>`+
+      `<td>${slot.start}</td><td>${slot.end}</td>`+
+      `<td>${slot.skill1 ? `${slot.skill1} ${slot.count1}회` : '선택 안함'}</td>`+
+      `<td>${slot.skill2 ? `${slot.skill2} ${slot.count2}회` : '선택 안함'}</td></tr>`];
+  });
+  summary.innerHTML=`<table aria-label="설정된 성소 정보 기본정보"><thead><tr>`+
+    `<th scope="col">슬롯 번호</th><th scope="col">${startLabel}</th><th scope="col">${endLabel}</th>`+
+    `<th scope="col">1번 스킬 / 사용 횟수</th><th scope="col">2번 스킬 / 사용 횟수</th>`+
+    `</tr></thead><tbody>${rows.join('')||'<tr><td colspan="5" class="unit-basic-empty">선택한 정보가 없습니다</td></tr>'}</tbody></table>`;
+}
+function renderDpsSanctuaryInfo(){
+  const rows=$('unitSanctuaryRows');
+  if(!rows) return;
+  const info=currentDpsSanctuaryInfo();
+  const maximum=dpsSanctuaryRoundLimit();
+  const [startLabel,endLabel]=dpsSanctuaryRangeLabels();
+  renderDpsSanctuarySummary(info);
+  const options=selected=>`<option value="">선택 안함</option>${DPS_SANCTUARY_SKILLS.map(name=>`<option value="${name}"${name===selected?' selected':''}>${name}</option>`).join('')}`;
+  const counts=(selected,max,hasSkill)=>{
+    const first=hasSkill ? 1 : 0;
+    const last=hasSkill ? max : 0;
+    return Array.from({length:last-first+1},(_,i)=>{
+      const n=first+i;
+      return `<option value="${n}"${n===selected?' selected':''}>${n}회</option>`;
+    }).join('');
+  };
+  const field=(index,name)=>`data-sanctuary-index="${index}" data-sanctuary-field="${name}"`;
+  const box=(label,control)=>`<label class="unit-sanctuary-field"><span>${label}</span>${control}</label>`;
+  rows.innerHTML=info.slots.map((slot,index)=>{
+    const invalid=slot.start>0 && slot.end>0 && (slot.start>slot.end || slot.end>maximum);
+    return `<article class="unit-sanctuary-card${invalid?' is-invalid':''}" aria-label="${index+1}번 성소 슬롯">`+
+      `<header class="unit-sanctuary-card-head"><span class="unit-slot-number" aria-hidden="true">${String(index+1).padStart(2,'0')}</span><strong>슬롯</strong><button type="button" class="unit-list-remove" data-sanctuary-remove="${index}" aria-label="${index+1}번 성소 슬롯 삭제">×</button></header>`+
+      `<div class="unit-sanctuary-fields">`+
+      box(startLabel,`<input aria-label="${index+1}번 ${startLabel}" type="number" min="0" max="${maximum}" inputmode="numeric" value="${slot.start}" ${field(index,'start')}>`)+
+      box('1번 스킬',`<select aria-label="${index+1}번 1번 스킬" ${field(index,'skill1')}>${options(slot.skill1)}</select>`)+
+      box('1번 사용 횟수',`<select aria-label="${index+1}번 1번 사용 횟수" ${field(index,'count1')}>${counts(slot.count1,4-slot.count2,!!slot.skill1)}</select>`)+
+      box(endLabel,`<input aria-label="${index+1}번 ${endLabel}" type="number" min="0" max="${maximum}" inputmode="numeric" value="${slot.end}" ${field(index,'end')}>`)+
+      box('2번 스킬',`<select aria-label="${index+1}번 2번 스킬" ${field(index,'skill2')}>${options(slot.skill2)}</select>`)+
+      box('2번 사용 횟수',`<select aria-label="${index+1}번 2번 사용 횟수" ${field(index,'count2')}>${counts(slot.count2,4-slot.count1,!!slot.skill2)}</select>`)+
+      `</div></article>`;
+  }).join('');
+  const counter=$('unitSanctuaryCount');
+  if(counter) counter.textContent=`${info.slots.length} / 10`;
+  const add=$('unitSanctuaryAdd');
+  if(add){
+    add.disabled=info.slots.length>=10;
+    const label=add.querySelector('small');
+    if(label) label.textContent=info.slots.length<10 ? `${info.slots.length+1}번 슬롯 · 최대 10개` : '최대 10개';
+  }
+}
+function updateDpsSanctuaryField(control,render=true){
+  const index=Number(control.dataset.sanctuaryIndex);
+  const field=control.dataset.sanctuaryField;
+  if(!Number.isInteger(index) || !['start','end','skill1','count1','skill2','count2'].includes(field)) return;
+  const info=currentDpsSanctuaryInfo();
+  if(!info.slots[index]) return;
+  const slot=info.slots[index];
+  if(field==='start' || field==='end'){
+    slot[field]=Math.max(0,Math.min(dpsSanctuaryRoundLimit(),Math.round(Number(control.value)||0)));
+  }else{
+    const ownSkill=field.endsWith('1') ? 'skill1' : 'skill2';
+    const ownCount=field.endsWith('1') ? 'count1' : 'count2';
+    const otherCount=field.endsWith('1') ? 'count2' : 'count1';
+    if(field.startsWith('skill')){
+      slot[field]=DPS_SANCTUARY_SKILLS.includes(control.value) ? control.value : '';
+      slot[ownCount]=slot[field] ? Math.max(1,slot[ownCount]) : 0;
+    }else{
+      slot[field]=slot[ownSkill] ? Math.max(1,Math.min(4,Math.round(Number(control.value)||1))) : 0;
+    }
+    // 방금 편집한 스킬·횟수를 우선 유지하며, 다른 스킬과의 총합을 4회로 제한한다.
+    if(slot[ownCount]+slot[otherCount]>4) slot[otherCount]=Math.max(1,4-slot[ownCount]);
+  }
+  const store=$('dpsSanctuaryInfo');
+  if(store) store.value=JSON.stringify(normalizeDpsSanctuaryInfo(info));
+  renderDpsSanctuarySummary(normalizeDpsSanctuaryInfo(info));
+  // 숫자 입력 중 테이블 전체를 재생성하면 다음 칸의 포커스·입력이 소실된다.
+  if(control.tagName==='INPUT'){
+    if(render) control.value=String(slot[field]);
+    const limit=dpsSanctuaryRoundLimit();
+    control.closest('.unit-sanctuary-card')?.classList.toggle('is-invalid',slot.start>0 && slot.end>0 && (slot.start>slot.end || slot.end>limit));
+  }else if(render) renderDpsSanctuaryInfo();
+  scheduleAutoSave();
+}
+function bindDpsSanctuaryEvents(){
+  const guide=$('unitSanctuaryGuideDetails');
+  if(guide){
+    const trigger=guide.querySelector('summary');
+    guide.addEventListener('toggle',()=>trigger.setAttribute('aria-expanded',String(guide.open)));
+    document.addEventListener('pointerdown',event=>{
+      if(guide.open && !guide.contains(event.target)) guide.open=false;
+    });
+    document.addEventListener('keydown',event=>{
+      if(event.key==='Escape' && guide.open){
+        guide.open=false;
+        trigger.focus({preventScroll:true});
+        event.stopPropagation();
+      }
+    });
+  }
+  $('unitSanctuaryAdd')?.addEventListener('click',()=>{
+    const info=currentDpsSanctuaryInfo();
+    if(info.slots.length>=10) return;
+    info.slots.push(DPS_SANCTUARY_BLANK_SLOT());
+    $('dpsSanctuaryInfo').value=JSON.stringify(info);
+    renderDpsSanctuaryInfo();
+    scheduleAutoSave();
+  });
+  $('unitSanctuaryRows')?.addEventListener('click',event=>{
+    const remove=event.target?.closest?.('[data-sanctuary-remove]');
+    if(!remove || remove.disabled) return;
+    const info=currentDpsSanctuaryInfo();
+    const index=Number(remove.dataset.sanctuaryRemove);
+    if(!Number.isInteger(index) || index<0 || index>=info.slots.length) return;
+    info.slots.splice(index,1);
+    $('dpsSanctuaryInfo').value=JSON.stringify(info);
+    renderDpsSanctuaryInfo();
+    scheduleAutoSave();
+  });
+  $('unitSanctuaryReset')?.addEventListener('click',()=>{
+    const info={slots:[]};
+    $('dpsSanctuaryInfo').value=JSON.stringify(info);
+    renderDpsSanctuaryInfo();
+    scheduleAutoSave();
+  });
+  $('unitSanctuaryPanel')?.addEventListener('input',event=>{
+    if(event.target?.matches?.('input[data-sanctuary-field]')) updateDpsSanctuaryField(event.target,false);
+  });
+  $('unitSanctuaryPanel')?.addEventListener('change',event=>{
+    if(event.target?.matches?.('[data-sanctuary-field]')) updateDpsSanctuaryField(event.target);
+  });
+}
+
+// 기록 보관소와 일반 텍스트 입력을 위한 단일 세로형 복사 보고서.
 function formatDpsClearReport(report){
-  const {context,stageMain,stageRound,achievement,specDps,required,expected,buildRows,effects,units}=report;
+  const {context,stageMain,stageRound,achievement,specDps,dpsLabel,required,expected,resourceRows,buildRows,effects,units,sanctuaryRows=[]}=report;
   const totalQuantity=units.reduce((sum,unit)=>sum+Math.max(1,Number(unit.quantity)||1),0);
-  const unitHeading=`선택 유닛 정보 (${units.length}슬롯 · ${totalQuantity}마리)`;
   const lines=[
-    '**클리어 기록 보고서**',
-    `| 모드 난이도: ${context} | 고행 라운드: ${stageMain}${stageRound!=='—'?` · ${stageRound}`:''} | 스펙 DPS: ${specDps} |`,
-    '| :---: | :---: | :---: |',
-    `| 클리어 기준: ${required} | 클리어 기대값: ${expected} | 클리어 달성률: ${achievement} |`,
-    '', '**빌드 설정**',...buildRows.map(row=>`- ${row.label} ${row.value}`)
+    '클리어 기록 보고서',
+    `- 모드 난이도: ${context}`,
+    `- 고행: ${stageMain}`,
+    `- 라운드: ${stageRound}`,
+    `- ${dpsLabel}: ${specDps}`,
+    `- 클리어 기준: ${required}`,
+    `- 클리어 기대값: ${expected}`,
+    `- 클리어 달성률: ${achievement}`,
+    '', '재화 현황',
+    ...resourceRows.map(({label,value})=>`- ${label}: ${value}`),
+    '', '빌드 설정',
+    ...buildRows.map(({label,value})=>`- ${label}: ${value}`)
   ];
-  effects.filter(group=>group.lines.length).forEach(group=>lines.push('',`**${group.title}**`,...group.lines.map(line=>`- ${line}`)));
-  lines.push('',`**${unitHeading}**`);
-  units.forEach(unit=>{
-    const title=`- **${unit.slot} · ${unit.name}** · ${unit.quantity}마리 · 강화 ${unit.enhance}`;
+  for(const group of effects.filter(group=>group.lines.length)){
+    lines.push('',group.title,...group.lines.map(line=>`- ${line}`));
+  }
+  lines.push('', '성소 정보');
+  if(sanctuaryRows.length){
+    for(const slot of sanctuaryRows) lines.push(`- ${slot.number} · ${slot.start} ~ ${slot.end} · ${slot.skill1||'—'} · ${slot.count1||'—'} · ${slot.skill2||'—'} · ${slot.count2||'—'}`);
+  }else lines.push('성소 스킬 사용 없이 클리어됨');
+  lines.push('',`선택 유닛 정보 (${units.length}슬롯 · ${totalQuantity}마리)`);
+  for(const unit of units){
+    const title=`- ${unit.slot} · ${unit.name} · ${unit.quantity}마리 · 강화 ${unit.enhance}`;
     if(!unit.extras.length){
       lines.push(`${title} · 돌파 ${unit.limitBreak} · ${unit.jewel}`);
     }else{
-      lines.push(title,`  - 1기 · 돌파 ${unit.limitBreak} · ${unit.jewel}`,
-        ...unit.extras.map(extra=>`  - ${extra.number}기 · 돌파 ${extra.limitBreak} · ${extra.jewel}`));
+      lines.push(title,`  - 1번 · 돌파 ${unit.limitBreak} · ${unit.jewel}`,
+        ...unit.extras.map(extra=>`  - ${extra.number}번 · 돌파 ${extra.limitBreak} · ${extra.jewel}`));
     }
-  });
-  const esc=value=>escapeHtml(String(value ?? ''));
-  const tableStyle='width:100%;border-collapse:collapse;table-layout:fixed;font-size:13px;line-height:1.5;';
-  const cellStyle='padding:9px 10px;border:1px solid #dce4ed;vertical-align:middle;color:#243447;overflow-wrap:anywhere;';
-  const section=(title,content)=>`<tr><td style="padding:0 18px 18px;"><div style="font-size:15px;font-weight:700;color:#213b59;padding:0 0 8px;">${esc(title)}</div>${content}</td></tr>`;
-  const summaryRows=[
-    [['모드 난이도',context],['고행 라운드',stageMain],['스펙 DPS',specDps]],
-    [['클리어 기준',required],['클리어 기대값',expected],['클리어 달성률',achievement]]
-  ];
-  const summary=summaryRows.map((row,rowIndex)=>`<tr>${row.map(([label,value],colIndex)=>`<td width="33%" style="padding:12px 6px;border:1px solid #dce4ed;background:#f3f7fc;text-align:center;overflow-wrap:anywhere;"><span style="font-size:11px;color:#5f7187;">${esc(label)}</span><br><strong style="font-size:${rowIndex===0?16:21}px;color:#244d78;">${esc(value)}</strong>${rowIndex===0 && colIndex===1 && stageRound!=='—'?`<br><small style="font-size:11px;color:#244d78;">${esc(stageRound)}</small>`:''}</td>`).join('')}</tr>`).join('');
-  const pairedRowsHtml=rows=>rows.map(row=>`<tr><th scope="row" width="84" style="${cellStyle}background:#f6f8fb;font-weight:400;text-align:left;">${esc(row.label)}</th><td style="${cellStyle}">${esc(row.value)}</td></tr>`).join('');
-  const build=`<table cellpadding="0" cellspacing="0" style="${tableStyle}"><tbody>${pairedRowsHtml(buildRows)}</tbody></table>`;
-  const effectSections=effects.filter(group=>group.lines.length).map(group=>section(group.title,
-    `<table cellpadding="0" cellspacing="0" style="${tableStyle}"><tbody>${group.rows ? pairedRowsHtml(group.rows) : group.lines.map(line=>`<tr><td style="${cellStyle}">${esc(line)}</td></tr>`).join('')}</tbody></table>`)).join('');
-  const unitRows=units.map((unit,index)=>{
-    const entries=unit.extras.length
-      ? [{number:1,limitBreak:unit.limitBreak,jewel:unit.jewel},...unit.extras]
-      : [{number:Number(unit.quantity)>1?'공통':1,limitBreak:unit.limitBreak,jewel:unit.jewel}];
-    const background=index%2 ? '#f8fafd' : '#ffffff';
-    const style=`${cellStyle}background:${background};`;
-    return entries.map((entry,rowIndex)=>`<tr>${rowIndex===0?`<th scope="rowgroup" rowspan="${entries.length}" style="${style}text-align:left;font-weight:700;"><span style="font-size:11px;color:#59738f;">${esc(unit.slot)}</span><br>${esc(unit.name)}</th><td rowspan="${entries.length}" style="${style}text-align:center;">${esc(unit.quantity)}마리<br><span style="font-size:11px;color:#63758a;">강화 ${esc(unit.enhance)}</span></td>`:''}<td style="${style}text-align:center;">${esc(entry.number)}${entry.number==='공통'?'':'기'}</td><td style="${style}text-align:center;">${esc(entry.limitBreak)}</td><td style="${style}">${esc(entry.jewel)}</td></tr>`).join('');
-  }).join('');
-  const unitTable=`<table cellpadding="0" cellspacing="0" style="${tableStyle}"><colgroup><col width="28%"><col width="17%"><col width="11%"><col width="12%"><col width="32%"></colgroup><thead><tr>${['유닛','수량 · 강화','구분','돌파','쥬얼'].map(label=>`<th scope="col" style="${cellStyle}background:#eaf0f7;color:#3d5773;font-size:11px;text-align:center;">${esc(label)}</th>`).join('')}</tr></thead><tbody>${unitRows}</tbody></table>`;
-  const html=`<div style="font-family:Arial,'Malgun Gothic',sans-serif;text-align:left;color:#243447;background:#ffffff;max-width:680px;"><table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;border-collapse:collapse;border:1px solid #d4dfea;background:#ffffff;"><tbody><tr><td style="padding:18px;background:#233b56;color:#f4f8ff;text-align:center;"><strong style="font-size:20px;">클리어 기록 보고서</strong></td></tr><tr><td style="padding:18px;"><table role="presentation" cellpadding="0" cellspacing="0" style="${tableStyle}"><tbody>${summary}</tbody></table></td></tr>${section('빌드 설정',build)}${effectSections}${section(unitHeading,unitTable)}</tbody></table></div>`;
-  return {plainText:lines.join('\n'),html};
+  }
+  return lines.join('\n');
 }
 
 // 복사 시점의 분석값·선택 슬롯 및 확장 슬롯 설정을 함께 보고서로 구성한다.
@@ -2144,6 +2322,7 @@ async function copyDpsAnalysisBoard(button){
   const expected=metricText(summaryItems[1]);
   const achievement=readText('.unit-achievement-value');
   const specDps=($('dpsVal')?.textContent || '—').trim();
+  const dpsLabel=isArtifactDpsViewEnabled() ? '유물 DPS' : '스펙 DPS';
   const runeNames={ap:'파이널룬',td:'카오스룬',ua:'코스모스룬',harmony:'하모니아룬'};
   const runeName=runeNames[$('runeChoiceType')?.value] || '미분류';
   const readOption=id=>{
@@ -2156,13 +2335,15 @@ async function copyDpsAnalysisBoard(button){
   const opt15=readOption('opt15');
   const trans=readOption('transOpt');
   const enchants=ENCHANT_INPUT_IDS.map(id=>$(id)?.value.trim() || '—').join(' · ');
+  // 재화는 이미 계산되어 표시 중인 분석 보드 값을 읽는다. 계산·저장 상태는 변경하지 않는다.
+  const resourceRows=[
+    {label:'총 SP',value:($('spTotalBasicView')?.textContent || '—').trim()},
+    {label:'사용한 EP',value:($('epUsedBasicView')?.textContent || '—').trim()},
+    {label:'사용한 RP',value:($('rpUsedBasicView')?.textContent || '—').trim()},
+    {label:'사용한 심연의혼',value:($('soulUsedBasicView')?.textContent || '—').trim()}
+  ];
   // 빌드 기본 설정은 항목별로 한 줄씩 출력한다.
   const buildRows=[{label:'룬',value:`${runeName} · 각성 ${asc}`},{label:'종족업',value:race},{label:'10강',value:opt10},{label:'15강',value:opt15},{label:'초월',value:trans},{label:'인첸트',value:enchants}];
-  const groupLines=(items,count)=>{
-    const lines=[];
-    for(let index=0;index<items.length;index+=count) lines.push(items.slice(index,index+count).join('  ·  '));
-    return lines;
-  };
   const activeNumber=(id,label)=>{
     const value=Number($(id)?.value || 0);
     return Number.isFinite(value) && value>0 ? `${label} ${value}` : null;
@@ -2188,14 +2369,17 @@ async function copyDpsAnalysisBoard(button){
   ].filter(row=>row.value);
   const enhanceLines=enhanceRows.map(row=>row.label==='리페핸스' ? row.value : `${row.label} ${row.value}`);
   const buffIds=['prodArtifact','prodNova','prodTeratron','prodAmon','prodAdun','prodKerrigan','prodOvermind','prodNarud','flowerSkill1','flowerSkill2','flowerSkill3'];
-  const buffEntries=buffIds.map(id=>$(id)).filter(input=>input?.checked && !input.disabled)
-    .map(input=>input.closest('label')?.querySelector('span')?.textContent.trim() || input.id);
-  // 사용 중인 효과만 출력하며 선택 버프는 한 줄에 최대 네 개를 배치한다.
-  const januaryActive=monthRuneRows.some(row=>row.label==='1월');
+  const selectedBuffs=buffIds.map(id=>({id,input:$(id)})).filter(({input})=>input?.checked && !input.disabled);
+  const buffNames=(items)=>items.map(({id,input})=>input.closest('label')?.querySelector('span')?.textContent.trim() || id).join(' · ');
+  const unitBuffs=buffNames(selectedBuffs.filter(({id})=>id.startsWith('prod')));
+  const flowerBuffs=buffNames(selectedBuffs.filter(({id})=>id.startsWith('flower')));
+  const buffLines=[unitBuffs && `유닛 버프: ${unitBuffs}`,flowerBuffs && `꽃 버프: ${flowerBuffs}`].filter(Boolean);
+  if(!buffLines.length) buffLines.push('없음');
+  // 현재 선택된 버프만 종류별 한 줄로 보존한다.
   const effects=[
-    {title:`이달의 룬 효과${januaryActive?` · 1월 적용 ${januaryScope}`:''}`,lines:monthRuneLines,rows:monthRuneRows},
-    {title:'강화 효과',lines:enhanceLines,rows:enhanceRows},
-    {title:'선택 버프',lines:groupLines(buffEntries,4)}
+    {title:'이달의 룬 효과',lines:[`1월 적용 범위: ${januaryScope}`,...monthRuneLines]},
+    {title:'강화 효과',lines:enhanceLines},
+    {title:'선택 버프',lines:buffLines}
   ];
   const selectedSlots=currentDpsBaseUnitSlots();
   const jewels=dpsJewelSettingsObject();
@@ -2209,21 +2393,12 @@ async function copyDpsAnalysisBoard(button){
         }) : [];
     return {slot,name,quantity,enhance:unit ? String(dpsBaseUnitEnhanceValue(unit)) : '—',limitBreak,jewel,extras};
   });
-  const {plainText,html}=formatDpsClearReport({
-    context,stageMain,stageRound,achievement,specDps,required,expected,buildRows,effects,units:unitEntries
+  const plainText=formatDpsClearReport({
+    context,stageMain,stageRound,achievement,specDps,dpsLabel,required,expected,resourceRows,buildRows,effects,units:unitEntries,sanctuaryRows:dpsSanctuaryValidRows()
   });
   let copied=false;
   button.disabled=true;
   try{
-    if(navigator.clipboard?.write && typeof ClipboardItem!=='undefined'){
-      try{
-        await navigator.clipboard.write([new ClipboardItem({
-          'text/plain':new Blob([plainText],{type:'text/plain'}),
-          'text/html':new Blob([html],{type:'text/html'})
-        })]);
-        copied=true;
-      }catch{}
-    }
     if(!copied && navigator.clipboard?.writeText){
       try{await navigator.clipboard.writeText(plainText);copied=true;}catch{}
     }
@@ -2754,6 +2929,10 @@ function bindDpsBaseUnitControlEvents(){
 }
 
 /* ── 09 · 통합 헤더·화면 전환 ── */
+/* 탭 공통: Home/End/좌우 화살표의 순환 이동 인덱스 */
+function nextHorizontalTabIndex(key,current,length){
+  return key==='Home'?0:key==='End'?length-1:(current+(key==='ArrowRight'?1:-1)+length)%length;
+}
 /* 통합 헤더 하위 탭: 원래 DOM을 유지하여 계산·저장 필드 재생성을 방지 */
 function activateIntegratedTab(group,index){
   const tabs=[...qsa(`[data-integrated-tab="${group}"]`)];
@@ -2783,7 +2962,7 @@ function bindIntegratedTabEvents(){
     const group=button.dataset.integratedTab;
     const tabs=[...qsa(`[data-integrated-tab="${group}"]`)];
     const current=tabs.indexOf(button);
-    const next=event.key==='Home'?0:event.key==='End'?tabs.length-1:(current+(event.key==='ArrowRight'?1:-1)+tabs.length)%tabs.length;
+    const next=nextHorizontalTabIndex(event.key,current,tabs.length);
     event.preventDefault();
     activateIntegratedTab(group,Number(tabs[next].dataset.integratedIndex));
     tabs[next].focus({preventScroll:true});
@@ -2920,7 +3099,7 @@ function bindDamageBoardTabEvents(){
     const tabs=[...tab.parentElement.querySelectorAll('[data-damage-board-subtab]')].filter(button=>!button.disabled);
     const current=tabs.indexOf(tab);
     if(current<0 || !tabs.length) return;
-    const next=event.key==='Home'?0:event.key==='End'?tabs.length-1:(current+(event.key==='ArrowRight'?1:-1)+tabs.length)%tabs.length;
+    const next=nextHorizontalTabIndex(event.key,current,tabs.length);
     event.preventDefault();
     if(tabs[next].dataset.damageBoardSubtab==='dps') openDpsCompareModal(tabs[next]);
     else {
@@ -2962,7 +3141,7 @@ function bindDamageBoardSwitchEvents(){
       if(!tab || !['ArrowLeft','ArrowRight','Home','End'].includes(event.key)) return;
       event.preventDefault();
       const current=tabs.indexOf(tab);
-      const next=event.key==='Home'?0:event.key==='End'?tabs.length-1:(current+(event.key==='ArrowRight'?1:-1)+tabs.length)%tabs.length;
+      const next=nextHorizontalTabIndex(event.key,current,tabs.length);
       selectTab(next,true);
     });
   }
@@ -3960,6 +4139,7 @@ function bindReactiveInputs(){
       syncArtifactDpsViewSwitch();
       syncErosionControlElements();
       syncPlanetExplorationRestrictedControls();
+      renderDpsSanctuaryInfo();
     }
     if(RUNE_CHOICE_SYNC_IDS.has(target.id)) syncRuneChoice();
     if(ENCHANT_INPUT_ID_SET.has(target.id)) syncEnchantInputs();
@@ -4023,7 +4203,7 @@ function bindAppEvents(){
   [
     bindFontScaleViewportGuard, bindFontScalePopover, bindActionEvents, bindTraitHoldEvents, bindTraitInputEvents,
     bindIntegratedTabEvents, ()=>window.DpsPreset.bindEvents(), bindJewelImageEvents,
-    bindZeroScoreCalculator, bindTraitLimitDisplayEvents, bindTraitLimitChoiceEvents, bindDpsBaseUnitControlEvents, bindReactiveInputs,
+    bindZeroScoreCalculator, bindTraitLimitDisplayEvents, bindTraitLimitChoiceEvents, bindDpsBaseUnitControlEvents, bindDpsSanctuaryEvents, bindReactiveInputs,
     bindButtonPressFeedback, bindIndependentWindowButton, bindDamageBoardTabEvents, bindDpsCompareEvents, bindDamageBoardSwitchEvents, bindAppTitleVersion, bindPlanetExplorationCalendar
   ].forEach(fn=>fn());
 }
@@ -4289,6 +4469,7 @@ function initApp(){
   syncDonationBuffControl();
   syncBuffChoiceButtons();
   syncDpsBaseUnitControl();
+  renderDpsSanctuaryInfo();
   syncExclusiveRuneOptions();
   updateZeroScoreCalculator();
   formatAllMoneyInputs();

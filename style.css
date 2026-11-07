@@ -1909,6 +1909,45 @@ body:is(.is-mobile,.is-tablet) .hdr-meta .right-workspace-window-toggle.nexus-la
 @media(max-width:410px){.zero-calc-list-head{padding-left:8px;padding-right:8px;}}
 
 /* v015 · 유닛 보드와 상세 설정: 결과 → 수치 → 적용 설정 */
+/* 성소 정보: 유닛 구성 아래 독립 영역. 유닛 카드와 같은 슬롯 헤더, 3열 × 2행. */
+body .unit-sanctuary-panel{display:grid;min-width:0;gap:12px;margin:26px 0 0;padding:0;border:0;border-radius:0;background:transparent;}
+body .unit-sanctuary-heading{display:flex;position:relative;align-items:center;justify-content:flex-start;gap:8px;margin:0;}
+body .unit-sanctuary-heading h3{display:flex;align-items:center;gap:9px;margin:0;color:var(--ui-text);font-size:calc(15px * var(--app-font-scale));line-height:1.4;}
+body .unit-sanctuary-help{position:static;min-width:0;}
+body .unit-sanctuary-help summary{display:grid;place-items:center;width:22px;height:22px;border:1px solid #52657b;border-radius:50%;background:#1a293a;color:#d6e8f9;cursor:pointer;font-size:calc(12px * var(--app-font-scale));list-style:none;}
+body .unit-sanctuary-help summary::-webkit-details-marker{display:none;}
+body .unit-sanctuary-help summary:focus-visible{outline:2px solid #97c5ff;outline-offset:2px;}
+body .unit-sanctuary-help[open] summary{background:#2a4055;}
+body .unit-sanctuary-guide{position:absolute;left:0;top:calc(100% + 6px);z-index:25;display:grid;gap:6px;width:min(320px,100%);box-sizing:border-box;padding:12px;border:1px solid #4c6078;border-radius:9px;background:#121a25;box-shadow:0 10px 28px rgba(0,0,0,.5);color:#c5d0de;font-size:calc(13px * var(--app-font-scale));line-height:1.5;word-break:keep-all;overflow-wrap:break-word;}
+body .unit-sanctuary-guide strong{font-size:calc(13px * var(--app-font-scale));font-weight:600;color:var(--ui-text);}
+body .unit-sanctuary-guide ul{display:grid;gap:6px;margin:0;padding-left:17px;}
+body .unit-sanctuary-reset{display:grid;place-items:center;margin-left:auto;width:30px;height:30px;padding:5px;border:1px solid transparent;border-radius:6px;background:transparent;color:#9daec5;cursor:pointer;}
+body .unit-sanctuary-reset svg{width:17px;height:17px;}
+body .unit-sanctuary-reset:hover,body .unit-sanctuary-reset:focus-visible{border-color:#9b6571;background:#211b23;color:#ffccd4;outline-offset:2px;}
+body .unit-sanctuary-slots{display:grid;grid-template-columns:minmax(0,1fr);gap:9px;min-width:0;}
+body .unit-sanctuary-card{min-width:0;overflow:hidden;border:1px solid var(--ui-panel-border);border-radius:10px;background:var(--ui-panel-body-bg);}
+body .unit-sanctuary-card-head{display:flex;align-items:center;gap:7px;min-height:34px;padding:5px 10px;border-bottom:1px solid var(--ui-integrated-head-line);background:var(--ui-integrated-head-bg);}
+body .unit-sanctuary-card-head .unit-slot-number{display:grid;place-items:center;flex:0 0 26px;width:26px;height:24px;border-radius:5px;background:#1b3347;color:#b5d7fa;font:calc(10px * var(--app-font-scale))/1 Consolas,monospace;}
+body .unit-sanctuary-card-head strong{font-size:calc(11px * var(--app-font-scale));font-weight:600;color:#dceafa;}
+body .unit-sanctuary-card-head .unit-list-remove{margin-left:auto;min-width:28px;width:28px;min-height:28px;height:28px;padding:0;background:transparent;border-color:transparent;color:#9daec5;}
+body .unit-sanctuary-card-head .unit-list-remove:hover:not(:disabled){border-color:#9b6571;color:#ffccd4;}
+body .unit-sanctuary-fields{display:grid;grid-template-columns:minmax(0,.86fr) minmax(0,1.62fr) minmax(0,.98fr);gap:8px 7px;min-width:0;padding:9px;}
+body .unit-sanctuary-field{display:grid;align-content:start;grid-template-rows:auto 30px;gap:4px;min-width:0;}
+body .unit-sanctuary-field>span{display:block;min-width:0;color:#aebdd0;font-size:calc(10px * var(--app-font-scale));line-height:1.2;text-align:center;white-space:nowrap;}
+body .unit-sanctuary-field :is(input,select){display:block;width:100%;min-width:0;height:30px;min-height:30px;padding:3px 4px;border:1px solid #425569;border-radius:6px;background:#111820;color:#e5edf7;text-align:center;text-align-last:center;box-sizing:border-box;font-size:calc(11px * var(--app-font-scale));}
+body .unit-sanctuary-field :is(input,select):disabled{opacity:.42;cursor:not-allowed;}
+body .unit-sanctuary-field input::-webkit-inner-spin-button,body .unit-sanctuary-field input::-webkit-outer-spin-button{-webkit-appearance:none;margin:0;}
+body .unit-sanctuary-field input[type=number]{appearance:textfield;-moz-appearance:textfield;}
+body .unit-sanctuary-card.is-invalid input{border-color:#d17979;}
+body .unit-sanctuary-footer{display:grid;grid-template-columns:minmax(0,1fr);min-width:0;}
+@container (max-width:420px){
+  body .unit-sanctuary-panel{gap:10px;}
+  body .unit-sanctuary-fields{gap:7px 4px;padding:8px 6px;}
+  body .unit-sanctuary-field>span{font-size:calc(9px * var(--app-font-scale));}
+  body .unit-sanctuary-field :is(input,select){height:32px;min-height:32px;padding:2px;font-size:calc(10px * var(--app-font-scale));}
+  body .unit-sanctuary-field{grid-template-rows:auto 32px;}
+}
+
 body #damageBoardUnitPanel{container-type:inline-size;}
 body #dpsBaseUnitSummary{overflow:visible;}
 body #dpsBaseUnitSummary .dps-base-unit-summary-row{min-width:0;border-color:var(--ui-panel-border);border-radius:12px;}
@@ -1925,8 +1964,8 @@ body #dpsBaseUnitSummary .dps-base-unit-results>.unit-achievement{display:grid;g
 body #dpsBaseUnitSummary .unit-achievement-label{justify-content:flex-start;text-align:left;font-size:calc(11px * var(--app-font-scale));}
 body #dpsBaseUnitSummary .unit-achievement-value{font-size:calc(24px * var(--app-font-scale));text-align:right;}
 body .ub-collection-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:6px 0 12px;}
-body .ub-collection-head h3{display:flex;align-items:center;gap:9px;margin:0;color:var(--ui-text);font-size:calc(13px * var(--app-font-scale));}
-.ub-collection-head h3>span{padding:2px 7px;border:1px solid var(--ui-panel-border);border-radius:5px;color:#a9c8ff;font:calc(10px * var(--app-font-scale))/1.5 Consolas,monospace;}
+body .ub-collection-head h3{display:flex;align-items:center;gap:9px;margin:0;color:var(--ui-text);font-size:calc(15px * var(--app-font-scale));}
+.ub-collection-head h3>span,body .unit-sanctuary-heading h3>span{padding:2px 7px;border:1px solid var(--ui-panel-border);border-radius:5px;color:#a9c8ff;font:calc(10px * var(--app-font-scale))/1.5 Consolas,monospace;}
 .ub-collection-head small{color:#9daec5;font-size:calc(10px * var(--app-font-scale));}
 body #dpsBaseUnitSlotStack .unit-slot-cards-grid{padding:0;grid-template-columns:minmax(0,1fr);gap:12px;}
 body #dpsBaseUnitSlotStack .unit-slot-overview-card{border-color:var(--ui-panel-border);border-radius:12px;box-shadow:none;transition:border-color .15s;}
@@ -1959,9 +1998,9 @@ body #dpsBaseUnitSlotStack .unit-slot-card-main:focus-visible{outline:2px solid 
 .ub-setting>span{color:#9daec5;font-size:calc(10px * var(--app-font-scale));}
 .ub-setting>b{color:#e2e7f0;font-size:calc(12px * var(--app-font-scale));line-height:1.4;overflow-wrap:anywhere;}
 .ub-wide{grid-column:1/-1;}
-body #dpsBaseUnitSlotStack .unit-slot-add-card{border:1px dashed #53636b;border-radius:12px;background:transparent;flex-direction:row;min-height:64px;gap:10px;padding:12px;}
-body #dpsBaseUnitSlotStack .unit-slot-add-symbol{font-size:25px;}
-body #dpsBaseUnitSlotStack .unit-slot-add-card small{color:#9daec5;font-size:calc(10px * var(--app-font-scale));}
+body :is(#dpsBaseUnitSlotStack,#unitSanctuaryPanel) .unit-slot-add-card{border:1px dashed #53636b;border-radius:12px;background:transparent;flex-direction:row;min-height:64px;gap:10px;padding:12px;}
+body :is(#dpsBaseUnitSlotStack,#unitSanctuaryPanel) .unit-slot-add-symbol{font-size:25px;}
+body :is(#dpsBaseUnitSlotStack,#unitSanctuaryPanel) .unit-slot-add-card small{color:#9daec5;font-size:calc(10px * var(--app-font-scale));}
 body #dpsUnitSlotModal .unit-slot-modal-dialog{width:min(780px,calc(100vw - 32px));border-radius:18px;}
 body #dpsUnitSlotModal .unit-slot-modal-header{padding:18px 22px;}
 body #dpsUnitSlotModal .unit-slot-modal-heading{gap:5px;}
@@ -2025,17 +2064,23 @@ body #dpsUnitSlotModal .ub-expansion-section .dps-base-unit-extra-settings{margi
 /* v017 · 취소/완료를 하단에 나란히 배치하고 슬롯 요약표를 상단에 상시 표시 */
 body #dpsUnitSlotModal .unit-slot-modal-cancel{grid-column:1;min-width:0;min-height:40px;padding:8px 19px;border:1px solid var(--ui-button-border);border-radius:9px;background:var(--ui-button-bg);color:var(--ui-button-text);font:inherit;cursor:pointer;}
 body #dpsUnitSlotModal .unit-slot-modal-cancel:focus-visible{outline:2px solid var(--ui-field-focus-border);outline-offset:2px;}
-body #dpsBaseUnitSlotStack .unit-basic-summary{margin:0 0 14px;border:1px solid var(--ui-panel-border);border-radius:10px;}
-body #dpsBaseUnitSlotStack .unit-basic-summary table{min-width:0;font-size:calc(11px * var(--app-font-scale));}
-body #dpsBaseUnitSlotStack .unit-basic-summary :is(th,td){height:36px;padding:9px 6px;white-space:normal;overflow-wrap:anywhere;}
-body #dpsBaseUnitSlotStack .unit-basic-summary thead th{background:#111417;color:#c6d1dc;border-bottom:1px solid #2a3037;font-size:calc(10px * var(--app-font-scale));}
-body #dpsBaseUnitSlotStack .unit-basic-summary tbody tr+tr{border-top:1px solid var(--ui-panel-border);}
+body :is(#dpsBaseUnitSlotStack,#unitSanctuaryPanel) .unit-basic-summary{margin:0 0 14px;border:1px solid var(--ui-panel-border);border-radius:10px;}
+body :is(#dpsBaseUnitSlotStack,#unitSanctuaryPanel) .unit-basic-summary table{min-width:0;font-size:calc(11px * var(--app-font-scale));}
+body :is(#dpsBaseUnitSlotStack,#unitSanctuaryPanel) .unit-basic-summary :is(th,td){height:36px;padding:9px 6px;white-space:normal;overflow-wrap:anywhere;}
+body :is(#dpsBaseUnitSlotStack,#unitSanctuaryPanel) .unit-basic-summary thead th{background:#111417;color:#c6d1dc;border-bottom:1px solid #2a3037;font-size:calc(10px * var(--app-font-scale));}
+body :is(#dpsBaseUnitSlotStack,#unitSanctuaryPanel) .unit-basic-summary tbody tr+tr{border-top:1px solid var(--ui-panel-border);}
+body #unitSanctuaryPanel .unit-sanctuary-summary{margin:0;overflow-x:auto;overflow-y:hidden;}
+body #unitSanctuaryPanel .unit-sanctuary-summary table{min-width:520px;}
+body #unitSanctuaryPanel .unit-sanctuary-summary th:nth-child(1){width:12%;}
+body #unitSanctuaryPanel .unit-sanctuary-summary th:nth-child(2),body #unitSanctuaryPanel .unit-sanctuary-summary th:nth-child(3){width:17%;}
+body #unitSanctuaryPanel .unit-sanctuary-summary th:nth-child(4),body #unitSanctuaryPanel .unit-sanctuary-summary th:nth-child(5){width:27%;}
+body #unitSanctuaryPanel .unit-sanctuary-summary tbody td{font-family:var(--font-main);font-variant-numeric:tabular-nums;}
 body #dpsBaseUnitSlotStack .unit-basic-number{width:12%;}
 body #dpsBaseUnitSlotStack .unit-basic-name{width:28%;}
 body #dpsBaseUnitSlotStack .unit-basic-quantity{width:12%;}
 body #dpsBaseUnitSlotStack .unit-basic-limit-break{width:16%;}
 body #dpsBaseUnitSlotStack .unit-basic-jewel{width:32%;}
-@media(max-width:420px){body #dpsBaseUnitSlotStack .unit-basic-summary :is(th,td){padding:8px 3px;}body #dpsBaseUnitSlotStack .unit-basic-summary table{font-size:calc(10px * var(--app-font-scale));}}
+@media(max-width:420px){body :is(#dpsBaseUnitSlotStack,#unitSanctuaryPanel) .unit-basic-summary :is(th,td){padding:8px 3px;}body :is(#dpsBaseUnitSlotStack,#unitSanctuaryPanel) .unit-basic-summary table{font-size:calc(10px * var(--app-font-scale));}}
 
 /* v018 · 스펙/유닛 보드의 제목·주요 값·보조 정보 행을 같은 기준으로 정렬 */
 body .right-analytics-workspace :is(#statDpsSummary.board-context-header,#dpsBaseUnitSummary .board-context-header){--context-caption-row:calc(26px * var(--app-font-scale));--context-value-row:calc(32px * var(--app-font-scale));--context-detail-row:calc(18px * var(--app-font-scale));--context-row-gap:5px;--context-pad-y:14px;display:grid;grid-template-rows:auto;align-items:stretch;width:100%;min-width:0;min-height:0;grid-template-columns:var(--board-summary-columns);}
@@ -2156,8 +2201,8 @@ body .analytics-polish #dpsBaseUnitSlotStack .ub-dps>b{min-width:0;max-width:100
 body .analytics-polish #dpsBaseUnitSlotStack :is(.ub-setting,.ub-metric,.ub-extra-jewel,.ub-extra-break){min-width:0;}
 body .analytics-polish #dpsBaseUnitSlotStack :is(.ub-setting,.ub-extra-jewel)>b{max-width:100%;white-space:normal;overflow-wrap:anywhere;}
 body .analytics-polish #dpsBaseUnitSlotStack :is(.ub-setting,.ub-metric)>span{white-space:normal;overflow-wrap:anywhere;}
-body .analytics-polish #dpsBaseUnitSlotStack .unit-slot-add-card{border-color:#304158;background:transparent;box-shadow:none;}
-body .analytics-polish #dpsBaseUnitSlotStack .unit-slot-add-card:hover{background:rgba(34,50,70,.2);border-color:#4d6384;}
+body .analytics-polish :is(#dpsBaseUnitSlotStack,#unitSanctuaryPanel) .unit-slot-add-card{border-color:#304158;background:transparent;box-shadow:none;}
+body .analytics-polish :is(#dpsBaseUnitSlotStack,#unitSanctuaryPanel) .unit-slot-add-card:hover{background:rgba(34,50,70,.2);border-color:#4d6384;}
 body .analytics-polish #dpsJewelConfigGrid .dps-jewel-card{box-shadow:none;}
 body .analytics-polish #dpsJewelConfigGrid .dps-jewel-card-head{padding:10px;gap:9px;box-sizing:border-box;}
 body .analytics-polish #dpsJewelConfigGrid :is(.dps-jewel-title-block,.jewel-ability){min-width:0;}
